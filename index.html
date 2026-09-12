@@ -86,7 +86,9 @@
   .col+.col .slot::before{content:"";position:absolute;left:calc(-1*var(--gap));width:calc(var(--gap)/2);top:25%;height:50%;border:2px solid var(--hairline-strong);border-left:0;border-radius:0 3px 3px 0}
   .col+.col .slot::after{content:"";position:absolute;left:calc(var(--gap)/-2);width:calc(var(--gap)/2);top:50%;border-top:2px solid var(--hairline-strong)}
   .bx{background:var(--bg-card);border-radius:var(--radius-md);padding:4px 7px 5px;width:100%;position:relative;z-index:1}
-  .bx .meta{font-size:.76rem;line-height:1.4;margin:0 0 1px 2px;min-height:14px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;display:block}
+  .bx .meta{font-size:.76rem;line-height:1.4;margin:0 0 1px 2px;min-height:15px;white-space:nowrap;display:flex;justify-content:space-between;gap:6px}
+  .bx .meta .num{color:var(--text-muted)}
+  .bx .meta .res{margin-left:auto;color:var(--text-primary);font-weight:600;overflow:hidden;text-overflow:ellipsis}
   .bx .name{font-size:.94rem;line-height:1.35;padding:2px 4px;margin:0 -4px;width:calc(100% + 8px);gap:5px}
   .bx .seed{min-width:16px;font-size:.7rem}
   /* settings */
@@ -125,7 +127,9 @@
 const EVENT='52703b65-bade-46e2-9ce2-399dd32d93e4';
 const DATA_URL='data/results.json';
 const LIVE_URL=`https://floarena.firebaseio.com/${EVENT}/mats.json`;
-const ROUND_LABEL={R32:'R32',R16:'R16',QF:'QF',SF:'SF',F:'final','3':'3rd place'};
+const ROUND_LABEL={R32:'round of 32',R16:'round of 16',QF:'quarterfinal',SF:'semifinal',F:'final','3':'3rd place'};
+const ROUND_HEAD={R32:'round of 32',R16:'round of 16',QF:'quarterfinals',SF:'semifinals',F:'final','3':'3rd place'};
+const rl=r=>ROUND_LABEL[r]||r;
 
 let DATA=null;            // parsed results.json
 let LIVE={};              // boutNumber -> live mat entry
@@ -135,16 +139,16 @@ const quiet=()=>tab==='settings'&&DATA; // don't re-render under the user's fing
 
 // Schedule blocks: the order the day runs in. Editable in Settings. `kind` matches results.json divisions.
 const DEFAULT_BLOCKS = [
-  {id:'m-R16', label:"men R16",   kind:'pro', sex:'m', round:'R16', day:1},
-  {id:'w-QF',  label:"women QF",  kind:'pro', sex:'w', round:'QF',  day:1},
-  {id:'m-QF',  label:"men QF",    kind:'pro', sex:'m', round:'QF',  day:1},
-  {id:'m-SF',  label:"men SF",    kind:'pro', sex:'m', round:'SF',  day:2},
-  {id:'w-SF',  label:"women SF",  kind:'pro', sex:'w', round:'SF',  day:2},
-  {id:'abs-R16',label:"absolute R16",kind:'abs', round:'R16', day:2},
-  {id:'abs-QF',label:"absolute QF",kind:'abs', round:'QF',  day:2},
+  {id:'m-R16', label:"men round of 16",   kind:'pro', sex:'m', round:'R16', day:1},
+  {id:'w-QF',  label:"women quarterfinals",  kind:'pro', sex:'w', round:'QF',  day:1},
+  {id:'m-QF',  label:"men quarterfinals",    kind:'pro', sex:'m', round:'QF',  day:1},
+  {id:'m-SF',  label:"men semifinals",    kind:'pro', sex:'m', round:'SF',  day:2},
+  {id:'w-SF',  label:"women semifinals",  kind:'pro', sex:'w', round:'SF',  day:2},
+  {id:'abs-R16',label:"absolute round of 16",kind:'abs', round:'R16', day:2},
+  {id:'abs-QF',label:"absolute quarterfinals",kind:'abs', round:'QF',  day:2},
   {id:'w-3',   label:"women 3rd", kind:'pro', sex:'w', round:'3',   day:2},
   {id:'m-3',   label:"men 3rd",   kind:'pro', sex:'m', round:'3',   day:2},
-  {id:'abs-SF',label:"absolute SF",kind:'abs', round:'SF',  day:2},
+  {id:'abs-SF',label:"absolute semifinals",kind:'abs', round:'SF',  day:2},
   {id:'w-F',   label:"women final",   kind:'pro', sex:'w', round:'F',   day:2},
   {id:'m-F',   label:"men final",     kind:'pro', sex:'m', round:'F',   day:2},
   {id:'abs-3', label:"absolute 3rd",kind:'abs', round:'3',  day:2},
@@ -220,11 +224,11 @@ function winnerOf(div,rName,m){ const i=winnerInfo(div,rName,m); return i?i.w:nu
 function slot(div,rName,m,s){
   const b=boutAt(div,rName,m); const p=b?(s?b.b:b.a):null; if(p&&p.name) return p;
   const rn=rounds(div);
-  if(rName==='3'){ const sf=rn[rn.length-2]; const w=winnerOf(div,sf,s); if(w===null||w<0) return {tbd:true,label:`SF ${s+1} loser`}; return slot(div,sf,s,1-w); }
+  if(rName==='3'){ const sf=rn[rn.length-2]; const w=winnerOf(div,sf,s); if(w===null||w<0) return {tbd:true,label:`${rl(sf)} ${s+1} loser`}; return slot(div,sf,s,1-w); }
   const ri=rn.indexOf(rName); if(ri<=0) return {tbd:true,label:'TBD'};
   const prev=rn[ri-1], pm=m*2+s, w=winnerOf(div,prev,pm);
-  if(w===null) return {tbd:true,label:`${prev} ${pm+1}`};
-  if(w<0) return {tbd:true,label:`${prev} ${pm+1} · no winner`};
+  if(w===null) return {tbd:true,label:`${rl(prev)} ${pm+1} winner`};
+  if(w<0) return {tbd:true,label:`${rl(prev)} ${pm+1} · no winner`};
   return slot(div,prev,pm,w);
 }
 function matchObj(div,rName,m){
@@ -316,10 +320,22 @@ function pName(p,mo,s){
   const c=['name', isFollow(p)?'follow':'', mo.w===s?'win':'', (mo.w!==null&&mo.w!==s)?'lose':''].join(' ');
   return `<button class="${c}" data-win="${mo.key}|${s}"><span class="seed">${p.seed||''}</span><span class="nm">${esc(p.name)}</span></button>`;
 }
+// "SUB" + "6-0 6:53" -> "sub · 6:53"; "SCORE" + "5-0 15:00 TB1" -> "5-0 pts · OT"; "REF" -> "ref decision"
+function fmtResult(winType,result){
+  const r=String(result||''); const score=(r.match(/^(\d+-\d+)/)||[])[1]; const time=(r.match(/(\d+:\d+)/)||[])[1]; const ot=/TB|OT/i.test(r)?' · OT':'';
+  const t=String(winType||'').toUpperCase();
+  if(t==='SUB') return `sub${time?' · '+time:''}${ot}`;
+  if(t==='SCORE'||t==='PTS'||t==='DEC') return `${score?score+' pts':'on points'}${ot}`;
+  if(t==='REF') return `ref decision${ot}`;
+  if(t==='DQ') return 'dq';
+  if(t==='INJ'||t==='MED') return 'injury';
+  if(t==='WO'||t==='FF') return 'walkover';
+  return [t.toLowerCase(),r].filter(Boolean).join(' ');
+}
 function resultPill(mo){
   const b=mo.bout;
-  if(mo.src==='flo'&&b) return `<span class="res">${esc([b.winType,b.result].filter(Boolean).join(' '))}</span>`;
-  if(mo.src==='live'&&mo.live) return `<span class="res">${esc([mo.live.winType,mo.live.finalScore].filter(Boolean).join(' '))} · live</span>`;
+  if(mo.src==='flo'&&b) return `<span class="res">${esc(fmtResult(b.winType,b.result))}</span>`;
+  if(mo.src==='live'&&mo.live) return `<span class="res">${esc(fmtResult(mo.live.winType,mo.live.finalScore))} · live</span>`;
   if(mo.src==='tap') return `<span class="res">your tap</span>`;
   return '';
 }
@@ -330,7 +346,7 @@ function renderMats(){
   let h=`<h2 class="section-title">on the mats <span style="font-weight:400">· FloArena live</span></h2><div class="mats">`;
   for(const l of ms){
     const who=(p,i)=>`<div class="who ${l.over?(l.winner===i?'w':'l'):''} ${isFollow(p)?'follow':''}"><span><span class="seed">${p.seed||''}</span> ${esc(p.name)}</span><span class="sc">${p.score}${p.pen?`<small class="muted"> p${p.pen}</small>`:''}</span></div>`;
-    h+=`<div class="panel mat"><div class="hd"><span><b>${esc(String(l.mat).toLowerCase())}</b> · ${esc(l.weight)}${l.weight&&!/kg|abs/i.test(l.weight)?'kg':''} ${esc(l.round)} · #${esc(l.n)}</span>${l.over?`<span>final</span>`:`<span class="clock">${esc(l.clock)}${l.period&&l.period!=='1'?' '+esc(l.period):''}</span>`}</div>${who(l.red,0)}${who(l.blue,1)}<div class="ft">${l.over?`${esc(l.winType||'')} · ended ${ago(l.updated)}`:`<span class="cue live">live</span> updated ${ago(l.updated)}`}</div></div>`;
+    h+=`<div class="panel mat"><div class="hd"><span><b>${esc(String(l.mat).toLowerCase())}</b> · ${esc(l.weight)}${l.weight&&!/kg|abs/i.test(l.weight)?'kg':''} ${esc(l.round)} · #${esc(l.n)}</span>${l.over?`<span>final</span>`:`<span class="clock">${esc(l.clock)}${l.period&&l.period!=='1'?' '+esc(l.period):''}</span>`}</div>${who(l.red,0)}${who(l.blue,1)}<div class="ft">${l.over?`${esc(fmtResult(l.winType,l.finalScore))} · ended ${ago(l.updated)}`:`<span class="cue live">live</span> updated ${ago(l.updated)}`}</div></div>`;
   }
   return h+`</div>`;
 }
@@ -347,11 +363,13 @@ function renderNext(){
       const when=mo.onMat?`on mat ${mo.mat} now`:`${fmt(mo.at)} · ${rel(mo.at)} · mat ${mo.mat}`;
       h+=`<div class="panel follow-card"><span class="pin"></span><div><div class="big">${esc(f)}${mo.onMat?'':' · '+fmt(mo.at)}</div><div class="sub">${when} · ${esc(mo.div.name)} ${ROUND_LABEL[mo.rName]||mo.rName} · vs ${opp.tbd?esc(opp.label):esc(opp.name)}</div></div></div>`;
     } else {
-      let status='no match left in today’s queue';
+      // still alive somewhere (e.g. tomorrow, or a division with no bouts yet)? champion? otherwise eliminated: drop the card
+      let status='no match in today’s queue', out=false, champ=false;
       for(const div of divs()) for(const r of div.rounds) for(let m=0;m<r.bouts.length;m++){ const mo=matchObj(div,r.name,m);
-        if(mo.w!==null){ const l=mo.w===0?mo.b:mo.a; if(hit(l)) status=`eliminated in ${div.name} ${ROUND_LABEL[r.name]||r.name}`; } }
-      for(const div of divs()){ const rn=rounds(div); const w=winnerOf(div,rn[rn.length-1],0); if(w!==null&&hit(slot(div,rn[rn.length-1],0,w))) status=`${div.name} champion 🥇`; }
-      h+=`<div class="panel follow-card"><span class="pin"></span><div><div class="big">${esc(f)}</div><div class="sub">${status}</div></div></div>`;
+        if(mo.w!==null&&mo.w>=0){ const l=mo.w===0?mo.b:mo.a; if(hit(l)) out=true; } }
+      for(const div of divs()){ const rn=rounds(div); const w=winnerOf(div,rn[rn.length-1],0); if(w!==null&&w>=0&&hit(slot(div,rn[rn.length-1],0,w))){ champ=true; status=`${div.name} champion 🥇`; } }
+      const alive=divs().some(div=>div.rounds.some(r=>r.bouts.some((b,m)=>winnerOf(div,r.name,m)===null&&(hit(b.a)||hit(b.b)))));
+      if(champ||alive||!out) h+=`<div class="panel follow-card"><span class="pin"></span><div><div class="big">${esc(f)}</div><div class="sub">${status}</div></div></div>`;
     }
   }
   h+=`<h2 class="section-title">up next</h2>`;
@@ -361,11 +379,11 @@ function renderNext(){
     const isNow=mo.onMat||(mode==='anchor'&&S.anchor&&S.anchor.key===mo.key);
     const fol=isFollow(mo.a)||isFollow(mo.b);
     h+=`<div class="panel row ${isNow?'now':''} ${fol?'fol':''}"><div class="t">${mo.onMat?'now':fmt(mo.at)}<small>mat ${mo.mat}</small></div>
-      <div><div class="meta">${esc(mo.div.name)} ${ROUND_LABEL[mo.rName]||mo.rName}${mo.bout&&mo.bout.n?' · #'+esc(mo.bout.n):''} ${mo.onMat?`<span class="cue live">on the mat · ${esc(mo.live.clock)}</span>`:isNow?'<span class="cue live">on the mat</span>':`<button type="button" class="chip small" data-now="${mo.key}">set as now</button>`}</div>
+      <div><div class="meta">${esc(mo.div.name)} ${ROUND_LABEL[mo.rName]||mo.rName}${mo.bout&&mo.bout.n?' · #'+esc(mo.bout.n):''} ${mo.onMat?`<span class="cue live">on the mat · ${esc(mo.live.clock)}</span>`:isNow?'<span class="cue live">on the mat</span>':mode==='live'?'':`<button type="button" class="chip small" data-now="${mo.key}">mark on the mat</button>`}</div>
       <div class="vs">${pName(mo.a,mo,0)}${pName(mo.b,mo,1)}</div></div></div>`;
   });
   if(q.length) h+=`</div>`;
-  h+=`<div class="note">results arrive from FloArena automatically. tap a name only if the feed is behind — it advances the bracket here until FloArena confirms it. "set as now" re-projects everything from that match starting at the current time.</div>`;
+  h+=`<div class="note">results arrive from FloArena automatically. tap a name only if the feed is behind — it advances the bracket here until FloArena confirms it.${mode==='live'?'':' if the live feed is quiet, "mark on the mat" on the bout you can see re-projects the times from now.'}</div>`;
   if(S.anchor) h+=`<div class="actions"><button type="button" class="chip" id="clearAnchor">clear "now" anchor</button></div>`;
   return h;
 }
@@ -374,14 +392,14 @@ function currentDiv(){
   return ds.find(x=>x.id===S.bracketDiv) || ds.find(d=>d.rounds.some(r=>r.bouts.some(b=>isFollow(b.a)||isFollow(b.b)))) || ds[0];
 }
 function box(mo){
-  const b=mo.bout||{}; const bits=[];
-  if(b.n) bits.push('#'+b.n);
-  if(mo.src==='flo'&&(b.winType||b.result)) bits.push([b.winType,b.result].filter(Boolean).join(' '));
-  else if(mo.src==='live'&&mo.live) bits.push([mo.live.winType,mo.live.finalScore].filter(Boolean).join(' ')+' · live');
-  else if(mo.src==='tap') bits.push('your tap');
+  const b=mo.bout||{};
+  let res='';
+  if(mo.src==='flo'&&(b.winType||b.result)) res=fmtResult(b.winType,b.result);
+  else if(mo.src==='live'&&mo.live) res=fmtResult(mo.live.winType,mo.live.finalScore)+' · live';
+  else if(mo.src==='tap') res='your tap';
   const live=mo.live&&!mo.live.over;
   const now=!live&&S.anchor&&S.anchor.key===mo.key;
-  const meta=(live?`<span class="cue live">on the mat · ${esc(mo.live.clock)}</span> `:'')+(esc(bits.join(' · '))||(live?'':'&nbsp;'));
+  const meta=`<span class="num">${b.n?'#'+esc(b.n):''}</span>${live?`<span class="cue live">on the mat · ${esc(mo.live.clock)}</span>`:''}<span class="res">${esc(res)}</span>`;
   const fol=isFollow(mo.a)||isFollow(mo.b);
   return `<div class="bx ${now?'now':''} ${fol?'fol':''}"><div class="meta">${meta}</div>${pName(mo.a,mo,0)}${pName(mo.b,mo,1)}</div>`;
 }
@@ -391,7 +409,7 @@ function renderBrackets(){
   const n1=div.rounds[0].bouts.length;
   h+=`<div class="bwrap"><div class="bracket" style="--n1:${n1}">`;
   for(const r of div.rounds){
-    h+=`<div class="col"><h3>${ROUND_LABEL[r.name]||r.name}</h3><div class="slots">`;
+    h+=`<div class="col"><h3>${ROUND_HEAD[r.name]||r.name}</h3><div class="slots">`;
     for(let m=0;m<r.bouts.length;m++) h+=`<div class="slot">${box(matchObj(div,r.name,m))}</div>`;
     h+=`</div></div>`;
   }
@@ -447,7 +465,7 @@ $('#main').addEventListener('click',e=>{
   const w=e.target.closest('[data-win]'); if(w){ const [divId,r,m,s]=w.dataset.win.split('|'); const div=divs().find(d=>d.id===divId); if(div) setWinner(matchObj(div,r,+m),+s); return; }
   const dy=e.target.closest('[data-day]'); if(dy){ S.day=+dy.dataset.day; save(); render(); return; }
   const bd=e.target.closest('[data-bdiv]'); if(bd){ S.bracketDiv=bd.dataset.bdiv; save(); render(); return; }
-  const n=e.target.closest('[data-now]'); if(n){ S.anchor={key:n.dataset.now, at:new Date().toISOString()}; save(); render(); toast('re-projected from now'); return; }
+  const n=e.target.closest('[data-now]'); if(n){ S.anchor={key:n.dataset.now, at:new Date().toISOString()}; save(); render(); toast('times re-projected from now'); return; }
   if(e.target.id==='clearAnchor'){ S.anchor=null; save(); render(); return; }
   const up=e.target.closest('[data-up]'), dn=e.target.closest('[data-dn]');
   if(up||dn){ const i=+(up||dn).dataset[up?'up':'dn'], j=up?i-1:i+1; if(j<0||j>=S.blocks.length) return; [S.blocks[i],S.blocks[j]]=[S.blocks[j],S.blocks[i]]; save(); render(); return; }
