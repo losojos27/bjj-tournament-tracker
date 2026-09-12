@@ -21,12 +21,13 @@ each mat right now.
 node scripts/sync.mjs          # refresh data/results.json
 python3 -m http.server 8000    # then open http://localhost:8000
 ```
-No build step, no dependencies (Node 18+ for the sync script).
+No build step, no dependencies (Node 18+ for the sync script). Serve over HTTP; the theme's fonts and the results fetch don't work from `file://`.
 
 ## Layout
 | Path | What |
 | --- | --- |
 | `index.html` | The app: bracket engine, schedule projection, live mats. |
+| `field-manual-theme/` | The visual theme (tokens, primitives, JetBrains Mono, light/dark toggle). |
 | `data/results.json` | Current bracket state from FloArena (written by the sync). |
 | `scripts/sync.mjs` | FloArena → results.json. |
 | `scripts/build-artifact.sh` | Builds `dist/artifact.html` for publishing as a Claude artifact. |

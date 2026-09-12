@@ -8,6 +8,6 @@ out="${2:-$(dirname "$0")/../dist/artifact.html}"
 mkdir -p "$(dirname "$out")"
 {
   sed -n '/<title>/,/<\/style>/p' "$src"
-  sed -n '/<body>/,/<\/body>/p' "$src" | sed '1d;$d'
+  sed -n '/<body[ >]/,/<\/body>/p' "$src" | sed '1d;$d'
 } > "$out"
 echo "wrote $out ($(wc -c <"$out") bytes)"

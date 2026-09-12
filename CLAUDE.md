@@ -4,8 +4,8 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 ## What this is
 
-A dependency-free, single-file web app (`index.html`) that tracks BJJ tournament brackets and
-projects mat times, fed by FloArena. First event: ADCC World Championship 2026, Kraków,
+A dependency-free static web app (`index.html` plus the theme kit) that tracks BJJ tournament
+brackets and projects mat times, fed by FloArena. First event: ADCC World Championship 2026, Kraków,
 Sept 12–13. Lee uses it on a phone in the arena; other people get the link. The folder name
 is deliberately generic (`bjj-tournament-tracker`) because it will cover more than ADCC.
 
@@ -26,7 +26,8 @@ gh run list -w sync.yml -L5                 # is the cron firing?
 
 There are no tests and no build. Deploy is `git push` to `main`; GitHub Pages redeploys in about
 a minute. To update the artifact snapshot: run the build script, then publish `dist/artifact.html`
-with `data/results.json` attached as a supporting file.
+with `data/results.json`, `field-manual-theme/theme.css`, `theme.js`, and both woff2 fonts
+attached as supporting files.
 
 `fetch()` of a relative file fails from `file://`, so always test through a local server.
 
@@ -98,6 +99,27 @@ FloArena is the source of truth here. Seeds are unique within a division; match 
 - "Absolute Male" is a separate FloArena division from the Sunday "Super Fight" (one bout,
   Simoes v Duarte). Absolute had 0 bouts as of Sept 12 night; the sync picks it up (id `mabs`)
   once bouts appear and the page already has Day 2 blocks for its rounds.
+
+## Theme
+
+The look is `field-manual-theme/` (Lee's kit, extracted from jiu-jitsu-brain). `index.html`
+links `theme.css`/`theme.js` from there and layers its own rules in the inline `<style>`,
+using only the theme's tokens. Read `field-manual-theme/README.md` before touching styling;
+its "Rules the look depends on" are binding here:
+
+- One typeface (JetBrains Mono, self-hosted in `field-manual-theme/fonts/`), no borders or
+  shadows on content surfaces, achromatic accent, near-square corners, no uppercase or
+  letter-spaced labels, pills only for controls.
+- Everything lowercase except proper nouns, as a content convention (no `text-transform`).
+  Athlete and division names, "FloArena", and round codes (R16/QF/SF) keep their case.
+- Colour with meaning maps to theme tokens: `--follow` = `--type-e`, `--win` = `--type-a`,
+  `--live` = `--cue-warning` (rendered as a `.cue.live` tag). Those tokens are re-lit per
+  theme; `--type-c/d` are not, so don't use them for text.
+- Light/dark/auto is the theme's toggle (top right, key `bjjTracker.theme`). The head
+  bootstrap line must stay before the stylesheet link.
+- The bracket connectors are the one place an edge is load-bearing (`--hairline-strong`).
+  Box height must stay under `--pitch` (78px); the theme's 1.6 line-height is overridden
+  inside `.bx` for that reason.
 
 ## Lee's rules for this project
 

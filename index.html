@@ -2,121 +2,111 @@
 <html lang="en">
 <head>
 <meta charset="utf-8">
-<meta name="apple-mobile-web-app-capable" content="yes">
-<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-<meta name="apple-mobile-web-app-title" content="ADCC">
-<meta name="theme-color" content="#1b2230">
-<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
 <title>ADCC 2026 — Kraków</title>
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="default">
+<meta name="apple-mobile-web-app-title" content="ADCC">
+<meta name="theme-color" content="#f1f0ed" media="(prefers-color-scheme: light)">
+<meta name="theme-color" content="#343331" media="(prefers-color-scheme: dark)">
+<script>try{var t=localStorage.getItem('bjjTracker.theme');if(t==='light'||t==='dark')document.documentElement.dataset.theme=t}catch(e){}</script>
+<link rel="stylesheet" href="field-manual-theme/theme.css">
 <style>
-  :root{
-    --bg:#1b2230; --panel:#242d3d; --line:#33405a; --ink:#e8ecf2; --dim:#94a0b8;
-    --follow:#f2b84b; --win:#5ec27a; --now:#e0563f; --tbd:#6f7d99; --live:#3fa7e0;
-  }
-  *{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
-  html,body{margin:0;background:var(--bg);color:var(--ink);font:16px/1.4 -apple-system,system-ui,"Segoe UI",Roboto,sans-serif}
-  header{position:sticky;top:0;z-index:5;background:var(--bg);border-bottom:1px solid var(--line);padding:env(safe-area-inset-top) 0 0}
-  .tabs{display:flex}
-  .tabs button{flex:1;background:none;border:0;color:var(--dim);font:inherit;font-size:15px;padding:14px 4px 12px;border-bottom:3px solid transparent}
-  .tabs button.on{color:var(--ink);border-bottom-color:var(--follow);font-weight:600}
-  .status{display:flex;gap:12px;justify-content:center;font-size:11px;color:var(--dim);padding:4px 12px 5px;letter-spacing:.02em}
-  .status b{font-weight:600;color:var(--ink)}
-  .status .dot{display:inline-block;width:7px;height:7px;border-radius:50%;background:var(--tbd);margin-right:4px;vertical-align:1px}
-  .status .dot.ok{background:var(--win)} .status .dot.bad{background:var(--now)}
-  main{padding:12px 12px 80px;max-width:720px;margin:0 auto}
-  h2{font-size:13px;font-weight:600;color:var(--dim);margin:18px 0 8px;letter-spacing:.02em}
-  .card{background:var(--panel);border-radius:10px;padding:12px;margin-bottom:10px}
-  .follow-card{border-left:4px solid var(--follow)}
-  .big{font-size:26px;font-weight:700;line-height:1.1}
-  .sub{color:var(--dim);font-size:14px;margin-top:2px}
-  .row{display:grid;grid-template-columns:62px 1fr;gap:10px;padding:10px 0;border-bottom:1px solid var(--line)}
-  .row:last-child{border-bottom:0}
-  .row.now{background:linear-gradient(90deg,rgba(224,86,63,.18),transparent);margin:0 -12px;padding-left:12px;padding-right:12px;border-radius:8px}
-  .t{font-weight:700;font-size:17px;line-height:1.1;font-variant-numeric:tabular-nums}
-  .t small{display:block;color:var(--dim);font-weight:500;font-size:12px}
-  .meta{color:var(--dim);font-size:12px;margin-bottom:3px;display:flex;align-items:center;gap:6px;flex-wrap:wrap}
-  .vs{display:flex;flex-direction:column;gap:4px}
-  .name{display:flex;align-items:center;gap:8px;background:none;border:0;color:var(--ink);font:inherit;font-size:16px;text-align:left;padding:5px 6px;border-radius:6px;width:100%}
-  .name:active{background:var(--line)}
-  .name:focus-visible{outline:2px solid var(--follow);outline-offset:-2px}
-  .name.tbd{color:var(--tbd);font-style:italic}
+  /* App styles on top of field-manual-theme. Colour with meaning comes from the theme's
+     category and cue tokens; everything else is tone and spacing (no borders, no shadows). */
+  :root{ --follow:var(--type-e); --win:var(--type-a); --lose:var(--text-muted); --live:var(--cue-warning); } /* type-e and type-a are re-lit per theme */
+  .container{max-width:720px}
+  main.container{padding-top:2px;padding-bottom:calc(var(--bottom-nav-h) + env(safe-area-inset-bottom) + 28px)}
+  .topbar{display:flex;align-items:center;gap:10px;padding-bottom:4px}
+  .topbar .title{font-family:var(--font-heading);font-weight:650;font-size:1rem;letter-spacing:-.02em;white-space:nowrap}
+  .status{flex:1;min-width:0;font-size:var(--fs-eyebrow);color:var(--text-muted);text-align:right;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+  .status .bad{color:var(--cue-warning)}
+  .topbar .icon-btn{width:38px;height:38px}
+  .section-title{font-size:var(--fs-meta);font-weight:600;color:var(--text-muted);margin:18px 0 8px}
+  .panel{background:var(--bg-card);border-radius:var(--radius-md);padding:12px 14px}
+  .stack{display:flex;flex-direction:column;gap:6px}
+  .chip.small{padding:3px 9px;font-size:.72rem}
+  .chip.warn{background:var(--cue-warning);color:var(--accent-contrast)}
+  .chip:focus-visible,.name:focus-visible,.nav-item:focus-visible{outline:2px solid var(--accent-soft);outline-offset:1px}
+  .topline{display:flex;align-items:center;justify-content:space-between;gap:10px;flex-wrap:wrap;margin:4px 0 12px}
+  .note{font-size:var(--fs-meta);color:var(--text-muted);margin-top:8px}
+  .actions{display:flex;gap:8px;margin-top:10px;flex-wrap:wrap}
+  /* followed athletes */
+  .follow-card{display:flex;align-items:center;gap:12px}
+  .follow-card .pin{width:10px;height:10px;flex-shrink:0;border-radius:var(--radius-sm);background:var(--follow)}
+  .big{font-family:var(--font-heading);font-size:1.25rem;font-weight:650;letter-spacing:-.02em;line-height:1.15}
+  .sub{font-size:var(--fs-meta);color:var(--text-muted);margin-top:2px}
+  /* queue rows */
+  .row{display:grid;grid-template-columns:84px 1fr;gap:10px}
+  .row.now,.bx.now{background:color-mix(in srgb, var(--cue-warning) 12%, var(--bg-card))}
+  .t{font-family:var(--font-heading);font-weight:650;font-size:1rem;line-height:1.15;font-variant-numeric:tabular-nums}
+  .t small{display:block;color:var(--text-muted);font-weight:400;font-size:var(--fs-eyebrow)}
+  .meta{color:var(--text-muted);font-size:var(--fs-eyebrow);margin-bottom:2px;display:flex;align-items:center;gap:6px;flex-wrap:wrap}
+  .vs{display:flex;flex-direction:column;gap:2px}
+  .name{display:flex;align-items:center;gap:8px;background:none;border:0;color:var(--text-primary);font:inherit;font-size:var(--fs-body);text-align:left;padding:4px 6px;margin:0 -6px;border-radius:var(--radius-sm);width:calc(100% + 12px);cursor:pointer;-webkit-tap-highlight-color:transparent}
+  .name:active{background:var(--bg-card-hover)}
+  .name.tbd{color:var(--text-muted);font-style:italic;cursor:default}
   .name.follow{color:var(--follow);font-weight:600}
-  .name.win{color:var(--win);font-weight:700}
-  .name.lose{color:var(--dim);text-decoration:line-through}
-  .seed{font-size:11px;color:var(--dim);min-width:18px;text-align:right;font-variant-numeric:tabular-nums}
-  .pill{font-size:11px;padding:2px 7px;border-radius:99px;background:var(--line);color:var(--dim);white-space:nowrap}
-  .pill.now{background:var(--now);color:#fff}
-  .pill.res{color:var(--ink)}
-  .pill.tap{border:1px dashed var(--dim);background:none}
-  .pill.right{margin-left:auto}
-  .actions{display:flex;gap:8px;margin-top:6px;flex-wrap:wrap}
-  .btn{background:var(--line);color:var(--ink);border:0;border-radius:8px;padding:8px 12px;font:inherit;font-size:14px}
-  .btn.warn{background:var(--now);color:#fff}
-  .btn.ghost{background:none;border:1px solid var(--line);color:var(--dim)}
-  .btn:focus-visible{outline:2px solid var(--follow)}
+  .name.win{color:var(--win);font-weight:600}
+  .name.lose{color:var(--lose);text-decoration:line-through}
   .name .nm{overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
-  /* day switch */
-  .topline{display:flex;align-items:center;justify-content:space-between;gap:10px;margin:4px 0 12px;flex-wrap:wrap}
-  .seg{display:inline-flex;background:var(--panel);border-radius:9px;padding:3px;gap:2px}
-  .seg button{background:none;border:0;color:var(--dim);font:inherit;font-size:14px;padding:7px 14px;border-radius:7px}
-  .seg button.on{background:var(--line);color:var(--ink);font-weight:600}
-  .seg button:focus-visible{outline:2px solid var(--follow)}
-  /* bracket */
+  .seed{font-size:var(--fs-eyebrow);color:var(--text-muted);min-width:18px;text-align:right;font-variant-numeric:tabular-nums}
+  .res{margin-left:auto;color:var(--text-secondary)}
+  .cue{font-size:.62rem;padding:1px 6px;margin:0}
+  .cue.live{background:var(--live)}
+  /* live mats */
+  .mats{display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:8px;margin-bottom:12px}
+  .mat .hd{display:flex;justify-content:space-between;align-items:baseline;gap:8px;font-size:var(--fs-eyebrow);color:var(--text-muted);margin-bottom:6px}
+  .mat .hd b{color:var(--text-primary);font-weight:600}
+  .mat .clock{font-weight:650;color:var(--live);font-variant-numeric:tabular-nums}
+  .mat .who{display:flex;justify-content:space-between;align-items:center;gap:8px;padding:2px 0;font-size:var(--fs-body)}
+  .mat .who .sc{font-weight:650;font-variant-numeric:tabular-nums;min-width:22px;text-align:right}
+  .mat .who.w{color:var(--win)} .mat .who.l{color:var(--lose)} .mat .who.follow{color:var(--follow)}
+  .mat .ft{font-size:var(--fs-eyebrow);color:var(--text-muted);margin-top:4px}
+  /* bracket: columns per round; connectors are the one place an edge is load-bearing */
   .chips{display:flex;gap:6px;overflow-x:auto;padding:2px 0 10px;scrollbar-width:none}
   .chips::-webkit-scrollbar{display:none}
-  .chips button{flex:0 0 auto;background:var(--panel);border:1px solid var(--line);color:var(--dim);font:inherit;font-size:13px;padding:6px 11px;border-radius:99px}
-  .chips button.on{background:var(--follow);border-color:var(--follow);color:#1b2230;font-weight:600}
-  .bwrap{overflow-x:auto;-webkit-overflow-scrolling:touch;padding:0 0 10px;margin:0 -12px;padding-left:12px}
-  .bracket{display:flex;gap:26px;width:max-content;--pitch:72px;--gap:26px;padding-right:12px}
-  .col{width:164px;flex:0 0 auto}
-  .col h3{font-size:12px;color:var(--dim);font-weight:600;margin:0 0 8px;text-align:center;letter-spacing:.04em;text-transform:uppercase}
+  .chips .chip{flex:0 0 auto}
+  .bwrap{overflow-x:auto;-webkit-overflow-scrolling:touch;padding-bottom:10px;margin:0 calc(-1*var(--spacing));padding-left:var(--spacing)}
+  .bracket{display:flex;gap:26px;width:max-content;--pitch:78px;--gap:26px;padding-right:var(--spacing)}
+  .col{width:172px;flex:0 0 auto}
+  .col h3{font-size:var(--fs-eyebrow);font-weight:600;color:var(--text-muted);margin:0 0 8px;text-align:center}
   .slots{display:flex;flex-direction:column;height:calc(var(--n1)*var(--pitch))}
   .slot{flex:1;display:flex;align-items:center;position:relative}
   .slot.single{flex:none;height:var(--pitch)}
-  .col+.col .slot::before{content:"";position:absolute;left:calc(-1*var(--gap));width:calc(var(--gap)/2);top:25%;height:50%;border:2px solid var(--line);border-left:0;border-radius:0 3px 3px 0}
-  .col+.col .slot::after{content:"";position:absolute;left:calc(var(--gap)/-2);width:calc(var(--gap)/2);top:50%;border-top:2px solid var(--line)}
-  .bx{background:var(--panel);border-radius:8px;padding:3px 5px 4px;width:100%;border:1px solid transparent;position:relative;z-index:1}
-  .bx.live{border-color:var(--live)}
-  .bx.now{border-color:var(--now)}
-  .bx .meta{font-size:10px;margin:0 0 1px 3px;gap:4px;min-height:14px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;display:block}
-  .bx .name{font-size:13px;padding:2px 3px;gap:5px;overflow:hidden}
-  .bx .seed{min-width:14px;font-size:10px}
-  /* live mats */
-  .mats{display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:8px;margin-bottom:10px}
-  .mat{background:var(--panel);border-radius:10px;padding:10px 12px;border-top:3px solid var(--line)}
-  .mat.live{border-top-color:var(--live)}
-  .mat .hd{display:flex;justify-content:space-between;align-items:baseline;font-size:12px;color:var(--dim);margin-bottom:6px}
-  .mat .hd b{color:var(--ink);font-size:13px}
-  .mat .clock{font-variant-numeric:tabular-nums;font-weight:700;color:var(--live);font-size:14px}
-  .mat .who{display:flex;justify-content:space-between;align-items:center;gap:8px;padding:3px 0;font-size:15px}
-  .mat .who .sc{font-weight:700;font-variant-numeric:tabular-nums;min-width:22px;text-align:right}
-  .mat .who.w{color:var(--win)} .mat .who.l{color:var(--dim)}
-  .mat .who.follow{color:var(--follow)}
-  .mat .ft{font-size:12px;color:var(--dim);margin-top:4px}
-  label{display:block;margin:12px 0 4px;color:var(--dim);font-size:13px}
-  input,textarea,select{width:100%;background:var(--bg);border:1px solid var(--line);color:var(--ink);border-radius:8px;padding:9px;font:inherit;font-size:16px}
-  textarea{min-height:90px;font-family:ui-monospace,Menlo,monospace;font-size:13px}
+  .col+.col .slot::before{content:"";position:absolute;left:calc(-1*var(--gap));width:calc(var(--gap)/2);top:25%;height:50%;border:2px solid var(--hairline-strong);border-left:0;border-radius:0 3px 3px 0}
+  .col+.col .slot::after{content:"";position:absolute;left:calc(var(--gap)/-2);width:calc(var(--gap)/2);top:50%;border-top:2px solid var(--hairline-strong)}
+  .bx{background:var(--bg-card);border-radius:var(--radius-md);padding:4px 7px 5px;width:100%;position:relative;z-index:1}
+  .bx .meta{font-size:.66rem;line-height:1.4;margin:0 0 1px 2px;min-height:14px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;display:block}
+  .bx .name{font-size:.8rem;line-height:1.35;padding:2px 4px;margin:0 -4px;width:calc(100% + 8px);gap:5px}
+  .bx .seed{min-width:14px;font-size:.62rem}
+  /* settings */
+  label{display:block;margin:12px 0 5px;color:var(--text-muted);font-size:var(--fs-meta)}
+  .field,textarea{width:100%;background:var(--bg-primary);border:0;color:var(--text-primary);border-radius:var(--radius-pill);padding:10px 12px;font:inherit;font-size:var(--fs-body);outline:none}
+  .field:focus,textarea:focus{box-shadow:0 0 0 2px var(--accent-soft)}
+  textarea{min-height:90px;font-size:var(--fs-meta)}
   .grid2{display:grid;grid-template-columns:1fr 1fr;gap:10px}
-  .blocklist div{display:flex;align-items:center;gap:8px;padding:8px 0;border-bottom:1px solid var(--line)}
-  .blocklist span{flex:1}
-  .blocklist button{width:36px;height:36px;border-radius:8px;border:0;background:var(--line);color:var(--ink);font-size:16px}
-  .note{font-size:13px;color:var(--dim);margin-top:6px}
-  .toast{position:fixed;bottom:18px;left:50%;transform:translateX(-50%);background:var(--ink);color:var(--bg);padding:10px 16px;border-radius:99px;font-size:14px;opacity:0;transition:opacity .2s;pointer-events:none;z-index:9}
+  .blocklist div{display:flex;align-items:center;gap:8px;padding:5px 0}
+  .blocklist span{flex:1;font-size:var(--fs-body)}
+  .toast{position:fixed;bottom:calc(var(--bottom-nav-h) + env(safe-area-inset-bottom) + 14px);left:50%;transform:translateX(-50%);background:var(--accent);color:var(--accent-contrast);padding:8px 14px;border-radius:var(--radius-pill);font-size:var(--fs-meta);opacity:0;transition:opacity .2s;pointer-events:none;z-index:300}
   .toast.show{opacity:1}
-  @media (prefers-reduced-motion:reduce){.toast{transition:none}}
+  @media (prefers-reduced-motion:reduce){.toast,.chip,.icon-btn,.name{transition:none}}
 </style>
 </head>
 <body>
-<header>
-  <div class="tabs">
-    <button data-tab="next" class="on">Next up</button>
-    <button data-tab="brackets">Brackets</button>
-    <button data-tab="settings">Settings</button>
-  </div>
+<div class="container topbar">
+  <div class="title">ADCC 2026 <span class="muted">Kraków</span></div>
   <div class="status" id="status"></div>
-</header>
-<main id="main"><div class="card">Loading bracket…</div></main>
+  <button class="icon-btn theme-btn" data-theme-toggle type="button" aria-label="theme: auto"></button>
+</div>
+<main id="main" class="container"><div class="panel">loading bracket…</div></main>
+<nav class="bottom-nav" aria-label="sections">
+  <button class="nav-item active" data-tab="next" type="button"><svg viewBox="0 0 24 24" aria-hidden="true"><line x1="8" x2="21" y1="6" y2="6"/><line x1="8" x2="21" y1="12" y2="12"/><line x1="8" x2="21" y1="18" y2="18"/><line x1="3" x2="3.01" y1="6" y2="6"/><line x1="3" x2="3.01" y1="12" y2="12"/><line x1="3" x2="3.01" y1="18" y2="18"/></svg><span class="nav-label">next up</span></button>
+  <button class="nav-item" data-tab="brackets" type="button"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="18" r="3"/><circle cx="6" cy="6" r="3"/><circle cx="18" cy="6" r="3"/><path d="M18 9v2c0 .6-.4 1-1 1H7c-.6 0-1-.4-1-1V9"/><path d="M12 12v3"/></svg><span class="nav-label">brackets</span></button>
+  <button class="nav-item" data-tab="settings" type="button"><svg viewBox="0 0 24 24" aria-hidden="true"><line x1="21" x2="14" y1="4" y2="4"/><line x1="10" x2="3" y1="4" y2="4"/><line x1="21" x2="12" y1="12" y2="12"/><line x1="8" x2="3" y1="12" y2="12"/><line x1="21" x2="16" y1="20" y2="20"/><line x1="12" x2="3" y1="20" y2="20"/><line x1="14" x2="14" y1="2" y2="6"/><line x1="8" x2="8" y1="10" y2="14"/><line x1="16" x2="16" y1="18" y2="22"/></svg><span class="nav-label">settings</span></button>
+</nav>
 <div class="toast" id="toast"></div>
+<script src="field-manual-theme/theme.js" data-key="bjjTracker.theme"></script>
 
 <script>
 // ---------- sources ----------
@@ -126,7 +116,7 @@
 const EVENT='52703b65-bade-46e2-9ce2-399dd32d93e4';
 const DATA_URL='data/results.json';
 const LIVE_URL=`https://floarena.firebaseio.com/${EVENT}/mats.json`;
-const ROUND_LABEL={R32:'R32',R16:'R16',QF:'QF',SF:'SF',F:'Final','3':'3rd place'};
+const ROUND_LABEL={R32:'R32',R16:'R16',QF:'QF',SF:'SF',F:'final','3':'3rd place'};
 
 let DATA=null;            // parsed results.json
 let LIVE={};              // boutNumber -> live mat entry
@@ -136,21 +126,21 @@ const quiet=()=>tab==='settings'&&DATA; // don't re-render under the user's fing
 
 // Schedule blocks: the order the day runs in. Editable in Settings. `kind` matches results.json divisions.
 const DEFAULT_BLOCKS = [
-  {id:'m-R16', label:"Men R16",   kind:'pro', sex:'m', round:'R16', day:1},
-  {id:'w-QF',  label:"Women QF",  kind:'pro', sex:'w', round:'QF',  day:1},
-  {id:'m-QF',  label:"Men QF",    kind:'pro', sex:'m', round:'QF',  day:1},
-  {id:'m-SF',  label:"Men SF",    kind:'pro', sex:'m', round:'SF',  day:2},
-  {id:'w-SF',  label:"Women SF",  kind:'pro', sex:'w', round:'SF',  day:2},
-  {id:'abs-R16',label:"Absolute R16",kind:'abs', round:'R16', day:2},
-  {id:'abs-QF',label:"Absolute QF",kind:'abs', round:'QF',  day:2},
-  {id:'w-3',   label:"Women 3rd", kind:'pro', sex:'w', round:'3',   day:2},
-  {id:'m-3',   label:"Men 3rd",   kind:'pro', sex:'m', round:'3',   day:2},
-  {id:'abs-SF',label:"Absolute SF",kind:'abs', round:'SF',  day:2},
-  {id:'w-F',   label:"Women F",   kind:'pro', sex:'w', round:'F',   day:2},
-  {id:'m-F',   label:"Men F",     kind:'pro', sex:'m', round:'F',   day:2},
-  {id:'abs-3', label:"Absolute 3rd",kind:'abs', round:'3',  day:2},
-  {id:'abs-F', label:"Absolute F",kind:'abs', round:'F',   day:2},
-  {id:'sf-F',  label:"Super fights",kind:'sf', round:'F',  day:2},
+  {id:'m-R16', label:"men R16",   kind:'pro', sex:'m', round:'R16', day:1},
+  {id:'w-QF',  label:"women QF",  kind:'pro', sex:'w', round:'QF',  day:1},
+  {id:'m-QF',  label:"men QF",    kind:'pro', sex:'m', round:'QF',  day:1},
+  {id:'m-SF',  label:"men SF",    kind:'pro', sex:'m', round:'SF',  day:2},
+  {id:'w-SF',  label:"women SF",  kind:'pro', sex:'w', round:'SF',  day:2},
+  {id:'abs-R16',label:"absolute R16",kind:'abs', round:'R16', day:2},
+  {id:'abs-QF',label:"absolute QF",kind:'abs', round:'QF',  day:2},
+  {id:'w-3',   label:"women 3rd", kind:'pro', sex:'w', round:'3',   day:2},
+  {id:'m-3',   label:"men 3rd",   kind:'pro', sex:'m', round:'3',   day:2},
+  {id:'abs-SF',label:"absolute SF",kind:'abs', round:'SF',  day:2},
+  {id:'w-F',   label:"women final",   kind:'pro', sex:'w', round:'F',   day:2},
+  {id:'m-F',   label:"men final",     kind:'pro', sex:'m', round:'F',   day:2},
+  {id:'abs-3', label:"absolute 3rd",kind:'abs', round:'3',  day:2},
+  {id:'abs-F', label:"absolute final",kind:'abs', round:'F',   day:2},
+  {id:'sf-F',  label:"super fights",kind:'sf', round:'F',  day:2},
 ];
 
 const DEFAULT = {
@@ -244,7 +234,7 @@ function allMatches(block){
 }
 function setWinner(mo,s){
   if(mo.src==='flo'){ toast('FloArena has this result already'); return; }
-  if(mo.src==='live'){ toast('Live feed has this result already'); return; }
+  if(mo.src==='live'){ toast('live feed has this result already'); return; }
   const k=mo.key;
   if(S.taps[k]===s) delete S.taps[k]; else S.taps[k]=s;
   // clear downstream taps that depended on this bout
@@ -305,7 +295,7 @@ function queue(){
   return {list:out, mode, floOrder, matCount:active.length};
 }
 function isFollow(p){ return p&&p.name && S.follow.some(f=>f && p.name.toLowerCase().includes(f.toLowerCase())); }
-function fmt(dt){ return dt.toLocaleTimeString([], {hour:'numeric',minute:'2-digit'}); }
+function fmt(dt){ return dt.toLocaleTimeString([], {hour:'numeric',minute:'2-digit'}).toLowerCase(); }
 function rel(dt){ const m=Math.round((dt-Date.now())/60000); if(m<=0) return 'now'; if(m<60) return `in ${m} min`; return `in ${Math.floor(m/60)}h ${m%60}m`; }
 function ago(ts){ const m=Math.round((Date.now()-ts)/60000); if(m<1) return 'just now'; if(m<60) return `${m} min ago`; return `${Math.floor(m/60)}h ${m%60}m ago`; }
 
@@ -319,25 +309,25 @@ function pName(p,mo,s){
 }
 function resultPill(mo){
   const b=mo.bout;
-  if(mo.src==='flo'&&b) return `<span class="pill res right">${esc([b.winType,b.result].filter(Boolean).join(' '))}</span>`;
-  if(mo.src==='live'&&mo.live) return `<span class="pill res right">${esc([mo.live.winType,mo.live.finalScore].filter(Boolean).join(' '))} · live</span>`;
-  if(mo.src==='tap') return `<span class="pill tap right">your tap</span>`;
+  if(mo.src==='flo'&&b) return `<span class="res">${esc([b.winType,b.result].filter(Boolean).join(' '))}</span>`;
+  if(mo.src==='live'&&mo.live) return `<span class="res">${esc([mo.live.winType,mo.live.finalScore].filter(Boolean).join(' '))} · live</span>`;
+  if(mo.src==='tap') return `<span class="res">your tap</span>`;
   return '';
 }
 function renderMats(){
   const cut=Date.now()-3*3600e3;
   const ms=Object.values(LIVE).filter(l=>l.updated>cut).sort((a,b)=>a.matIdx-b.matIdx);
   if(!ms.length) return '';
-  let h=`<h2>On the mats <span style="font-weight:400">· FloArena live</span></h2><div class="mats">`;
+  let h=`<h2 class="section-title">on the mats <span style="font-weight:400">· FloArena live</span></h2><div class="mats">`;
   for(const l of ms){
-    const who=(p,i)=>`<div class="who ${l.over?(l.winner===i?'w':'l'):''} ${isFollow(p)?'follow':''}"><span><span class="seed">${p.seed||''}</span> ${esc(p.name)}</span><span class="sc">${p.score}${p.pen?`<small style="color:var(--dim)"> p${p.pen}</small>`:''}</span></div>`;
-    h+=`<div class="mat ${l.over?'':'live'}"><div class="hd"><span><b>${esc(l.mat)}</b> · ${esc(l.weight)}${l.weight&&!/kg|abs/i.test(l.weight)?'kg':''} ${esc(l.round)} · #${esc(l.n)}</span>${l.over?`<span>Final</span>`:`<span class="clock">${esc(l.clock)}${l.period&&l.period!=='1'?' '+esc(l.period):''}</span>`}</div>${who(l.red,0)}${who(l.blue,1)}<div class="ft">${l.over?`${esc(l.winType||'')} · ended ${ago(l.updated)}`:`updated ${ago(l.updated)}`}</div></div>`;
+    const who=(p,i)=>`<div class="who ${l.over?(l.winner===i?'w':'l'):''} ${isFollow(p)?'follow':''}"><span><span class="seed">${p.seed||''}</span> ${esc(p.name)}</span><span class="sc">${p.score}${p.pen?`<small class="muted"> p${p.pen}</small>`:''}</span></div>`;
+    h+=`<div class="panel mat"><div class="hd"><span><b>${esc(String(l.mat).toLowerCase())}</b> · ${esc(l.weight)}${l.weight&&!/kg|abs/i.test(l.weight)?'kg':''} ${esc(l.round)} · #${esc(l.n)}</span>${l.over?`<span>final</span>`:`<span class="clock">${esc(l.clock)}${l.period&&l.period!=='1'?' '+esc(l.period):''}</span>`}</div>${who(l.red,0)}${who(l.blue,1)}<div class="ft">${l.over?`${esc(l.winType||'')} · ended ${ago(l.updated)}`:`<span class="cue live">live</span> updated ${ago(l.updated)}`}</div></div>`;
   }
   return h+`</div>`;
 }
 function renderNext(){
   const {list:q,mode,floOrder,matCount:matsInUse}=queue(); const d=today();
-  let h=`<div class="topline"><div class="seg" role="tablist">${[1,2].map(x=>`<button data-day="${x}" class="${d===x?'on':''}" aria-pressed="${d===x}">Day ${x}</button>`).join('')}</div><span class="note" style="margin:0">${matsInUse} mat${matsInUse===1?'':'s'}${floOrder?'':' (assumed)'} · times are estimates${mode==='live'?' · anchored to the live feed':mode==='anchor'?' · anchored manually':''}${floOrder?' · order from FloArena':''}</span></div>`;
+  let h=`<div class="topline"><div class="chip-row">${[1,2].map(x=>`<button type="button" class="chip ${d===x?'active':''}" data-day="${x}" aria-pressed="${d===x}">day ${x}</button>`).join('')}</div><span class="note" style="margin:0">${matsInUse} mat${matsInUse===1?'':'s'}${floOrder?'':' (assumed)'} · times are estimates${mode==='live'?' · anchored to the live feed':mode==='anchor'?' · anchored manually':''}${floOrder?' · order from FloArena':''}</span></div>`;
   h+=renderMats();
   const fl=S.follow.filter(Boolean);
   for(const f of fl){
@@ -345,28 +335,28 @@ function renderNext(){
     const mo=q.find(x=>hit(x.a)||hit(x.b));
     if(mo){
       const opp=hit(mo.a)?mo.b:mo.a;
-      const when=mo.onMat?`on Mat ${mo.mat} now`:`${fmt(mo.at)} · ${rel(mo.at)} · Mat ${mo.mat}`;
-      h+=`<div class="card follow-card"><div class="big">${esc(f)}${mo.onMat?'':' · '+fmt(mo.at)}</div><div class="sub">${when} · ${esc(mo.div.name)} ${ROUND_LABEL[mo.rName]||mo.rName} · vs ${opp.tbd?esc(opp.label):esc(opp.name)}</div></div>`;
+      const when=mo.onMat?`on mat ${mo.mat} now`:`${fmt(mo.at)} · ${rel(mo.at)} · mat ${mo.mat}`;
+      h+=`<div class="panel follow-card"><span class="pin"></span><div><div class="big">${esc(f)}${mo.onMat?'':' · '+fmt(mo.at)}</div><div class="sub">${when} · ${esc(mo.div.name)} ${ROUND_LABEL[mo.rName]||mo.rName} · vs ${opp.tbd?esc(opp.label):esc(opp.name)}</div></div></div>`;
     } else {
-      let status='No match left in today’s queue';
+      let status='no match left in today’s queue';
       for(const div of divs()) for(const r of div.rounds) for(let m=0;m<r.bouts.length;m++){ const mo=matchObj(div,r.name,m);
-        if(mo.w!==null){ const l=mo.w===0?mo.b:mo.a; if(hit(l)) status=`Eliminated in ${div.name} ${ROUND_LABEL[r.name]||r.name}`; } }
+        if(mo.w!==null){ const l=mo.w===0?mo.b:mo.a; if(hit(l)) status=`eliminated in ${div.name} ${ROUND_LABEL[r.name]||r.name}`; } }
       for(const div of divs()){ const rn=rounds(div); const w=winnerOf(div,rn[rn.length-1],0); if(w!==null&&hit(slot(div,rn[rn.length-1],0,w))) status=`${div.name} champion 🥇`; }
-      h+=`<div class="card follow-card"><div class="big">${esc(f)}</div><div class="sub">${status}</div></div>`;
+      h+=`<div class="panel follow-card"><span class="pin"></span><div><div class="big">${esc(f)}</div><div class="sub">${status}</div></div></div>`;
     }
   }
-  h+=`<h2>Up next</h2>`;
-  if(!q.length) h+=`<div class="card">Nothing left in today’s queue. Check the block order in Settings, or change the day.</div>`;
-  else h+=`<div class="card">`;
+  h+=`<h2 class="section-title">up next</h2>`;
+  if(!q.length) h+=`<div class="panel">nothing left in today’s queue. check the running order in settings, or change the day.</div>`;
+  else h+=`<div class="stack">`;
   q.slice(0,48).forEach(mo=>{
     const isNow=mo.onMat||(mode==='anchor'&&S.anchor&&S.anchor.key===mo.key);
-    h+=`<div class="row ${isNow?'now':''}"><div class="t">${mo.onMat?'now':fmt(mo.at)}<small>Mat ${mo.mat}</small></div>
-      <div><div class="meta">${esc(mo.div.name)} ${ROUND_LABEL[mo.rName]||mo.rName}${mo.bout&&mo.bout.n?' · #'+esc(mo.bout.n):''} ${mo.onMat?`<span class="pill now">on the mat · ${esc(mo.live.clock)}</span>`:isNow?'<span class="pill now">on the mat</span>':`<button class="btn ghost" style="padding:2px 8px;font-size:12px" data-now="${mo.key}">set as now</button>`}</div>
+    h+=`<div class="panel row ${isNow?'now':''}"><div class="t">${mo.onMat?'now':fmt(mo.at)}<small>mat ${mo.mat}</small></div>
+      <div><div class="meta">${esc(mo.div.name)} ${ROUND_LABEL[mo.rName]||mo.rName}${mo.bout&&mo.bout.n?' · #'+esc(mo.bout.n):''} ${mo.onMat?`<span class="cue live">on the mat · ${esc(mo.live.clock)}</span>`:isNow?'<span class="cue live">on the mat</span>':`<button type="button" class="chip small" data-now="${mo.key}">set as now</button>`}</div>
       <div class="vs">${pName(mo.a,mo,0)}${pName(mo.b,mo,1)}</div></div></div>`;
   });
   if(q.length) h+=`</div>`;
-  h+=`<div class="note">Results arrive from FloArena automatically. Tap a name only if the feed is behind — it advances the bracket here until FloArena confirms it. "Set as now" re-projects everything from that match starting at the current time.</div>`;
-  if(S.anchor) h+=`<div class="actions"><button class="btn ghost" id="clearAnchor">Clear "now" anchor</button></div>`;
+  h+=`<div class="note">results arrive from FloArena automatically. tap a name only if the feed is behind — it advances the bracket here until FloArena confirms it. "set as now" re-projects everything from that match starting at the current time.</div>`;
+  if(S.anchor) h+=`<div class="actions"><button type="button" class="chip" id="clearAnchor">clear "now" anchor</button></div>`;
   return h;
 }
 function currentDiv(){
@@ -376,17 +366,17 @@ function currentDiv(){
 function box(mo){
   const b=mo.bout||{}; const bits=[];
   if(b.n) bits.push('#'+b.n);
-  if(b.mat&&mo.w!==null) bits.push(b.mat);
   if(mo.src==='flo'&&(b.winType||b.result)) bits.push([b.winType,b.result].filter(Boolean).join(' '));
   else if(mo.src==='live'&&mo.live) bits.push([mo.live.winType,mo.live.finalScore].filter(Boolean).join(' ')+' · live');
   else if(mo.src==='tap') bits.push('your tap');
-  const live=mo.live&&!mo.live.over; if(live) bits.push('on the mat · '+mo.live.clock);
+  const live=mo.live&&!mo.live.over;
   const now=!live&&S.anchor&&S.anchor.key===mo.key;
-  return `<div class="bx ${live?'live':''} ${now?'now':''}"><div class="meta">${esc(bits.join(' · '))||'&nbsp;'}</div>${pName(mo.a,mo,0)}${pName(mo.b,mo,1)}</div>`;
+  const meta=(live?`<span class="cue live">on the mat · ${esc(mo.live.clock)}</span> `:'')+(esc(bits.join(' · '))||(live?'':'&nbsp;'));
+  return `<div class="bx ${now?'now':''}"><div class="meta">${meta}</div>${pName(mo.a,mo,0)}${pName(mo.b,mo,1)}</div>`;
 }
 function renderBrackets(){
-  const ds=divs(); const div=currentDiv(); if(!div) return `<div class="card">No bracket data yet.</div>`;
-  let h=`<div class="chips">${ds.map(d=>{ const rn=rounds(d); const c=winnerOf(d,rn[rn.length-1],0); return `<button data-bdiv="${esc(d.id)}" class="${d.id===div.id?'on':''}">${esc(d.name)}${c!==null&&c>=0?' 🥇':''}</button>`; }).join('')}</div>`;
+  const ds=divs(); const div=currentDiv(); if(!div) return `<div class="panel">no bracket data yet.</div>`;
+  let h=`<div class="chips">${ds.map(d=>{ const rn=rounds(d); const c=winnerOf(d,rn[rn.length-1],0); return `<button type="button" data-bdiv="${esc(d.id)}" class="chip ${d.id===div.id?'active':''}">${esc(d.name)}${c!==null&&c>=0?' 🥇':''}</button>`; }).join('')}</div>`;
   const n1=div.rounds[0].bouts.length;
   h+=`<div class="bwrap"><div class="bracket" style="--n1:${n1}">`;
   for(const r of div.rounds){
@@ -396,62 +386,64 @@ function renderBrackets(){
   }
   h+=`</div></div>`;
   if(div.third) h+=`<div class="bracket" style="--n1:1;margin-top:4px"><div class="col"><h3>3rd place</h3><div class="slot single">${box(matchObj(div,'3',0))}</div></div></div>`;
-  h+=`<div class="note">Tap a name to record a result the feed doesn't have yet. Scroll sideways for later rounds.</div>`;
+  h+=`<div class="note">tap a name to record a result the feed doesn’t have yet. scroll sideways for later rounds.</div>`;
   return h;
 }
 function renderSettings(){
   const b=blocks();
   return `
-  <div class="card">
-    <label for="follow">Following (comma separated, partial names ok)</label><input id="follow" value="${esc(S.follow.join(', '))}">
+  <div class="panel">
+    <label for="follow">following (comma separated, partial names ok)</label><input class="field" id="follow" value="${esc(S.follow.join(', '))}">
     <div class="grid2">
-      <div><label for="mats">Mats running</label><input id="mats" type="number" min="1" max="6" value="${+S.mats||3}"></div>
-      <div><label>Day</label><div class="note" style="margin:0;padding-top:9px">Picked on the Next up tab${S.day?'':' (auto: '+today()+')'}</div></div>
-      <div><label for="start1">Day 1 first match</label><input id="start1" type="time" value="${esc(S.start1)}"></div>
-      <div><label for="start2">Day 2 first match</label><input id="start2" type="time" value="${esc(S.start2)}"></div>
+      <div><label for="mats">mats running</label><input class="field" id="mats" type="number" min="1" max="6" value="${+S.mats||3}"></div>
+      <div><label>day</label><div class="note" style="margin:0;padding-top:9px">picked on the next up tab${S.day?'':' (auto: '+today()+')'}</div></div>
+      <div><label for="start1">day 1 first match</label><input class="field" id="start1" type="time" value="${esc(S.start1)}"></div>
+      <div><label for="start2">day 2 first match</label><input class="field" id="start2" type="time" value="${esc(S.start2)}"></div>
     </div>
-    <label>Minutes per match slot, incl. changeover</label>
+    <label>minutes per match slot, incl. changeover</label>
     <div class="grid2">
-      ${['R16','QF','SF','3','F'].map(k=>`<div><label for="dur-${k}" style="margin-top:4px">${ROUND_LABEL[k]||k}</label><input id="dur-${k}" data-dur="${k}" type="number" value="${+S.dur[k]||12}"></div>`).join('')}
+      ${['R16','QF','SF','3','F'].map(k=>`<div><label for="dur-${k}" style="margin-top:4px">${ROUND_LABEL[k]||k}</label><input class="field" id="dur-${k}" data-dur="${k}" type="number" value="${+S.dur[k]||12}"></div>`).join('')}
     </div>
   </div>
-  <div class="card"><label style="margin-top:0">Running order (assumed — fix it as the day reveals itself)</label>
-    <div class="blocklist">${b.map((x,i)=>`<div><span>Day ${x.day} · ${esc(x.label)}</span><button data-up="${i}" aria-label="move up">↑</button><button data-dn="${i}" aria-label="move down">↓</button></div>`).join('')}</div>
+  <h2 class="section-title">running order (assumed — fix it as the day reveals itself)</h2>
+  <div class="panel">
+    <div class="blocklist">${b.map((x,i)=>`<div><span>day ${x.day} · ${esc(x.label)}</span><button type="button" class="chip small" data-up="${i}" aria-label="move up">↑</button><button type="button" class="chip small" data-dn="${i}" aria-label="move down">↓</button></div>`).join('')}</div>
   </div>
-  <div class="card"><label style="margin-top:0" for="dump">Your local taps and anchor (paste JSON to restore)</label>
-    <textarea id="dump">${esc(JSON.stringify({taps:S.taps,anchor:S.anchor}))}</textarea>
-    <div class="actions"><button class="btn" id="restore">Restore from text</button><button class="btn warn" id="reset">Reset everything</button></div>
-    <div class="note">Bracket and results come from FloArena (${DATA?'synced '+new Date(DATA.updated).toLocaleTimeString([], {hour:'numeric',minute:'2-digit'}):'not loaded'}). Live scores come from FloArena's mat feed. Taps and settings live only in this browser.</div>
+  <h2 class="section-title">your local taps and anchor (paste JSON to restore)</h2>
+  <div class="panel">
+    <textarea id="dump" aria-label="taps and anchor as JSON">${esc(JSON.stringify({taps:S.taps,anchor:S.anchor}))}</textarea>
+    <div class="actions"><button type="button" class="chip" id="restore">restore from text</button><button type="button" class="chip warn" id="reset">reset everything</button></div>
+    <div class="note">bracket and results come from FloArena (${DATA?'synced '+fmt(new Date(DATA.updated)):'not loaded'}). live scores come from FloArena’s mat feed. taps and settings live only in this browser.</div>
   </div>`;
 }
 function renderStatus(){
   const s=$('#status'); if(!s) return;
-  const dataTxt = DATA ? `<b>${new Date(DATA.updated).toLocaleTimeString([], {hour:'numeric',minute:'2-digit'})}</b>` : (dataErr?'<b>failed</b>':'…');
-  const liveTxt = liveState==='ok' ? `<span class="dot ok"></span>live ${lastLive?ago(lastLive):''}` : liveState==='bad' ? `<span class="dot bad"></span>live feed lost` : `<span class="dot"></span>live feed off`;
-  s.innerHTML=`<span>Results ${dataErr&&DATA?'<span class="dot bad"></span>':''}${dataTxt}</span><span>${liveTxt}</span>`;
+  const dataTxt = DATA ? `results ${dataErr?'<span class="bad">stale</span> ':''}${fmt(new Date(DATA.updated))}` : (dataErr?'<span class="bad">results failed</span>':'loading…');
+  const liveTxt = liveState==='ok' ? `live ${lastLive?ago(lastLive):''}` : liveState==='bad' ? `<span class="bad">live feed lost</span>` : `live feed off`;
+  s.innerHTML=`${dataTxt} · ${liveTxt}`;
 }
 function render(){
-  document.querySelectorAll('.tabs button').forEach(b=>b.classList.toggle('on',b.dataset.tab===tab));
+  document.querySelectorAll('.bottom-nav .nav-item').forEach(b=>b.classList.toggle('active',b.dataset.tab===tab));
   renderStatus();
-  if(!DATA){ $('#main').innerHTML = dataErr ? `<div class="card">Couldn’t load the bracket (${esc(dataErr.message)}). Retrying every minute.</div>` : `<div class="card">Loading bracket…</div>`; return; }
+  if(!DATA){ $('#main').innerHTML = dataErr ? `<div class="panel">couldn’t load the bracket (${esc(dataErr.message)}). retrying every minute.</div>` : `<div class="panel">loading bracket…</div>`; return; }
   $('#main').innerHTML = tab==='next'?renderNext():tab==='brackets'?renderBrackets():renderSettings();
 }
 function toast(t){ const e=$('#toast'); e.textContent=t; e.classList.add('show'); setTimeout(()=>e.classList.remove('show'),1400); }
 
 // ---------- events ----------
-document.querySelector('.tabs').addEventListener('click',e=>{ const b=e.target.closest('button'); if(b){ tab=b.dataset.tab; render(); window.scrollTo(0,0);} });
+document.querySelector('.bottom-nav').addEventListener('click',e=>{ const b=e.target.closest('[data-tab]'); if(b){ tab=b.dataset.tab; render(); window.scrollTo(0,0);} });
 $('#main').addEventListener('click',e=>{
   const w=e.target.closest('[data-win]'); if(w){ const [divId,r,m,s]=w.dataset.win.split('|'); const div=divs().find(d=>d.id===divId); if(div) setWinner(matchObj(div,r,+m),+s); return; }
   const dy=e.target.closest('[data-day]'); if(dy){ S.day=+dy.dataset.day; save(); render(); return; }
   const bd=e.target.closest('[data-bdiv]'); if(bd){ S.bracketDiv=bd.dataset.bdiv; save(); render(); return; }
-  const n=e.target.closest('[data-now]'); if(n){ S.anchor={key:n.dataset.now, at:new Date().toISOString()}; save(); render(); toast('Re-projected from now'); return; }
+  const n=e.target.closest('[data-now]'); if(n){ S.anchor={key:n.dataset.now, at:new Date().toISOString()}; save(); render(); toast('re-projected from now'); return; }
   if(e.target.id==='clearAnchor'){ S.anchor=null; save(); render(); return; }
   const up=e.target.closest('[data-up]'), dn=e.target.closest('[data-dn]');
   if(up||dn){ const i=+(up||dn).dataset[up?'up':'dn'], j=up?i-1:i+1; if(j<0||j>=S.blocks.length) return; [S.blocks[i],S.blocks[j]]=[S.blocks[j],S.blocks[i]]; save(); render(); return; }
-  if(e.target.id==='restore'){ try{ const o=JSON.parse($('#dump').value); if(o.taps&&typeof o.taps==='object') S.taps=o.taps; if('anchor' in o) S.anchor=o.anchor; save(); render(); toast('Restored'); }catch(err){ toast('That JSON didn’t parse'); } return; }
+  if(e.target.id==='restore'){ try{ const o=JSON.parse($('#dump').value); if(o.taps&&typeof o.taps==='object') S.taps=o.taps; if('anchor' in o) S.anchor=o.anchor; save(); render(); toast('restored'); }catch(err){ toast('that JSON didn’t parse'); } return; }
   if(e.target.id==='reset'){ // two-tap confirm: native confirm() is blocked in sandboxed iframes
-    if(e.target.dataset.armed){ S=JSON.parse(JSON.stringify(DEFAULT)); save(); render(); toast('Reset'); }
-    else{ e.target.dataset.armed='1'; e.target.textContent='Tap again to wipe taps and settings'; setTimeout(()=>{ if(e.target.isConnected){ delete e.target.dataset.armed; e.target.textContent='Reset everything'; } },4000); }
+    if(e.target.dataset.armed){ S=JSON.parse(JSON.stringify(DEFAULT)); save(); render(); toast('reset'); }
+    else{ e.target.dataset.armed='1'; e.target.textContent='tap again to wipe taps and settings'; setTimeout(()=>{ if(e.target.isConnected){ delete e.target.dataset.armed; e.target.textContent='reset everything'; } },4000); }
     return; }
 });
 $('#main').addEventListener('change',e=>{
