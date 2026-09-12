@@ -122,7 +122,8 @@ its "Rules the look depends on" are binding here:
   list matches fighter names or countries.
 - Light/dark/auto lives in Settings as three chips (key `bjjTracker.theme`); they drive the
   kit's own `AppTheme.cycle()` rather than reimplementing it. The head bootstrap line must stay
-  before the stylesheet link. The bottom nav is words only, 46px.
+  before the stylesheet link. Tabs are words in a sticky top header (title row above them); no
+  bottom nav, so mobile Safari's own bottom bar doesn't stack against ours.
 - The bracket connectors are the one place an edge is load-bearing (`--hairline-strong`).
   Box height must stay under `--pitch` (78px); the theme's 1.6 line-height is overridden
   inside `.bx` for that reason.

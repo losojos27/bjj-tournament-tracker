@@ -29,11 +29,15 @@
   .panel .chip.active{background:var(--accent);color:var(--accent-contrast)}
   .panel .chip.warn{background:var(--cue-warning);color:var(--accent-contrast)}
   .container{max-width:720px}
-  :root{--bottom-nav-h:46px}                       /* words only in the nav, so it can be short */
-  .nav-label{font-size:.9rem;font-weight:500}
-  .nav-item.active .nav-label{font-weight:650}
-  main.container{padding-top:2px;padding-bottom:calc(var(--bottom-nav-h) + env(safe-area-inset-bottom) + 28px)}
-  .topbar{display:flex;align-items:center;gap:10px;padding-block:10px 4px}
+  /* sticky header: title row + tabs. Tabs live up here so Safari's own bottom bar has the bottom to itself. */
+  .top{position:sticky;top:0;z-index:200;padding-top:env(safe-area-inset-top);background:color-mix(in srgb, var(--bg-primary) 94%, transparent);backdrop-filter:blur(16px);-webkit-backdrop-filter:blur(16px)}
+  .topbar{display:flex;align-items:center;gap:10px;padding-block:10px 0}
+  .tabs{display:flex;padding-block:0;padding-bottom:0}
+  .tab{position:relative;flex:1;background:none;border:0;padding:9px 4px 11px;font:inherit;font-size:.92rem;font-weight:500;color:var(--text-muted);cursor:pointer;-webkit-tap-highlight-color:transparent}
+  .tab.active{color:var(--accent);font-weight:650}
+  .tab.active::after{content:"";position:absolute;left:50%;bottom:0;transform:translateX(-50%);width:28px;height:3px;border-radius:3px 3px 0 0;background:var(--accent)}
+  .tab:focus-visible{outline:2px solid var(--accent-soft);outline-offset:-2px}
+  main.container{padding-top:12px;padding-bottom:calc(env(safe-area-inset-bottom) + 28px)}
   .topbar .title{font-family:var(--font-heading);font-weight:650;font-size:1.05rem;letter-spacing:-.02em;white-space:nowrap}
   .status{flex:1;min-width:0;font-size:var(--fs-eyebrow);color:var(--text-muted);text-align:right;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
   .status .bad{color:var(--cue-warning)}
@@ -41,7 +45,7 @@
   .panel{background:var(--bg-card);border-radius:var(--radius-md);padding:12px 14px}
   .stack{display:flex;flex-direction:column;gap:6px}
   .chip.warn{background:var(--cue-warning);color:var(--accent-contrast)}
-  .chip:focus-visible,.nav-item:focus-visible{outline:2px solid var(--accent-soft);outline-offset:1px}
+  .chip:focus-visible{outline:2px solid var(--accent-soft);outline-offset:1px}
   .topline{display:flex;align-items:center;justify-content:space-between;gap:10px;flex-wrap:wrap;margin:4px 0 12px}
   .note{font-size:var(--fs-meta);color:var(--text-muted);margin-top:8px}
   .actions{display:flex;gap:8px;margin-top:10px;flex-wrap:wrap}
@@ -111,22 +115,24 @@
   .fields .field{text-align:right}
   .field{width:100%;background:var(--bg-primary);border:0;color:var(--text-primary);border-radius:var(--radius-pill);padding:10px 12px;font:inherit;font-size:var(--fs-body);outline:none}
   .field:focus{box-shadow:0 0 0 2px var(--accent-soft)}
-  .toast{position:fixed;bottom:calc(var(--bottom-nav-h) + env(safe-area-inset-bottom) + 14px);left:50%;transform:translateX(-50%);background:var(--accent);color:var(--accent-contrast);padding:8px 14px;border-radius:var(--radius-pill);font-size:var(--fs-meta);opacity:0;transition:opacity .2s;pointer-events:none;z-index:300}
+  .toast{position:fixed;bottom:calc(env(safe-area-inset-bottom) + 18px);left:50%;transform:translateX(-50%);background:var(--accent);color:var(--accent-contrast);padding:8px 14px;border-radius:var(--radius-pill);font-size:var(--fs-meta);opacity:0;transition:opacity .2s;pointer-events:none;z-index:300}
   .toast.show{opacity:1}
   @media (prefers-reduced-motion:reduce){.toast,.chip,.icon-btn{transition:none}}
 </style>
 </head>
 <body>
-<div class="container topbar">
-  <div class="title">ADCC 2026 <span class="muted">Kraków</span></div>
-  <div class="status" id="status"></div>
-</div>
+<header class="top">
+  <div class="container topbar">
+    <div class="title">ADCC 2026 <span class="muted">Kraków</span></div>
+    <div class="status" id="status"></div>
+  </div>
+  <nav class="container tabs" aria-label="sections">
+    <button class="tab active" data-tab="next" type="button">next up</button>
+    <button class="tab" data-tab="brackets" type="button">brackets</button>
+    <button class="tab" data-tab="settings" type="button">settings</button>
+  </nav>
+</header>
 <main id="main" class="container"><div class="panel">loading bracket…</div></main>
-<nav class="bottom-nav" aria-label="sections">
-  <button class="nav-item active" data-tab="next" type="button"><span class="nav-label">next up</span></button>
-  <button class="nav-item" data-tab="brackets" type="button"><span class="nav-label">brackets</span></button>
-  <button class="nav-item" data-tab="settings" type="button"><span class="nav-label">settings</span></button>
-</nav>
 <div class="toast" id="toast"></div>
 <script src="field-manual-theme/theme.js" data-key="bjjTracker.theme"></script>
 
@@ -446,7 +452,7 @@ function renderStatus(){
   s.innerHTML=`${dataTxt} · ${liveTxt}`;
 }
 function render(){
-  document.querySelectorAll('.bottom-nav .nav-item').forEach(b=>b.classList.toggle('active',b.dataset.tab===tab));
+  document.querySelectorAll('.tabs .tab').forEach(b=>b.classList.toggle('active',b.dataset.tab===tab));
   renderStatus();
   if(!DATA){ $('#main').innerHTML = dataErr ? `<div class="panel">couldn’t load the bracket (${esc(dataErr.message)}). retrying every minute.</div>` : `<div class="panel">loading bracket…</div>`; return; }
   $('#main').innerHTML = tab==='next'?renderNext():tab==='brackets'?renderBrackets():renderSettings();
@@ -458,7 +464,7 @@ async function copyText(t){
 function toast(t){ const e=$('#toast'); e.textContent=t; e.classList.add('show'); setTimeout(()=>e.classList.remove('show'),1400); }
 
 // ---------- events ----------
-document.querySelector('.bottom-nav').addEventListener('click',e=>{ const b=e.target.closest('[data-tab]'); if(b){ tab=b.dataset.tab; render(); window.scrollTo(0,0);} });
+document.querySelector('.tabs').addEventListener('click',e=>{ const b=e.target.closest('[data-tab]'); if(b){ tab=b.dataset.tab; render(); window.scrollTo(0,0);} });
 $('#main').addEventListener('click',e=>{
   const dy=e.target.closest('[data-day]'); if(dy){ S.day=+dy.dataset.day; save(); render(); return; }
   const bd=e.target.closest('[data-bdiv]'); if(bd){ S.bracketDiv=bd.dataset.bdiv; save(); render(); return; }
