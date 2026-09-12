@@ -113,9 +113,10 @@ its "Rules the look depends on" are binding here:
   letter-spaced labels, pills only for controls.
 - Everything lowercase except proper nouns, as a content convention (no `text-transform`).
   Athlete and division names, "FloArena", and round codes (R16/QF/SF) keep their case.
-- Colour with meaning maps to theme tokens: `--follow` = `--type-e`, `--win` = `--type-a`,
-  `--live` = `--cue-warning` (rendered as a `.cue.live` tag). Those tokens are re-lit per
-  theme; `--type-c/d` are not, so don't use them for text.
+- Colour with meaning: `--win` = `--type-a`, `--live` = `--cue-warning` (rendered as a
+  `.cue.live` tag), `--follow` = an app-defined teal (#1f6f7a light / #62bccb dark, set in
+  all three token blocks). Not red/brick: Lee read that as "eliminated". The kit's `--type-c/d`
+  teals aren't re-lit for dark, so they're not used for text.
 - Flags are emoji built from FloArena's `team` (the country at ADCC) via the `ISO` map in
   `index.html`; unknown countries render an empty flag slot so seeds stay aligned. The follow
   list matches fighter names or countries.

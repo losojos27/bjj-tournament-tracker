@@ -14,7 +14,9 @@
 <style>
   /* App styles on top of field-manual-theme. Colour with meaning comes from the theme's
      category and cue tokens; everything else is tone and spacing (no borders, no shadows). */
-  :root{ --follow:var(--type-e); --win:var(--type-a); --lose:var(--text-muted); --live:var(--cue-warning); } /* type-e and type-a are re-lit per theme */
+  :root{ --follow:#1f6f7a; --win:var(--type-a); --lose:var(--text-muted); --live:var(--cue-warning); } /* follow: a teal lit per theme below; not the kit's type-c/d, which stay dark on charcoal */
+  @media (prefers-color-scheme: dark){ :root:not([data-theme="light"]){ --follow:#62bccb; } }
+  :root[data-theme="dark"]{ --follow:#62bccb; }
   /* Phone-first scale: the kit's defaults read small in the arena. Bump the root and the type tokens together. */
   html{font-size:17px}
   :root{ --fs-body:1rem; --fs-meta:.86rem; --fs-eyebrow:.8rem; --fs-card-title:1.05rem; }
