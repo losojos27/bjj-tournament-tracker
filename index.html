@@ -47,7 +47,7 @@
   .sub{font-size:var(--fs-meta);color:var(--text-muted);margin-top:2px}
   /* queue rows */
   .row{display:grid;grid-template-columns:96px 1fr;gap:10px}
-  .row.now,.bx.now{background:color-mix(in srgb, var(--cue-warning) 12%, var(--bg-card))}
+  .row.now{background:color-mix(in srgb, var(--cue-warning) 12%, var(--bg-card))}
   .t{font-family:var(--font-heading);font-weight:650;font-size:1.1rem;line-height:1.15;font-variant-numeric:tabular-nums}
   .t small{display:block;color:var(--text-muted);font-weight:400;font-size:var(--fs-eyebrow)}
   .meta{color:var(--text-muted);font-size:var(--fs-eyebrow);margin-bottom:2px;display:flex;align-items:center;gap:6px;flex-wrap:wrap}
@@ -59,7 +59,7 @@
   .name.lose{color:var(--lose);text-decoration:line-through}
   .name.follow{color:var(--follow);font-weight:650}   /* after win/lose: a followed fighter stays highlighted */
   .row.fol,.bx.fol,.panel.follow-card{background:color-mix(in srgb, var(--follow) 16%, var(--bg-card))}
-  .row.fol.now,.bx.fol.now{background:color-mix(in srgb, var(--cue-warning) 14%, color-mix(in srgb, var(--follow) 16%, var(--bg-card)))}
+  .row.fol.now{background:color-mix(in srgb, var(--cue-warning) 14%, color-mix(in srgb, var(--follow) 16%, var(--bg-card)))}
   .name .nm{overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
   .seed{font-size:var(--fs-eyebrow);color:var(--text-muted);min-width:18px;text-align:right;font-variant-numeric:tabular-nums}
   .res{margin-left:auto;color:var(--text-secondary)}
@@ -165,7 +165,6 @@ const DEFAULT = {
   start1:'11:00', start2:'11:00',
   dur:{R32:12, R16:12, QF:20, SF:20, '3':20, F:30},
   blocks:DEFAULT_BLOCKS.map(b=>b.id),
-  anchor:null,                     // {key, at}: the match that was on the mat at time `at`
   bracketDiv:null,                 // division shown on the Brackets tab
   v:9,
 };
@@ -177,9 +176,10 @@ const store = { get:k=>{ try{ return localStorage.getItem(k); }catch(e){ return 
 function loadState(){
   try{ const v=store.get('adcc26'); if(v){ const o=JSON.parse(v); S=Object.assign({},DEFAULT,o); S.dur=Object.assign({},DEFAULT.dur,o.dur||{}); } }catch(e){}
   if((S.v||0)<9){ // results used to be baked into the page; they now come from FloArena
-    S.taps={}; S.anchor=null; delete S.winners; delete S.third;
+    S.taps={}; delete S.winners; delete S.third;
     S.blocks=DEFAULT.blocks.slice(); S.v=9; save();
   }
+  delete S.anchor;
   S.blocks=S.blocks.filter(id=>DEFAULT_BLOCKS.some(b=>b.id===id));
   for(const b of DEFAULT_BLOCKS) if(!S.blocks.includes(b.id)) S.blocks.splice(DEFAULT_BLOCKS.indexOf(b),0,b.id);
 }
@@ -273,12 +273,9 @@ function queue(){
   for(const b of blocks()){ if(b.day!==d) continue; for(const mo of allMatches(b)) full.push(mo); }
   const inProg=liveInProgress();
   let startAt=dayStart(d), from=0, mode='schedule';
-  // 1) live feed: the earliest in-progress bout that is in today's list anchors the projection at "now"
+  // the live feed anchors the projection: the earliest in-progress bout in today's list is "now"; otherwise the day's start, never in the past
   const liveIdx=full.map((mo,i)=>inProg.some(l=>mo.bout&&l.n===String(mo.bout.n))?i:-1).filter(i=>i>=0);
   if(liveIdx.length){ from=Math.min(...liveIdx); startAt=new Date(); mode='live'; }
-  // 2) manual anchor: the match that was on the mat at `at`; never project into the past
-  else if(S.anchor){ const i=full.findIndex(x=>x.key===S.anchor.key);
-    if(i>=0){ from=i; startAt=new Date(S.anchor.at); mode='anchor'; if(Date.now()>startAt.getTime()) startAt=new Date(); } }
   else if(Date.now()>startAt.getTime()) startAt=new Date();
   // FloArena's published per-mat order, when it exists, beats the block-order guess.
   // Match by bout number against every bout in the bracket, not just today's blocks (the day tags are a guess).
@@ -289,8 +286,8 @@ function queue(){
   }
   const matIdx=name=>(parseInt(String(name||'').replace(/\D/g,''),10)||1)-1;
   const upMats=(DATA.mats||[]).map(m=>({idx:matIdx(m.name), list:(m.upcoming||[]).map(u=>byN.get(String(u.n))).filter(Boolean)})).filter(m=>m.list.length);
-  // entries listed before the bout that anchors "now" on that mat (a live in-progress bout, or the manual anchor) are treated as already run
-  for(const m of upMats){ const cut=m.list.findIndex(mo=>(mo.live&&!mo.live.over&&inProg.includes(mo.live))||(mode==='anchor'&&S.anchor.key===mo.key)); if(cut>0) m.list=m.list.slice(cut); }
+  // entries listed before a live in-progress bout on that mat are treated as already run
+  for(const m of upMats){ const cut=m.list.findIndex(mo=>mo.live&&!mo.live.over&&inProg.includes(mo.live)); if(cut>0) m.list=m.list.slice(cut); }
   const floOrder=upMats.length>0;
   const nMats=Math.max(1,S.mats|0, ...inProg.map(l=>l.matIdx+1), ...upMats.map(m=>m.idx+1));
   const mats=Array.from({length:nMats},()=>startAt.getTime());
@@ -354,7 +351,7 @@ function renderMats(){
 }
 function renderNext(){
   const {list:q,mode,floOrder,matCount:matsInUse}=queue(); const d=today();
-  let h=`<div class="topline"><div class="chip-row">${[1,2].map(x=>`<button type="button" class="chip ${d===x?'active':''}" data-day="${x}" aria-pressed="${d===x}">day ${x}</button>`).join('')}</div><span class="note" style="margin:0">${matsInUse} mat${matsInUse===1?'':'s'}${floOrder?'':' (assumed)'} · times are estimates${mode==='live'?' · anchored to the live feed':mode==='anchor'?' · anchored manually':''}${floOrder?' · order from FloArena':''}</span></div>`;
+  let h=`<div class="topline"><div class="chip-row">${[1,2].map(x=>`<button type="button" class="chip ${d===x?'active':''}" data-day="${x}" aria-pressed="${d===x}">day ${x}</button>`).join('')}</div><span class="note" style="margin:0">${matsInUse} mat${matsInUse===1?'':'s'}${floOrder?'':' (assumed)'} · times are estimates${mode==='live'?' · following the live feed':''}${floOrder?' · order from FloArena':''}</span></div>`;
   h+=renderMats();
   const fl=S.follow.filter(Boolean);
   for(const f of fl){
@@ -378,15 +375,13 @@ function renderNext(){
   if(!q.length) h+=`<div class="panel">nothing left in today’s queue. check the running order in settings, or change the day.</div>`;
   else h+=`<div class="stack">`;
   q.slice(0,48).forEach(mo=>{
-    const isNow=mo.onMat||(mode==='anchor'&&S.anchor&&S.anchor.key===mo.key);
     const fol=isFollow(mo.a)||isFollow(mo.b);
-    h+=`<div class="panel row ${isNow?'now':''} ${fol?'fol':''}"><div class="t">${mo.onMat?'now':fmt(mo.at)}<small>mat ${mo.mat}</small></div>
-      <div><div class="meta">${esc(mo.div.name)} ${ROUND_LABEL[mo.rName]||mo.rName}${mo.bout&&mo.bout.n?' · #'+esc(mo.bout.n):''} ${mo.onMat?`<span class="cue live">on the mat · ${esc(mo.live.clock)}</span>`:isNow?'<span class="cue live">on the mat</span>':`<button type="button" class="chip small" data-now="${mo.key}">set as now</button>`}</div>
+    h+=`<div class="panel row ${mo.onMat?'now':''} ${fol?'fol':''}"><div class="t">${mo.onMat?'now':fmt(mo.at)}<small>mat ${mo.mat}</small></div>
+      <div><div class="meta">${esc(mo.div.name)} ${ROUND_LABEL[mo.rName]||mo.rName}${mo.bout&&mo.bout.n?' · #'+esc(mo.bout.n):''} ${mo.onMat?`<span class="cue live">on the mat · ${esc(mo.live.clock)}</span>`:''}</div>
       <div class="vs">${pName(mo.a,mo,0)}${pName(mo.b,mo,1)}</div></div></div>`;
   });
   if(q.length) h+=`</div>`;
-  h+=`<div class="note">results arrive from FloArena automatically. tap a name only if the feed is behind — it advances the bracket here until FloArena confirms it. "set as now" on the bout you can see re-projects every time from now.</div>`;
-  if(S.anchor) h+=`<div class="actions"><button type="button" class="chip" id="clearAnchor">clear "now" anchor</button></div>`;
+  h+=`<div class="note">results and mat times follow FloArena automatically. tap a name only if the feed is behind — it advances the bracket here until FloArena confirms it.</div>`;
   return h;
 }
 function currentDiv(){
@@ -400,10 +395,9 @@ function box(mo){
   else if(mo.src==='live'&&mo.live) res=fmtResult(mo.live.winType,mo.live.finalScore)+' · live';
   else if(mo.src==='tap') res='your tap';
   const live=mo.live&&!mo.live.over;
-  const now=!live&&S.anchor&&S.anchor.key===mo.key;
   const meta=`<span class="num">${b.n?'#'+esc(b.n):''}</span>${live?`<span class="cue live">on the mat · ${esc(mo.live.clock)}</span>`:''}<span class="res">${esc(res)}</span>`;
   const fol=isFollow(mo.a)||isFollow(mo.b);
-  return `<div class="bx ${now?'now':''} ${fol?'fol':''}"><div class="meta">${meta}</div>${pName(mo.a,mo,0)}${pName(mo.b,mo,1)}</div>`;
+  return `<div class="bx ${fol?'fol':''}"><div class="meta">${meta}</div>${pName(mo.a,mo,0)}${pName(mo.b,mo,1)}</div>`;
 }
 function renderBrackets(){
   const ds=divs(); const div=currentDiv(); if(!div) return `<div class="panel">no bracket data yet.</div>`;
@@ -440,9 +434,9 @@ function renderSettings(){
   <div class="panel">
     <div class="blocklist">${b.map((x,i)=>`<div><span>day ${x.day} · ${esc(x.label)}</span><button type="button" class="chip small" data-up="${i}" aria-label="move up">↑</button><button type="button" class="chip small" data-dn="${i}" aria-label="move down">↓</button></div>`).join('')}</div>
   </div>
-  <h2 class="section-title">your local taps and anchor (paste JSON to restore)</h2>
+  <h2 class="section-title">your local taps (paste JSON to restore)</h2>
   <div class="panel">
-    <textarea id="dump" aria-label="taps and anchor as JSON">${esc(JSON.stringify({taps:S.taps,anchor:S.anchor}))}</textarea>
+    <textarea id="dump" aria-label="taps as JSON">${esc(JSON.stringify({taps:S.taps}))}</textarea>
     <div class="actions"><button type="button" class="chip" id="restore">restore from text</button><button type="button" class="chip warn" id="reset">reset everything</button></div>
     <div class="note">bracket and results come from FloArena (${DATA?'synced '+fmt(new Date(DATA.updated)):'not loaded'}). live scores come from FloArena’s mat feed. taps and settings live only in this browser.</div>
   </div>`;
@@ -467,11 +461,9 @@ $('#main').addEventListener('click',e=>{
   const w=e.target.closest('[data-win]'); if(w){ const [divId,r,m,s]=w.dataset.win.split('|'); const div=divs().find(d=>d.id===divId); if(div) setWinner(matchObj(div,r,+m),+s); return; }
   const dy=e.target.closest('[data-day]'); if(dy){ S.day=+dy.dataset.day; save(); render(); return; }
   const bd=e.target.closest('[data-bdiv]'); if(bd){ S.bracketDiv=bd.dataset.bdiv; save(); render(); return; }
-  const n=e.target.closest('[data-now]'); if(n){ S.anchor={key:n.dataset.now, at:new Date().toISOString()}; save(); render(); toast('times re-projected from now'); return; }
-  if(e.target.id==='clearAnchor'){ S.anchor=null; save(); render(); return; }
   const up=e.target.closest('[data-up]'), dn=e.target.closest('[data-dn]');
   if(up||dn){ const i=+(up||dn).dataset[up?'up':'dn'], j=up?i-1:i+1; if(j<0||j>=S.blocks.length) return; [S.blocks[i],S.blocks[j]]=[S.blocks[j],S.blocks[i]]; save(); render(); return; }
-  if(e.target.id==='restore'){ try{ const o=JSON.parse($('#dump').value); if(o.taps&&typeof o.taps==='object') S.taps=o.taps; if('anchor' in o) S.anchor=o.anchor; save(); render(); toast('restored'); }catch(err){ toast('that JSON didn’t parse'); } return; }
+  if(e.target.id==='restore'){ try{ const o=JSON.parse($('#dump').value); if(o.taps&&typeof o.taps==='object') S.taps=o.taps; save(); render(); toast('restored'); }catch(err){ toast('that JSON didn’t parse'); } return; }
   if(e.target.id==='reset'){ // two-tap confirm: native confirm() is blocked in sandboxed iframes
     if(e.target.dataset.armed){ S=JSON.parse(JSON.stringify(DEFAULT)); save(); render(); toast('reset'); }
     else{ e.target.dataset.armed='1'; e.target.textContent='tap again to wipe taps and settings'; setTimeout(()=>{ if(e.target.isConnected){ delete e.target.dataset.armed; e.target.textContent='reset everything'; } },4000); }

@@ -47,7 +47,7 @@ Three layers, all read-only except the last:
    Firebase `mats.json` every 15 s for the bout on each mat (clock, score, `isMatchOver`,
    `winner`). Neither poll re-renders while the Settings tab is open (`quiet()`).
 3. **Local overlay (`S`, in localStorage).** `taps` (results the user recorded), follow list,
-   mats, day, start times, slot durations, block order, manual anchor, chosen bracket division.
+   mats, day, start times, slot durations, block order, chosen bracket division.
    `S.v` is a schema version; bump it and extend the migration in `loadState()` when the shape
    of `S` changes.
 
@@ -65,10 +65,10 @@ Settings), assigned to the earliest-free mat with per-round slot lengths. If `re
 carries FloArena's per-mat `mats[].upcoming` lists, those win: bouts are matched by number `n`
 and placed on exactly the mats Flo lists, in Flo's order; anything not listed falls back to
 block order on those same mats. Without such lists the mats are `S.mats` (plus any mat the
-live feed shows a bout on) and the header says "(assumed)". A live in-progress bout, or the
-manual anchor, marks entries listed before it on that mat as already run. Start point, in priority: a live in-progress bout (mat free at now +
-remaining clock + 2 min) → the manual "set as now" anchor, clamped to now → the day's
-configured start on the event's calendar date (`DAY_DATES`). Never projects into the past.
+live feed shows a bout on) and the header says "(assumed)". A live in-progress bout marks
+entries listed before it on that mat as already run. Start point: a live in-progress bout (mat free at now + remaining clock + 2 min), else the
+day's configured start on the event's calendar date (`DAY_DATES`), clamped to now. There is
+no manual anchor any more (Lee removed "set as now" on Sept 12: automation over precision).
 
 ## FloArena data sources (found by watching the arena page's network traffic)
 
@@ -123,7 +123,8 @@ its "Rules the look depends on" are binding here:
 
 ## Lee's rules for this project
 
-- Predicted times are estimates; keep the "set as now" lever obvious.
+- Predicted times are estimates. Automation and glanceability beat to-the-second accuracy:
+  no manual levers for the projection.
 - One tap per result. No burdensome workarounds.
 - Don't re-litigate settled decisions; execute.
 - Flag uncertainty explicitly.
