@@ -2,7 +2,18 @@
 
 Single-file web app (`index.html`) that tracks the ADCC World Championship 2026 brackets
 (Kraków, Sept 12–13) and projects match start times. Built in a Claude chat on Sept 12
-while Lee was in the arena; moving here so it can be hosted and iterated properly.
+while Lee was in the arena; moved here Sept 12 evening so it can be hosted and iterated.
+
+## Repo layout & publishing
+- `index.html` — the app. `README.md` — public-facing overview. `archive/` — original chat handoff zip.
+- `scripts/build-artifact.sh` → `dist/artifact.html` (gitignored): `index.html` minus the
+  doctype/html/head/body wrapper, which the Claude artifact host supplies itself.
+- **Published:** https://claude.ai/code/artifact/78d4a9a4-2636-4548-9de6-b03be85ae72e
+  Republish after any change: run the build script, then `Artifact` on `dist/artifact.html`
+  (same path keeps the URL). Persistence there is localStorage, per viewer, per browser.
+- When baking new results into `DEFAULT.winners`, **bump `DEFAULT.v`** and extend the
+  migration condition in `load()`, or existing viewers' stored state will shadow them.
+- The Reset button uses a two-tap confirm; native `confirm()` is blocked in the artifact iframe.
 
 ## What it does
 - Three tabs: **Next up** (followed athletes' next match + ETA, then the projected queue),
@@ -60,8 +71,22 @@ while Lee was in the arena; moving here so it can be hosted and iterated properl
 - One tap per result. No burdensome workarounds.
 - Flag uncertainty explicitly.
 
+## Known issues (found in the Sept 12 evening review)
+- Stale anchor: if the anchored match has no recorded result and `anchor.at` is in the past,
+  `queue()` still projects from `anchor.at` (into the past). Only completed anchors jump to now.
+  Only bites on Day 1; the Day 2 queue ignores the Day 1 anchor key entirely.
+- `DEFAULT.anchor.at` is computed as *today* 16:30 on every fresh load, so a first-time viewer
+  on Day 1 morning would see a future-dated anchor. Harmless from Day 2 on.
+- "Clear now anchor" button still shows on Day 2 even though the anchor is inert there.
+- Times are the *viewer's* local time. `dayStart` uses local 11:00, so viewers outside CEST
+  get wrong Day 2 start projections until someone taps "set as now".
+- Each viewer has their own localStorage; results Lee taps do not reach other viewers unless
+  baked into `DEFAULT` and republished. Shared state would need a backend (artifact `db`).
+- Restore-from-JSON does an unvalidated `Object.assign` (self-XSS only; not a sharing risk).
+
 ## Next steps (suggested)
-1. Host it (GitHub Pages) so storage and the home-screen icon work.
+1. ~~Host it~~ Published as a Claude artifact (see above). GitHub Pages is a `gh repo create` away
+   if a plain URL / iOS home-screen install is wanted.
 2. Find the FloArena JSON endpoint and add a sync (server-side or a proxy), or at least
    a "paste results" import that's faster than editing `DEFAULT`.
 3. Verify Day 2 block order against FloArena's Upcoming tab before Sept 13 starts.
