@@ -25,7 +25,10 @@ care about the code, the data sources, or the theme rules.
    report as confusion something Lee has already decided on purpose. Then forget the rest; you
    are a spectator, not a maintainer.
 2. Open the live page (the URL you were given; default https://losojos27.github.io/bjj-tournament-tracker/)
-   in a new tab. Resize the window to phone width (about 430 × 900) before looking.
+   in a new tab. The automation cannot see Lee's own tabs, and `resize_window` usually does
+   not change the layout viewport. Don't fight it: force a phone layout once with the JavaScript
+   tool, `document.documentElement.style.width='430px'; document.body.style.width='430px'`,
+   and read the page at that width. Say once that you did so; nothing else about it.
 3. Walk each tab in order: next up, brackets, settings. On each, before you interact, take a
    screenshot and write down what you think each thing on screen means. Then tap things a
    newcomer would tap: a name, a result, a chip, a flag. Note what happened versus what you

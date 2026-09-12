@@ -1,5 +1,5 @@
 {
- "updated": "2026-09-12T22:03:41.723Z",
+ "updated": "2026-09-12T23:05:40.167Z",
  "event": {
   "id": "52703b65-bade-46e2-9ce2-399dd32d93e4",
   "name": "2026 ADCC World Championships",
@@ -1621,7 +1621,7 @@
   },
   {
    "id": "w65p",
-   "name": "W +65kg",
+   "name": "women's +65kg",
    "sex": "w",
    "kind": "pro",
    "size": 8,
@@ -1786,7 +1786,7 @@
   },
   {
    "id": "w65",
-   "name": "W -65kg",
+   "name": "women's -65kg",
    "sex": "w",
    "kind": "pro",
    "size": 8,
@@ -1951,7 +1951,7 @@
   },
   {
    "id": "w55",
-   "name": "W -55kg",
+   "name": "women's -55kg",
    "sex": "w",
    "kind": "pro",
    "size": 8,
@@ -2116,7 +2116,7 @@
   },
   {
    "id": "sf-super-fight-sun",
-   "name": "Super fight",
+   "name": "super fight",
    "sex": "m",
    "kind": "sf",
    "size": 2,

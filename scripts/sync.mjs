@@ -29,10 +29,11 @@ function divId(divName, wc) {
   return m ? sex + m[2] + (m[1] === '+' ? 'p' : '') : sex + wc.replace(/\W+/g, '-').toLowerCase();
 }
 function divLabel(divName, wc) {
-  if (/absolute/i.test(wc)) return (/female/i.test(divName) ? 'W ' : '') + 'Absolute';
-  if (/super/i.test(divName)) return 'Super fight';
+  const w = /female/i.test(divName) ? "women's " : '';
+  if (/absolute/i.test(wc)) return w + 'absolute';
+  if (/super/i.test(divName)) return 'super fight';
   const m = wc.match(/^([+-])\s*(\d+)/);
-  return (/female/i.test(divName) ? 'W ' : '') + (m ? `${m[1]}${m[2]}kg` : wc);
+  return w + (m ? `${m[1]}${m[2]}kg` : wc);
 }
 const person = w => w ? { name: `${w.firstName || ''} ${w.lastName || ''}`.trim(), seed: w.seed ?? null, team: w.team?.name || null } : null;
 function bout(x) {
