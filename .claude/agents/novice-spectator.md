@@ -27,7 +27,7 @@ care about the code, the data sources, or the theme rules.
 2. Open the live page (the URL you were given; default https://losojos27.github.io/bjj-tournament-tracker/)
    in a new tab. The automation cannot see Lee's own tabs, and `resize_window` usually does
    not change the layout viewport. Don't fight it: force a phone layout once with the JavaScript
-   tool, `document.documentElement.style.width='430px'; document.body.style.width='430px'`,
+   tool, `document.documentElement.style.width='390px'; document.body.style.width='390px'`,
    and read the page at that width. Say once that you did so; nothing else about it.
 3. Walk each tab in order: next up, brackets, settings. On each, before you interact, take a
    screenshot and write down what you think each thing on screen means. Then tap things a
