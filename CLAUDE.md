@@ -119,8 +119,9 @@ its "Rules the look depends on" are binding here:
 - Flags are emoji built from FloArena's `team` (the country at ADCC) via the `ISO` map in
   `index.html`; unknown countries render an empty flag slot so seeds stay aligned. The follow
   list matches fighter names or countries.
-- Light/dark/auto is the theme's toggle (top right, key `bjjTracker.theme`). The head
-  bootstrap line must stay before the stylesheet link.
+- Light/dark/auto lives in Settings as three chips (key `bjjTracker.theme`); they drive the
+  kit's own `AppTheme.cycle()` rather than reimplementing it. The head bootstrap line must stay
+  before the stylesheet link. The bottom nav is words only, 46px.
 - The bracket connectors are the one place an edge is load-bearing (`--hairline-strong`).
   Box height must stay under `--pitch` (78px); the theme's 1.6 line-height is overridden
   inside `.bx` for that reason.
@@ -134,7 +135,7 @@ its "Rules the look depends on" are binding here:
 - Flag uncertainty explicitly.
 - UI choices already made: Day 1/Day 2 is a switch on the Next up tab; the Brackets tab is a
   real column bracket with a division picker, not an accordion; Settings holds the follow
-  list, mats, slot minutes and reset. Don't add knobs for things the feed decides.
+  list, appearance, mats, slot minutes and reset. Don't add knobs for things the feed decides.
 
 ## Known limitations
 

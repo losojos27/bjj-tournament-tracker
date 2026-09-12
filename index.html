@@ -24,14 +24,17 @@
   .chip{font-size:.88rem}
   .chip.small{padding:4px 10px;font-size:.78rem}
   .panel .chip{background:var(--accent-soft);color:var(--text-primary)}   /* a control on a card: visibly inset from the card tone */
+  .panel .chip.active{background:var(--accent);color:var(--accent-contrast)}
   .panel .chip.warn{background:var(--cue-warning);color:var(--accent-contrast)}
   .container{max-width:720px}
+  :root{--bottom-nav-h:46px}                       /* words only in the nav, so it can be short */
+  .nav-label{font-size:.9rem;font-weight:500}
+  .nav-item.active .nav-label{font-weight:650}
   main.container{padding-top:2px;padding-bottom:calc(var(--bottom-nav-h) + env(safe-area-inset-bottom) + 28px)}
-  .topbar{display:flex;align-items:center;gap:10px;padding-bottom:4px}
+  .topbar{display:flex;align-items:center;gap:10px;padding-block:10px 4px}
   .topbar .title{font-family:var(--font-heading);font-weight:650;font-size:1.05rem;letter-spacing:-.02em;white-space:nowrap}
   .status{flex:1;min-width:0;font-size:var(--fs-eyebrow);color:var(--text-muted);text-align:right;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
   .status .bad{color:var(--cue-warning)}
-  .topbar .icon-btn{width:38px;height:38px}
   .section-title{font-size:var(--fs-meta);font-weight:600;color:var(--text-muted);margin:18px 0 8px}
   .panel{background:var(--bg-card);border-radius:var(--radius-md);padding:12px 14px}
   .stack{display:flex;flex-direction:column;gap:6px}
@@ -112,13 +115,12 @@
 <div class="container topbar">
   <div class="title">ADCC 2026 <span class="muted">Kraków</span></div>
   <div class="status" id="status"></div>
-  <button class="icon-btn theme-btn" data-theme-toggle type="button" aria-label="theme: auto"></button>
 </div>
 <main id="main" class="container"><div class="panel">loading bracket…</div></main>
 <nav class="bottom-nav" aria-label="sections">
-  <button class="nav-item active" data-tab="next" type="button"><svg viewBox="0 0 24 24" aria-hidden="true"><line x1="8" x2="21" y1="6" y2="6"/><line x1="8" x2="21" y1="12" y2="12"/><line x1="8" x2="21" y1="18" y2="18"/><line x1="3" x2="3.01" y1="6" y2="6"/><line x1="3" x2="3.01" y1="12" y2="12"/><line x1="3" x2="3.01" y1="18" y2="18"/></svg><span class="nav-label">next up</span></button>
-  <button class="nav-item" data-tab="brackets" type="button"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="18" r="3"/><circle cx="6" cy="6" r="3"/><circle cx="18" cy="6" r="3"/><path d="M18 9v2c0 .6-.4 1-1 1H7c-.6 0-1-.4-1-1V9"/><path d="M12 12v3"/></svg><span class="nav-label">brackets</span></button>
-  <button class="nav-item" data-tab="settings" type="button"><svg viewBox="0 0 24 24" aria-hidden="true"><line x1="21" x2="14" y1="4" y2="4"/><line x1="10" x2="3" y1="4" y2="4"/><line x1="21" x2="12" y1="12" y2="12"/><line x1="8" x2="3" y1="12" y2="12"/><line x1="21" x2="16" y1="20" y2="20"/><line x1="12" x2="3" y1="20" y2="20"/><line x1="14" x2="14" y1="2" y2="6"/><line x1="8" x2="8" y1="10" y2="14"/><line x1="16" x2="16" y1="18" y2="22"/></svg><span class="nav-label">settings</span></button>
+  <button class="nav-item active" data-tab="next" type="button"><span class="nav-label">next up</span></button>
+  <button class="nav-item" data-tab="brackets" type="button"><span class="nav-label">brackets</span></button>
+  <button class="nav-item" data-tab="settings" type="button"><span class="nav-label">settings</span></button>
 </nav>
 <div class="toast" id="toast"></div>
 <script src="field-manual-theme/theme.js" data-key="bjjTracker.theme"></script>
@@ -405,6 +407,10 @@ function renderBrackets(){
   h+=`<div class="note">scroll sideways for later rounds.</div>`;
   return h;
 }
+function themeMode(){ try{ const t=localStorage.getItem('bjjTracker.theme'); return t==='light'||t==='dark'?t:'auto'; }catch(e){ return 'auto'; } }
+function setThemeMode(v){ // theme.js owns the switch; cycle it until the stored mode matches
+  for(let i=0;i<3&&themeMode()!==v;i++) window.AppTheme&&window.AppTheme.cycle();
+}
 function renderSettings(){
   const synced=DATA?fmt(new Date(DATA.updated)):'not loaded';
   return `
@@ -412,6 +418,8 @@ function renderSettings(){
     <label for="follow">following (names or countries, comma separated)</label><input class="field" id="follow" value="${esc(S.follow.join(', '))}" autocomplete="off" autocapitalize="words">
     <div class="note">partial names work. a country (e.g. USA, Poland) follows everyone from it. followed fighters are highlighted everywhere and get a card at the top of next up while they’re still in it.</div>
   </div>
+  <h2 class="section-title">appearance</h2>
+  <div class="panel"><div class="chip-row">${[['auto','auto'],['light','light'],['dark','dark']].map(([v,l])=>`<button type="button" class="chip ${themeMode()===v?'active':''}" data-theme-set="${v}">${l}</button>`).join('')}</div></div>
   <h2 class="section-title">projection (only used when FloArena hasn’t published the order)</h2>
   <div class="panel">
     <div class="fields">
@@ -444,6 +452,7 @@ document.querySelector('.bottom-nav').addEventListener('click',e=>{ const b=e.ta
 $('#main').addEventListener('click',e=>{
   const dy=e.target.closest('[data-day]'); if(dy){ S.day=+dy.dataset.day; save(); render(); return; }
   const bd=e.target.closest('[data-bdiv]'); if(bd){ S.bracketDiv=bd.dataset.bdiv; save(); render(); return; }
+  const th=e.target.closest('[data-theme-set]'); if(th){ setThemeMode(th.dataset.themeSet); render(); return; }
   if(e.target.id==='reset'){ // two-tap confirm: native confirm() is blocked in sandboxed iframes
     if(e.target.dataset.armed){ S=JSON.parse(JSON.stringify(DEFAULT)); save(); render(); toast('reset'); }
     else{ e.target.dataset.armed='1'; e.target.textContent='tap again to reset the follow list and settings'; setTimeout(()=>{ if(e.target.isConnected){ delete e.target.dataset.armed; e.target.textContent='reset everything'; } },4000); }
