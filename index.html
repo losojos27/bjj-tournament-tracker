@@ -377,13 +377,14 @@ function renderNext(){
         cards.push({at:mo.at,html:`<div class="panel follow-card"><span class="pin"></span><div><div class="big"><button type="button" class="copy-name" data-copy="${esc(me.name)}" title="copy name">${flagHtml(me.team)}${esc(me.name)}</button>${mo.onMat?' · '+'':' · '+fmt(mo.at)}</div><div class="sub">${when} · ${esc(mo.div.name)} ${rl(mo.rName)} · vs ${opp.tbd?esc(opp.label):esc(opp.name)}</div></div></div>`}); }
     } else {
       // still alive somewhere (e.g. tomorrow, or a division with no bouts yet)? champion? otherwise eliminated: no card
-      let status='no match in today’s queue', out=false, champ=false;
+      let status='no match in today’s queue', out=false, champ=false;   // eliminated fighters get a neutral 'no scheduled matches' card, never their loss
       for(const div of divs()) for(const r of div.rounds) for(let m=0;m<r.bouts.length;m++){ const mo=matchObj(div,r.name,m);
         if(mo.w!==null&&mo.w>=0){ const l=mo.w===0?mo.b:mo.a; if(hit(l)) out=true; } }
       for(const div of divs()){ const rn=rounds(div); const w=winnerOf(div,rn[rn.length-1],0); if(w!==null&&w>=0&&hit(slot(div,rn[rn.length-1],0,w))){ champ=true; status=`${div.name} champion 🥇`; } }
       const alive=divs().some(div=>div.rounds.some(r=>r.bouts.some((b,m)=>winnerOf(div,r.name,m)===null&&(hit(b.a)||hit(b.b)))));
+      if(out&&!alive&&!champ) status='no scheduled matches';
       if(dayDone&&!champ) continue;   // a finished day: don't say "no match in today's queue"
-      if(champ||alive||!out) cards.push({at:new Date(8.64e15),html:`<div class="panel follow-card"><span class="pin"></span><div><div class="big">${esc(f)}</div><div class="sub">${status}</div></div></div>`});
+      cards.push({at:new Date(8.64e15),html:`<div class="panel follow-card"><span class="pin"></span><div><div class="big">${esc(f)}</div><div class="sub">${status}</div></div></div>`});
     }
   }
   cards.sort((x,y)=>x.at-y.at);

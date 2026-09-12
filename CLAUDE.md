@@ -152,6 +152,8 @@ the look depends on" are binding:
 - Automation and glanceability beat to-the-second accuracy: no manual levers for the
   projection, nothing entered by hand, no knobs for things the feed decides.
 - Don't re-litigate settled decisions; execute. Flag uncertainty explicitly.
+- An eliminated followed fighter gets a neutral "no scheduled matches" card on Next up, never
+  a card that names the loss (Lee shows the page to the fighters themselves).
 - Settled UI: day switch on Next up; a real column bracket with a division picker, not an
   accordion; tabs at the top; theme control in Settings; names copy, they don't link.
 
