@@ -137,7 +137,7 @@
 <div class="toast" id="toast"></div>
 <script src="field-manual-theme/theme.js" data-key="bjjTracker.theme"></script>
 
-<script>
+<script id="app">
 // ---------- sources ----------
 // Bracket + results: data/results.json, written by scripts/sync.mjs from FloArena's bout endpoints
 // (a GitHub Actions cron reruns it every few minutes). Live mats: FloArena's public Firebase feed,
@@ -490,7 +490,9 @@ $('#main').addEventListener('change',e=>{
 setInterval(()=>{ if(!quiet()) loadData(); },60000);
 setInterval(()=>{ if(!quiet()) loadLive(); },15000);
 document.addEventListener('visibilitychange',()=>{ if(!document.hidden){ loadData(); loadLive(); } });
-loadState(); loadData(); loadLive();
+// entry point. A test harness sets window.QUEUE_TEST to a callback and gets the engine instead of a boot.
+if(typeof window.QUEUE_TEST==='function') window.QUEUE_TEST({queue, S, setData:d=>{DATA=d;}, setLive:l=>{LIVE=l;}});
+else { loadState(); loadData(); loadLive(); }
 </script>
 </body>
 </html>

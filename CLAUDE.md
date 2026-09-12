@@ -17,16 +17,19 @@ the link. The repo name is deliberately generic because it will cover more than 
 
 ```
 node scripts/sync.mjs            # FloArena -> data/results.json (Node 18+, no deps)
-node scripts/queue-test.js       # the one test: schedule engine against results.json, synthetic Flo lists + live bouts
+node scripts/queue-test.js       # the one test: schedule engine on its own small fixture (Flo lists, live bouts, DQs)
 python3 -m http.server 8000      # serve locally; open http://localhost:8000 (file:// breaks fetch and fonts)
-node --check <(sed -n '/<script>$/,/<\/script>/p' index.html | sed '1d;$d')   # syntax-check the app script
+node --check <(sed -n '/<script id="app">/,/<\/script>/p' index.html | sed '1d;$d')   # syntax-check the app script
 scripts/build-artifact.sh        # index.html -> dist/artifact.html for the artifact host
 gh workflow run sync.yml         # trigger a sync on GitHub now
 gh run list -w sync.yml -L5      # is the cron firing?
 ```
 
-The `--check` pattern must be `<script>$`: the head has a one-line theme bootstrap `<script>`
-before the app's script. `queue-test.js` extracts the app script the same way (last `<script>`).
+The app script is `<script id="app">`; both the `--check` command and `queue-test.js` anchor on
+that id (the head also has a one-line theme bootstrap `<script>`, and `theme.js` loads by src).
+The script's last statement is the entry point: if `window.QUEUE_TEST` is a function it hands
+the engine (`queue`, `S`, `setData`, `setLive`) to it instead of booting; that is how the test
+loads the real code with stubs.
 
 Deploy is `git push` to `main`; GitHub Pages redeploys in about a minute. To update the artifact
 snapshot: run the build script, then publish `dist/artifact.html` with `data/results.json`
@@ -83,12 +86,14 @@ Base `https://arena.flograppling.com`, event `52703b65-bade-46e2-9ce2-399dd32d93
 - `bracket/<event>/bouts/<wcGuid>/pool/<poolGuid>` → all bouts for a division. Not CDN-cached.
   Winner is `winnerWrestlerGuid` (no `winner` object); `roundName.displayName` is the round;
   `boutVideoUrl` appears once the bout is published.
-- `bracket/<event>/bout/<boutGuid>` → scoring transcript (clock and point events only; no
-  submission name exists anywhere in Flo's data, so results say "sub · 6:53" at most).
+- `bracket/<event>/bout/<boutGuid>` → scoring transcript (clock and point events only). Not
+  used by the sync; recorded here because it proves no submission name exists anywhere in Flo's
+  data, so results say "sub · 6:53" at most.
 - `event/<event>/upcoming-bouts` → per-mat upcoming order. Empty at the end of Day 1; the sync
-  maps it best-effort (`x.bout || x`, `boutNumber`, `topWrestler`…). If Flo lists bouts but
-  none yield a number, the sync writes the raw field names to `upcomingShape` in `results.json`
-  and exits 1 under `SYNC_STRICT` (run goes red; results still commit).
+  maps it best-effort (`x.bout || x`, `boutNumber`, `topWrestler`…). Whenever Flo lists anything
+  the sync writes the raw field names of the first bout to `upcomingShape` in `results.json`
+  (so the guesses can be checked on a green run); if none of the listed bouts yield a number it
+  also exits 1 under `SYNC_STRICT` (run goes red; results still commit).
 - `event/<event>/recent-results` is CDN-cached 20 min (`s-maxage=1200`). Don't use it.
 - Firebase `https://floarena.firebaseio.com/<event>/mats.json`: public, CORS-open, no-cache.
   `red` = FloArena top slot (`a`), `blue` = bottom (`b`); `redTeamName`/`blueTeamName` carry the
@@ -98,7 +103,10 @@ Base `https://arena.flograppling.com`, event `52703b65-bade-46e2-9ce2-399dd32d93
 
 Names in FloArena differ from Flo's published brackets ("Belal Etiabari", "Francis Pana");
 FloArena is the source of truth. Seeds are unique within a division; match on seed, not name.
-`team` is the country at ADCC; the `ISO` map in `index.html` turns it into a flag emoji.
+`team` is the country at ADCC; the `ISO` map in `index.html` turns it into a flag emoji. An
+unknown country renders an empty `.flag` span on purpose, so seeds and names stay aligned. The
+follow list matches a fighter's name or their country (`isFollow`, and the follow-card `hit()`
+that mirrors it): "Poland" follows every Polish athlete.
 
 ## Event facts (ADCC 2026)
 
@@ -130,8 +138,9 @@ the look depends on" are binding:
   blocks) — not red/brick, which Lee read as "eliminated". Follow beats win/lose on names, and
   rows/boxes containing a followed fighter get a follow tint. The kit's `--type-c/d` teals
   aren't re-lit for dark, so they aren't used for text.
-- Dark mode: `--bg-card`, `--chip-bg`, `--text-muted` are lifted in the app's own dark blocks
-  because the kit's card tone sat too close to the ground. Keep both dark blocks in sync.
+- Dark mode: `--bg-card`, `--bg-card-hover`, `--chip-bg`, `--text-muted` are lifted in the
+  app's own dark blocks because the kit's card tone sat too close to the ground. Keep both dark
+  blocks in sync.
 - Light/dark/auto are three chips in Settings (key `bjjTracker.theme`) that drive the kit's
   `AppTheme.cycle()`. The head bootstrap line must stay before the stylesheet link.
 - Bracket connectors are the one load-bearing edge (`--hairline-strong`). Box height must stay
