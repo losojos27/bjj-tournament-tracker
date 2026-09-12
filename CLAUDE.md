@@ -47,8 +47,8 @@ Three layers, all read-only except the last:
    Firebase `mats.json` every 15 s for the bout on each mat (clock, score, `isMatchOver`,
    `winner`). Neither poll re-renders while the Settings tab is open (`quiet()`).
 3. **Local overlay (`S`, in localStorage).** `taps` (results the user recorded), follow list,
-   day, chosen bracket division. Mats, start times, slot durations and block order are
-   defaults in `DEFAULT` with no UI (Settings is the follow list and a reset, nothing else).
+   day, mats, slot durations, chosen bracket division. Start times and block order are
+   defaults in `DEFAULT` with no UI (Settings is the follow list, mats, slot minutes, reset).
    `S.v` is a schema version; bump it and extend the migration in `loadState()` when the shape
    of `S` changes.
 
@@ -129,8 +129,8 @@ its "Rules the look depends on" are binding here:
 - Don't re-litigate settled decisions; execute.
 - Flag uncertainty explicitly.
 - UI choices already made: Day 1/Day 2 is a switch on the Next up tab; the Brackets tab is a
-  real column bracket with a division picker, not an accordion; Settings holds only the follow
-  list and reset. Don't add knobs for things the feed decides.
+  real column bracket with a division picker, not an accordion; Settings holds the follow
+  list, mats, slot minutes and reset. Don't add knobs for things the feed decides.
 
 ## Known limitations
 

@@ -95,6 +95,9 @@
   .bx .seed{min-width:16px;font-size:.7rem}
   /* settings */
   label{display:block;margin:12px 0 5px;color:var(--text-muted);font-size:var(--fs-meta)}
+  .fields{display:grid;grid-template-columns:1fr 120px;gap:10px 12px;align-items:center}
+  .fields label{margin:0}
+  .fields .field{text-align:right}
   .field{width:100%;background:var(--bg-primary);border:0;color:var(--text-primary);border-radius:var(--radius-pill);padding:10px 12px;font:inherit;font-size:var(--fs-body);outline:none}
   .field:focus{box-shadow:0 0 0 2px var(--accent-soft)}
   .toast{position:fixed;bottom:calc(var(--bottom-nav-h) + env(safe-area-inset-bottom) + 14px);left:50%;transform:translateX(-50%);background:var(--accent);color:var(--accent-contrast);padding:8px 14px;border-radius:var(--radius-pill);font-size:var(--fs-meta);opacity:0;transition:opacity .2s;pointer-events:none;z-index:300}
@@ -418,6 +421,14 @@ function renderSettings(){
     <label for="follow">following (comma separated, partial names ok)</label><input class="field" id="follow" value="${esc(S.follow.join(', '))}" autocomplete="off" autocapitalize="words">
     <div class="note">followed fighters are highlighted everywhere and get a card at the top of next up while they’re still in it.</div>
   </div>
+  <h2 class="section-title">projection (only used when FloArena hasn’t published the order)</h2>
+  <div class="panel">
+    <div class="fields">
+      <label for="mats">mats running</label><input class="field" id="mats" type="number" inputmode="numeric" min="1" max="6" value="${+S.mats||3}">
+      ${['R16','QF','SF','3','F'].map(k=>`<label for="dur-${k}">${ROUND_LABEL[k]||k} minutes</label><input class="field" id="dur-${k}" data-dur="${k}" type="number" inputmode="numeric" min="1" value="${+S.dur[k]||12}">`).join('')}
+    </div>
+    <div class="note">minutes per match slot including the changeover.</div>
+  </div>
   <div class="panel" style="margin-top:10px">
     <div class="note" style="margin:0">bracket, results, and mat order come from FloArena (last synced ${synced}); live scores and the clock come from FloArena’s mat feed. times are projected from that, never typed in. tapping a name records a result only until FloArena has it. taps and this list live in this browser only.</div>
     <div class="actions"><button type="button" class="chip warn" id="reset">reset everything</button></div>
@@ -451,6 +462,8 @@ $('#main').addEventListener('click',e=>{
 $('#main').addEventListener('change',e=>{
   const t=e.target;
   if(t.id==='follow'){ S.follow=t.value.split(',').map(x=>x.trim()).filter(Boolean); save(); }
+  if(t.id==='mats'){ S.mats=Math.max(1,+t.value||1); save(); }
+  if(t.dataset.dur){ S.dur[t.dataset.dur]=+t.value||12; save(); }
 });
 // refresh loops: results every 60s, live mats every 15s; the Settings tab is left alone while you type
 setInterval(()=>{ if(!quiet()) loadData(); },60000);
