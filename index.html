@@ -386,7 +386,10 @@ function renderNext(){
       const alive=divs().some(div=>div.rounds.some(r=>r.bouts.some((b,m)=>winnerOf(div,r.name,m)===null&&(hit(b.a)||hit(b.b)))));
       if(out&&!alive&&!champ) status='no scheduled matches';
       if(dayDone&&!champ) continue;   // a finished day: don't say "no match in today's queue"
-      cards.push({at:new Date(8.64e15),html:`<div class="panel follow-card"><span class="pin"></span><div><div class="big">${esc(f)}</div><div class="sub">${status}</div></div></div>`});
+      // the card names the fighter as the bracket does (flag, canonical spelling, copyable); a country entry gets its flag
+      let who=null; for(const div of divs()){ for(const r of div.rounds) for(const b of r.bouts) for(const p of [b.a,b.b]) if(!who&&p&&p.name&&p.name.toLowerCase().includes(q_)) who=p; }
+      const title=who?`<button type="button" class="copy-name" data-copy="${esc(who.name)}" title="copy name">${flagHtml(who.team)}${esc(who.name)}</button>`:`${flag(f)?flagHtml(f):''}${esc(f)}`;
+      cards.push({at:new Date(8.64e15),html:`<div class="panel follow-card"><span class="pin"></span><div><div class="big">${title}</div><div class="sub">${status}</div></div></div>`});
     }
   }
   cards.sort((x,y)=>x.at-y.at);
