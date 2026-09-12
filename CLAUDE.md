@@ -116,6 +116,9 @@ its "Rules the look depends on" are binding here:
 - Colour with meaning maps to theme tokens: `--follow` = `--type-e`, `--win` = `--type-a`,
   `--live` = `--cue-warning` (rendered as a `.cue.live` tag). Those tokens are re-lit per
   theme; `--type-c/d` are not, so don't use them for text.
+- Flags are emoji built from FloArena's `team` (the country at ADCC) via the `ISO` map in
+  `index.html`; unknown countries render an empty flag slot so seeds stay aligned. The follow
+  list matches fighter names or countries.
 - Light/dark/auto is the theme's toggle (top right, key `bjjTracker.theme`). The head
   bootstrap line must stay before the stylesheet link.
 - The bracket connectors are the one place an edge is load-bearing (`--hairline-strong`).
