@@ -95,12 +95,8 @@
   .bx .seed{min-width:16px;font-size:.7rem}
   /* settings */
   label{display:block;margin:12px 0 5px;color:var(--text-muted);font-size:var(--fs-meta)}
-  .field,textarea{width:100%;background:var(--bg-primary);border:0;color:var(--text-primary);border-radius:var(--radius-pill);padding:10px 12px;font:inherit;font-size:var(--fs-body);outline:none}
-  .field:focus,textarea:focus{box-shadow:0 0 0 2px var(--accent-soft)}
-  textarea{min-height:90px;font-size:var(--fs-meta)}
-  .grid2{display:grid;grid-template-columns:1fr 1fr;gap:10px}
-  .blocklist div{display:flex;align-items:center;gap:8px;padding:5px 0}
-  .blocklist span{flex:1;font-size:var(--fs-body)}
+  .field{width:100%;background:var(--bg-primary);border:0;color:var(--text-primary);border-radius:var(--radius-pill);padding:10px 12px;font:inherit;font-size:var(--fs-body);outline:none}
+  .field:focus{box-shadow:0 0 0 2px var(--accent-soft)}
   .toast{position:fixed;bottom:calc(var(--bottom-nav-h) + env(safe-area-inset-bottom) + 14px);left:50%;transform:translateX(-50%);background:var(--accent);color:var(--accent-contrast);padding:8px 14px;border-radius:var(--radius-pill);font-size:var(--fs-meta);opacity:0;transition:opacity .2s;pointer-events:none;z-index:300}
   .toast.show{opacity:1}
   @media (prefers-reduced-motion:reduce){.toast,.chip,.icon-btn,.name{transition:none}}
@@ -161,8 +157,9 @@ const DEFAULT_BLOCKS = [
 const DEFAULT = {
   taps:{},                         // "divId|round|m" -> 0|1, local results for bouts FloArena hasn't reported
   follow:['Felipe Costa','Victor Hugo'],
-  mats:3, day:null,                // null = auto by date
-  start1:'11:00', start2:'11:00',
+  day:null,                        // null = auto by date; the day chips on Next up set it
+  // projection defaults (no UI: the live feed and Flo's published order override them as the day runs)
+  mats:3, start1:'11:00', start2:'11:00',
   dur:{R32:12, R16:12, QF:20, SF:20, '3':20, F:30},
   blocks:DEFAULT_BLOCKS.map(b=>b.id),
   bracketDiv:null,                 // division shown on the Brackets tab
@@ -415,30 +412,15 @@ function renderBrackets(){
   return h;
 }
 function renderSettings(){
-  const b=blocks();
+  const synced=DATA?fmt(new Date(DATA.updated)):'not loaded';
   return `
   <div class="panel">
-    <label for="follow">following (comma separated, partial names ok)</label><input class="field" id="follow" value="${esc(S.follow.join(', '))}">
-    <div class="grid2">
-      <div><label for="mats">mats running</label><input class="field" id="mats" type="number" min="1" max="6" value="${+S.mats||3}"></div>
-      <div><label>day</label><div class="note" style="margin:0;padding-top:9px">picked on the next up tab${S.day?'':' (auto: '+today()+')'}</div></div>
-      <div><label for="start1">day 1 first match</label><input class="field" id="start1" type="time" value="${esc(S.start1)}"></div>
-      <div><label for="start2">day 2 first match</label><input class="field" id="start2" type="time" value="${esc(S.start2)}"></div>
-    </div>
-    <label>minutes per match slot, incl. changeover</label>
-    <div class="grid2">
-      ${['R16','QF','SF','3','F'].map(k=>`<div><label for="dur-${k}" style="margin-top:4px">${ROUND_LABEL[k]||k}</label><input class="field" id="dur-${k}" data-dur="${k}" type="number" value="${+S.dur[k]||12}"></div>`).join('')}
-    </div>
+    <label for="follow">following (comma separated, partial names ok)</label><input class="field" id="follow" value="${esc(S.follow.join(', '))}" autocomplete="off" autocapitalize="words">
+    <div class="note">followed fighters are highlighted everywhere and get a card at the top of next up while they’re still in it.</div>
   </div>
-  <h2 class="section-title">running order (assumed — fix it as the day reveals itself)</h2>
-  <div class="panel">
-    <div class="blocklist">${b.map((x,i)=>`<div><span>day ${x.day} · ${esc(x.label)}</span><button type="button" class="chip small" data-up="${i}" aria-label="move up">↑</button><button type="button" class="chip small" data-dn="${i}" aria-label="move down">↓</button></div>`).join('')}</div>
-  </div>
-  <h2 class="section-title">your local taps (paste JSON to restore)</h2>
-  <div class="panel">
-    <textarea id="dump" aria-label="taps as JSON">${esc(JSON.stringify({taps:S.taps}))}</textarea>
-    <div class="actions"><button type="button" class="chip" id="restore">restore from text</button><button type="button" class="chip warn" id="reset">reset everything</button></div>
-    <div class="note">bracket and results come from FloArena (${DATA?'synced '+fmt(new Date(DATA.updated)):'not loaded'}). live scores come from FloArena’s mat feed. taps and settings live only in this browser.</div>
+  <div class="panel" style="margin-top:10px">
+    <div class="note" style="margin:0">bracket, results, and mat order come from FloArena (last synced ${synced}); live scores and the clock come from FloArena’s mat feed. times are projected from that, never typed in. tapping a name records a result only until FloArena has it. taps and this list live in this browser only.</div>
+    <div class="actions"><button type="button" class="chip warn" id="reset">reset everything</button></div>
   </div>`;
 }
 function renderStatus(){
@@ -461,21 +443,14 @@ $('#main').addEventListener('click',e=>{
   const w=e.target.closest('[data-win]'); if(w){ const [divId,r,m,s]=w.dataset.win.split('|'); const div=divs().find(d=>d.id===divId); if(div) setWinner(matchObj(div,r,+m),+s); return; }
   const dy=e.target.closest('[data-day]'); if(dy){ S.day=+dy.dataset.day; save(); render(); return; }
   const bd=e.target.closest('[data-bdiv]'); if(bd){ S.bracketDiv=bd.dataset.bdiv; save(); render(); return; }
-  const up=e.target.closest('[data-up]'), dn=e.target.closest('[data-dn]');
-  if(up||dn){ const i=+(up||dn).dataset[up?'up':'dn'], j=up?i-1:i+1; if(j<0||j>=S.blocks.length) return; [S.blocks[i],S.blocks[j]]=[S.blocks[j],S.blocks[i]]; save(); render(); return; }
-  if(e.target.id==='restore'){ try{ const o=JSON.parse($('#dump').value); if(o.taps&&typeof o.taps==='object') S.taps=o.taps; save(); render(); toast('restored'); }catch(err){ toast('that JSON didn’t parse'); } return; }
   if(e.target.id==='reset'){ // two-tap confirm: native confirm() is blocked in sandboxed iframes
     if(e.target.dataset.armed){ S=JSON.parse(JSON.stringify(DEFAULT)); save(); render(); toast('reset'); }
-    else{ e.target.dataset.armed='1'; e.target.textContent='tap again to wipe taps and settings'; setTimeout(()=>{ if(e.target.isConnected){ delete e.target.dataset.armed; e.target.textContent='reset everything'; } },4000); }
+    else{ e.target.dataset.armed='1'; e.target.textContent='tap again to clear taps and the follow list'; setTimeout(()=>{ if(e.target.isConnected){ delete e.target.dataset.armed; e.target.textContent='reset everything'; } },4000); }
     return; }
 });
 $('#main').addEventListener('change',e=>{
   const t=e.target;
-  if(t.id==='follow') S.follow=t.value.split(',').map(x=>x.trim()).filter(Boolean);
-  if(t.id==='mats') S.mats=Math.max(1,+t.value||1);
-  if(t.id==='start1') S.start1=t.value; if(t.id==='start2') S.start2=t.value;
-  if(t.dataset.dur) S.dur[t.dataset.dur]=+t.value||12;
-  save();
+  if(t.id==='follow'){ S.follow=t.value.split(',').map(x=>x.trim()).filter(Boolean); save(); }
 });
 // refresh loops: results every 60s, live mats every 15s; the Settings tab is left alone while you type
 setInterval(()=>{ if(!quiet()) loadData(); },60000);

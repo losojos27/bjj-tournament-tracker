@@ -47,7 +47,8 @@ Three layers, all read-only except the last:
    Firebase `mats.json` every 15 s for the bout on each mat (clock, score, `isMatchOver`,
    `winner`). Neither poll re-renders while the Settings tab is open (`quiet()`).
 3. **Local overlay (`S`, in localStorage).** `taps` (results the user recorded), follow list,
-   mats, day, start times, slot durations, block order, chosen bracket division.
+   day, chosen bracket division. Mats, start times, slot durations and block order are
+   defaults in `DEFAULT` with no UI (Settings is the follow list and a reset, nothing else).
    `S.v` is a schema version; bump it and extend the migration in `loadState()` when the shape
    of `S` changes.
 
@@ -60,8 +61,7 @@ propagated from earlier winners when FloArena hasn't filled the slot. This is wh
 brackets work: at -66kg bout #39 was a double DQ and FloArena slotted the loser of #37 into the
 QF instead. Don't add hand-coded bracket overrides; fix the sync or the slot logic.
 
-Schedule (`queue()`): today's matches in `DEFAULT_BLOCKS` order (day 1 / day 2, editable in
-Settings), assigned to the earliest-free mat with per-round slot lengths. If `results.json`
+Schedule (`queue()`): today's matches in `DEFAULT_BLOCKS` order (day 1 / day 2), assigned to the earliest-free mat with per-round slot lengths. If `results.json`
 carries FloArena's per-mat `mats[].upcoming` lists, those win: bouts are matched by number `n`
 and placed on exactly the mats Flo lists, in Flo's order; anything not listed falls back to
 block order on those same mats. Without such lists the mats are `S.mats` (plus any mat the
@@ -128,8 +128,9 @@ its "Rules the look depends on" are binding here:
 - One tap per result. No burdensome workarounds.
 - Don't re-litigate settled decisions; execute.
 - Flag uncertainty explicitly.
-- UI choices already made: Day 1/Day 2 is a switch on the Next up tab, not in Settings; the
-  Brackets tab is a real column bracket with a division picker, not an accordion.
+- UI choices already made: Day 1/Day 2 is a switch on the Next up tab; the Brackets tab is a
+  real column bracket with a division picker, not an accordion; Settings holds only the follow
+  list and reset. Don't add knobs for things the feed decides.
 
 ## Known limitations
 
