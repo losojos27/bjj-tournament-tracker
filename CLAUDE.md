@@ -16,7 +16,7 @@ while Lee was in the arena; moved here Sept 12 evening so it can be hosted and i
 - The Reset button uses a two-tap confirm; native `confirm()` is blocked in the artifact iframe.
 
 ## Where things live
-- **Live page (share this):** https://losojos27.github.io/adcc-tracker/ (GitHub Pages, repo `losojos27/adcc-tracker`)
+- **Live page (share this):** https://losojos27.github.io/bjj-tournament-tracker/ (GitHub Pages, repo `losojos27/bjj-tournament-tracker`)
 - Claude artifact snapshot: https://claude.ai/code/artifact/78d4a9a4-2636-4548-9de6-b03be85ae72e
   (no live feed there: the artifact CSP blocks fetches; results are as of the last republish)
 - `index.html` app · `data/results.json` bracket state · `scripts/sync.mjs` FloArena→JSON ·

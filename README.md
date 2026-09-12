@@ -4,7 +4,7 @@ Bracket and schedule tracker for the ADCC World Championship 2026 (Kraków, Sept
 Results come from FloArena automatically; the page projects mat times and shows what is on
 each mat right now.
 
-**Live page:** https://losojos27.github.io/adcc-tracker/
+**Live page:** https://losojos27.github.io/bjj-tournament-tracker/
 
 ## How it stays live
 - `scripts/sync.mjs` pulls every division's bouts from FloArena's JSON endpoints and writes
