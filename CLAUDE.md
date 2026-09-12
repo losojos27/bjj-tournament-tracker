@@ -60,10 +60,13 @@ brackets work: at -66kg bout #39 was a double DQ and FloArena slotted the loser 
 QF instead. Don't add hand-coded bracket overrides; fix the sync or the slot logic.
 
 Schedule (`queue()`): today's matches in `DEFAULT_BLOCKS` order (day 1 / day 2, editable in
-Settings), assigned to the earliest-free mat with per-round slot lengths. Start point, in
-priority: a live in-progress bout (mat free at now + remaining clock + 2 min) → the manual
-"set as now" anchor, clamped to now → the day's configured start on the event's calendar date
-(`DAY_DATES`). Never projects into the past.
+Settings), assigned to the earliest-free mat with per-round slot lengths. If `results.json`
+carries FloArena's per-mat `mats[].upcoming` lists, those win: bouts are matched by number `n`
+and placed on exactly the mats Flo lists, in Flo's order; anything not listed falls back to
+block order on those same mats. Without such lists the mat count is `S.mats` and the header
+says "(assumed)". Start point, in priority: a live in-progress bout (mat free at now +
+remaining clock + 2 min) → the manual "set as now" anchor, clamped to now → the day's
+configured start on the event's calendar date (`DAY_DATES`). Never projects into the past.
 
 ## FloArena data sources (found by watching the arena page's network traffic)
 
@@ -85,8 +88,12 @@ FloArena is the source of truth here. Seeds are unique within a division; match 
 
 ## Event facts (ADCC 2026)
 
-- 3 mats. Bout numbers: men's R16 #1–40, women's QF #41–52, men's QF #53–72, SF #73–88.
-  Day 2 block order in `DEFAULT_BLOCKS` is a guess; verify against `upcoming-bouts` on the day.
+- Day 1 ran 3 mats. Bout numbers: men's R16 #1–40, women's QF #41–52, men's QF #53–72,
+  SF #73–88. The Day 2 mat count and block order in `DEFAULT_BLOCKS` are guesses; the page
+  corrects both automatically once `upcoming-bouts` publishes, and a cloud routine
+  (https://claude.ai/code/routines/trig_016fZnDBjKV4GGWf22gXegzV, fires Sept 13 at 10:15,
+  11:15, 12:15 Kraków) verifies the sync's `upcoming` mapping and reorders the blocks if
+  needed. Its cron matches Sept 13 every year: disable it after the event.
 - "Absolute Male" is a separate FloArena division from the Sunday "Super Fight" (one bout,
   Simoes v Duarte). Absolute had 0 bouts as of Sept 12 night; the sync picks it up (id `mabs`)
   once bouts appear and the page already has Day 2 blocks for its rounds.
@@ -107,3 +114,6 @@ FloArena is the source of truth here. Seeds are unique within a division; match 
   in local hours, so viewers outside CEST see wrong projections until a live bout anchors it.
 - The Reset button uses a two-tap confirm because native `confirm()` is blocked in the
   artifact's sandboxed iframe.
+- The `upcoming-bouts` mapping in `sync.mjs` was written before FloArena had published any
+  order, so its field names are a best guess (`x.bout || x`, `boutNumber`, `topWrestler`…).
+  Verify against real output the first time it populates.
