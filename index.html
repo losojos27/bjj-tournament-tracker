@@ -286,9 +286,11 @@ function queue(){
   const onMat=mo=>{ const l=mo.live; if(l&&!l.over&&inProg.includes(l)){ mo.at=new Date(); mo.mat=l.matIdx+1; mo.onMat=true; out.push(mo); placed.add(mo.key); return true; } return false; };
   if(upMats.length){ mode= mode==='live'?'live':'flo';
     for(const m of upMats) for(const mo of m.list){ if(placed.has(mo.key)||onMat(mo)||mo.w!==null) continue; place(mo,m.idx); } }
+  // mats actually in use: the ones FloArena lists bouts for (if any), else every mat up to the configured count
+  const active = upMats.length ? upMats.map(m=>m.idx) : mats.map((_,k)=>k);
   for(let i=from;i<full.length;i++){
     const mo=full[i]; if(placed.has(mo.key)||onMat(mo)||mo.w!==null) continue;
-    let mi=0; for(let k=1;k<mats.length;k++) if(mats[k]<mats[mi]) mi=k;
+    let mi=active[0]; for(const k of active) if(mats[k]<mats[mi]) mi=k;
     place(mo,mi);
   }
   out.sort((a,b)=>a.at-b.at||a.mat-b.mat);
@@ -327,7 +329,8 @@ function renderMats(){
 }
 function renderNext(){
   const {list:q,mode,floOrder}=queue(); const d=today();
-  let h=`<div class="topline"><div class="seg" role="tablist">${[1,2].map(x=>`<button data-day="${x}" class="${d===x?'on':''}" aria-pressed="${d===x}">Day ${x}</button>`).join('')}</div><span class="note" style="margin:0">${S.mats} mats · times are estimates${mode==='live'?' · anchored to the live feed':mode==='anchor'?' · anchored manually':''}${floOrder?' · order from FloArena':''}</span></div>`;
+  const matsInUse = floOrder ? new Set(q.map(m=>m.mat)).size : S.mats;
+  let h=`<div class="topline"><div class="seg" role="tablist">${[1,2].map(x=>`<button data-day="${x}" class="${d===x?'on':''}" aria-pressed="${d===x}">Day ${x}</button>`).join('')}</div><span class="note" style="margin:0">${matsInUse} mat${matsInUse===1?'':'s'}${floOrder?'':' (assumed)'} · times are estimates${mode==='live'?' · anchored to the live feed':mode==='anchor'?' · anchored manually':''}${floOrder?' · order from FloArena':''}</span></div>`;
   h+=renderMats();
   const fl=S.follow.filter(Boolean);
   for(const f of fl){
