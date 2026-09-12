@@ -17,7 +17,10 @@ jobs:
         with:
           node-version: 22
       - run: node scripts/sync.mjs
+        env:
+          SYNC_STRICT: '1'   # go red if Flo lists bouts we can't parse; results are still committed below
       - name: Commit if results changed
+        if: always()   # the sync exits non-zero when Flo's upcoming shape can't be parsed; results still get committed
         run: |
           if git diff --quiet -- data/results.json; then echo "no change"; exit 0; fi
           git config user.name "flo-sync"
