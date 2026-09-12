@@ -54,13 +54,33 @@
   .btn.warn{background:var(--now);color:#fff}
   .btn.ghost{background:none;border:1px solid var(--line);color:var(--dim)}
   .btn:focus-visible{outline:2px solid var(--follow)}
-  details{margin-bottom:8px}
-  summary{list-style:none;cursor:pointer;background:var(--panel);border-radius:10px;padding:12px;font-weight:600;display:flex;justify-content:space-between;align-items:center;gap:8px}
-  summary::-webkit-details-marker{display:none}
-  .round{margin:8px 0 4px 6px}
-  .round h3{font-size:13px;color:var(--dim);font-weight:600;margin:10px 0 4px}
-  .m{background:var(--panel);border-radius:8px;padding:6px 8px;margin-bottom:6px}
-  .m .meta{margin:0 0 2px 6px}
+  .name .nm{overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+  /* day switch */
+  .topline{display:flex;align-items:center;justify-content:space-between;gap:10px;margin:4px 0 12px;flex-wrap:wrap}
+  .seg{display:inline-flex;background:var(--panel);border-radius:9px;padding:3px;gap:2px}
+  .seg button{background:none;border:0;color:var(--dim);font:inherit;font-size:14px;padding:7px 14px;border-radius:7px}
+  .seg button.on{background:var(--line);color:var(--ink);font-weight:600}
+  .seg button:focus-visible{outline:2px solid var(--follow)}
+  /* bracket */
+  .chips{display:flex;gap:6px;overflow-x:auto;padding:2px 0 10px;scrollbar-width:none}
+  .chips::-webkit-scrollbar{display:none}
+  .chips button{flex:0 0 auto;background:var(--panel);border:1px solid var(--line);color:var(--dim);font:inherit;font-size:13px;padding:6px 11px;border-radius:99px}
+  .chips button.on{background:var(--follow);border-color:var(--follow);color:#1b2230;font-weight:600}
+  .bwrap{overflow-x:auto;-webkit-overflow-scrolling:touch;padding:0 0 10px;margin:0 -12px;padding-left:12px}
+  .bracket{display:flex;gap:26px;width:max-content;--pitch:72px;--gap:26px;padding-right:12px}
+  .col{width:164px;flex:0 0 auto}
+  .col h3{font-size:12px;color:var(--dim);font-weight:600;margin:0 0 8px;text-align:center;letter-spacing:.04em;text-transform:uppercase}
+  .slots{display:flex;flex-direction:column;height:calc(var(--n1)*var(--pitch))}
+  .slot{flex:1;display:flex;align-items:center;position:relative}
+  .slot.single{flex:none;height:var(--pitch)}
+  .col+.col .slot::before{content:"";position:absolute;left:calc(-1*var(--gap));width:calc(var(--gap)/2);top:25%;height:50%;border:2px solid var(--line);border-left:0;border-radius:0 3px 3px 0}
+  .col+.col .slot::after{content:"";position:absolute;left:calc(var(--gap)/-2);width:calc(var(--gap)/2);top:50%;border-top:2px solid var(--line)}
+  .bx{background:var(--panel);border-radius:8px;padding:3px 5px 4px;width:100%;border:1px solid transparent;position:relative;z-index:1}
+  .bx.live{border-color:var(--live)}
+  .bx.now{border-color:var(--now)}
+  .bx .meta{font-size:10px;margin:0 0 1px 3px;gap:4px;min-height:14px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;display:block}
+  .bx .name{font-size:13px;padding:2px 3px;gap:5px;overflow:hidden}
+  .bx .seed{min-width:14px;font-size:10px}
   /* live mats */
   .mats{display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:8px;margin-bottom:10px}
   .mat{background:var(--panel);border-radius:10px;padding:10px 12px;border-top:3px solid var(--line)}
@@ -141,11 +161,11 @@ const DEFAULT = {
   dur:{R32:12, R16:12, QF:20, SF:20, '3':20, F:30},
   blocks:DEFAULT_BLOCKS.map(b=>b.id),
   anchor:null,                     // {key, at}: the match that was on the mat at time `at`
+  bracketDiv:null,                 // division shown on the Brackets tab
   v:9,
 };
 let S = JSON.parse(JSON.stringify(DEFAULT));
 let tab='next';
-const openDivs=new Set();          // bracket <details> the user opened this session
 
 // ---------- persistence (local to this browser) ----------
 const store = { get:k=>{ try{ return localStorage.getItem(k); }catch(e){ return null; } }, set:(k,v)=>{ try{ localStorage.setItem(k,v); }catch(e){} } };
@@ -280,7 +300,7 @@ function esc(s){ return String(s??'').replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&l
 function pName(p,mo,s){
   if(p.tbd) return `<span class="name tbd">${esc(p.label)}</span>`;
   const c=['name', isFollow(p)?'follow':'', mo.w===s?'win':'', (mo.w!==null&&mo.w!==s)?'lose':''].join(' ');
-  return `<button class="${c}" data-win="${mo.key}|${s}"><span class="seed">${p.seed||''}</span>${esc(p.name)}</button>`;
+  return `<button class="${c}" data-win="${mo.key}|${s}"><span class="seed">${p.seed||''}</span><span class="nm">${esc(p.name)}</span></button>`;
 }
 function resultPill(mo){
   const b=mo.bout;
@@ -302,7 +322,7 @@ function renderMats(){
 }
 function renderNext(){
   const {list:q,mode}=queue(); const d=today();
-  let h=`<h2>Day ${d} · ${S.mats} mats · times are estimates${mode==='live'?' · anchored to the live feed':mode==='anchor'?' · anchored manually':''}</h2>`;
+  let h=`<div class="topline"><div class="seg" role="tablist">${[1,2].map(x=>`<button data-day="${x}" class="${d===x?'on':''}" aria-pressed="${d===x}">Day ${x}</button>`).join('')}</div><span class="note" style="margin:0">${S.mats} mats · times are estimates${mode==='live'?' · anchored to the live feed':mode==='anchor'?' · anchored manually':''}</span></div>`;
   h+=renderMats();
   const fl=S.follow.filter(Boolean);
   for(const f of fl){
@@ -334,25 +354,35 @@ function renderNext(){
   if(S.anchor) h+=`<div class="actions"><button class="btn ghost" id="clearAnchor">Clear "now" anchor</button></div>`;
   return h;
 }
+function currentDiv(){
+  const ds=divs(); if(!ds.length) return null;
+  return ds.find(x=>x.id===S.bracketDiv) || ds.find(d=>d.rounds.some(r=>r.bouts.some(b=>isFollow(b.a)||isFollow(b.b)))) || ds[0];
+}
+function box(mo){
+  const b=mo.bout||{}; const bits=[];
+  if(b.n) bits.push('#'+b.n);
+  if(b.mat&&mo.w!==null) bits.push(b.mat);
+  if(mo.src==='flo'&&(b.winType||b.result)) bits.push([b.winType,b.result].filter(Boolean).join(' '));
+  else if(mo.src==='live'&&mo.live) bits.push([mo.live.winType,mo.live.finalScore].filter(Boolean).join(' ')+' · live');
+  else if(mo.src==='tap') bits.push('your tap');
+  const live=mo.live&&!mo.live.over; if(live) bits.push('on the mat · '+mo.live.clock);
+  const now=!live&&S.anchor&&S.anchor.key===mo.key;
+  return `<div class="bx ${live?'live':''} ${now?'now':''}"><div class="meta">${esc(bits.join(' · '))||'&nbsp;'}</div>${pName(mo.a,mo,0)}${pName(mo.b,mo,1)}</div>`;
+}
 function renderBrackets(){
-  let h='';
-  for(const div of divs()){
-    const rn=rounds(div); const champ=winnerOf(div,rn[rn.length-1],0);
-    const champName=champ!==null?slot(div,rn[rn.length-1],0,champ).name:'';
-    const hasFollow=div.rounds.some(r=>r.bouts.some(b=>isFollow(b.a)||isFollow(b.b)));
-    const open=openDivs.has(div.id)||(hasFollow&&!openDivs.has('!'+div.id));
-    h+=`<details data-div="${esc(div.id)}" ${open?'open':''}><summary>${esc(div.name)}<span class="pill">${champName?esc(champName)+' 🥇':`${div.rounds.reduce((n,r)=>n+r.bouts.filter((b,i)=>winnerOf(div,r.name,i)!==null).length,0)}/${div.rounds.reduce((n,r)=>n+r.bouts.length,0)}`}</span></summary><div class="round">`;
-    for(let ri=0;ri<rn.length;ri++){ const r=div.rounds[ri];
-      h+=`<h3>${ROUND_LABEL[r.name]||r.name}</h3>`;
-      for(let m=0;m<r.bouts.length;m++){ const mo=matchObj(div,r.name,m); const b=mo.bout;
-        h+=`<div class="m"><div class="meta">${ROUND_LABEL[r.name]||r.name} ${m+1}${b.n?' · #'+esc(b.n):''}${b.mat&&mo.w!==null?' · '+esc(b.mat):''}${mo.live&&!mo.live.over?` <span class="pill now">on the mat</span>`:''}${resultPill(mo)}</div><div class="vs">${pName(mo.a,mo,0)}${pName(mo.b,mo,1)}</div></div>`;
-      }
-      if(ri===rn.length-2&&div.third){ const mo=matchObj(div,'3',0);
-        h+=`<h3>3rd place</h3><div class="m"><div class="meta">3rd${mo.bout.n?' · #'+esc(mo.bout.n):''}${resultPill(mo)}</div><div class="vs">${pName(mo.a,mo,0)}${pName(mo.b,mo,1)}</div></div>`; }
-    }
-    h+=`</div></details>`;
+  const ds=divs(); const div=currentDiv(); if(!div) return `<div class="card">No bracket data yet.</div>`;
+  let h=`<div class="chips">${ds.map(d=>{ const rn=rounds(d); const c=winnerOf(d,rn[rn.length-1],0); return `<button data-bdiv="${esc(d.id)}" class="${d.id===div.id?'on':''}">${esc(d.name)}${c!==null&&c>=0?' 🥇':''}</button>`; }).join('')}</div>`;
+  const n1=div.rounds[0].bouts.length;
+  h+=`<div class="bwrap"><div class="bracket" style="--n1:${n1}">`;
+  for(const r of div.rounds){
+    h+=`<div class="col"><h3>${ROUND_LABEL[r.name]||r.name}</h3><div class="slots">`;
+    for(let m=0;m<r.bouts.length;m++) h+=`<div class="slot">${box(matchObj(div,r.name,m))}</div>`;
+    h+=`</div></div>`;
   }
-  return h||`<div class="card">No bracket data yet.</div>`;
+  h+=`</div></div>`;
+  if(div.third) h+=`<div class="bracket" style="--n1:1;margin-top:4px"><div class="col"><h3>3rd place</h3><div class="slot single">${box(matchObj(div,'3',0))}</div></div></div>`;
+  h+=`<div class="note">Tap a name to record a result the feed doesn't have yet. Scroll sideways for later rounds.</div>`;
+  return h;
 }
 function renderSettings(){
   const b=blocks();
@@ -361,7 +391,7 @@ function renderSettings(){
     <label for="follow">Following (comma separated, partial names ok)</label><input id="follow" value="${esc(S.follow.join(', '))}">
     <div class="grid2">
       <div><label for="mats">Mats running</label><input id="mats" type="number" min="1" max="6" value="${+S.mats||3}"></div>
-      <div><label for="day">Day</label><select id="day"><option value="">Auto (${today()})</option><option value="1" ${S.day===1?'selected':''}>Day 1</option><option value="2" ${S.day===2?'selected':''}>Day 2</option></select></div>
+      <div><label>Day</label><div class="note" style="margin:0;padding-top:9px">Picked on the Next up tab${S.day?'':' (auto: '+today()+')'}</div></div>
       <div><label for="start1">Day 1 first match</label><input id="start1" type="time" value="${esc(S.start1)}"></div>
       <div><label for="start2">Day 2 first match</label><input id="start2" type="time" value="${esc(S.start2)}"></div>
     </div>
@@ -395,9 +425,10 @@ function toast(t){ const e=$('#toast'); e.textContent=t; e.classList.add('show')
 
 // ---------- events ----------
 document.querySelector('.tabs').addEventListener('click',e=>{ const b=e.target.closest('button'); if(b){ tab=b.dataset.tab; render(); window.scrollTo(0,0);} });
-$('#main').addEventListener('toggle',e=>{ const d=e.target.closest('details[data-div]'); if(!d) return; const id=d.dataset.div; if(d.open){ openDivs.add(id); openDivs.delete('!'+id); } else { openDivs.delete(id); openDivs.add('!'+id); } },true);
 $('#main').addEventListener('click',e=>{
   const w=e.target.closest('[data-win]'); if(w){ const [divId,r,m,s]=w.dataset.win.split('|'); const div=divs().find(d=>d.id===divId); if(div) setWinner(matchObj(div,r,+m),+s); return; }
+  const dy=e.target.closest('[data-day]'); if(dy){ S.day=+dy.dataset.day; save(); render(); return; }
+  const bd=e.target.closest('[data-bdiv]'); if(bd){ S.bracketDiv=bd.dataset.bdiv; save(); render(); return; }
   const n=e.target.closest('[data-now]'); if(n){ S.anchor={key:n.dataset.now, at:new Date().toISOString()}; save(); render(); toast('Re-projected from now'); return; }
   if(e.target.id==='clearAnchor'){ S.anchor=null; save(); render(); return; }
   const up=e.target.closest('[data-up]'), dn=e.target.closest('[data-dn]');
@@ -412,7 +443,6 @@ $('#main').addEventListener('change',e=>{
   const t=e.target;
   if(t.id==='follow') S.follow=t.value.split(',').map(x=>x.trim()).filter(Boolean);
   if(t.id==='mats') S.mats=Math.max(1,+t.value||1);
-  if(t.id==='day') S.day=t.value?+t.value:null;
   if(t.id==='start1') S.start1=t.value; if(t.id==='start2') S.start2=t.value;
   if(t.dataset.dur) S.dur[t.dataset.dur]=+t.value||12;
   save();
