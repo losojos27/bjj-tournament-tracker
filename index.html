@@ -23,6 +23,8 @@
   :root[data-theme="dark"]{ --bg-card:#454340; --bg-card-hover:#504e4a; --chip-bg:#454340; --text-muted:#979289; }
   .chip{font-size:.88rem}
   .chip.small{padding:4px 10px;font-size:.78rem}
+  .panel .chip{background:var(--accent-soft);color:var(--text-primary)}   /* a control on a card: visibly inset from the card tone */
+  .panel .chip.warn{background:var(--cue-warning);color:var(--accent-contrast)}
   .container{max-width:720px}
   main.container{padding-top:2px;padding-bottom:calc(var(--bottom-nav-h) + env(safe-area-inset-bottom) + 28px)}
   .topbar{display:flex;align-items:center;gap:10px;padding-bottom:4px}
@@ -379,11 +381,11 @@ function renderNext(){
     const isNow=mo.onMat||(mode==='anchor'&&S.anchor&&S.anchor.key===mo.key);
     const fol=isFollow(mo.a)||isFollow(mo.b);
     h+=`<div class="panel row ${isNow?'now':''} ${fol?'fol':''}"><div class="t">${mo.onMat?'now':fmt(mo.at)}<small>mat ${mo.mat}</small></div>
-      <div><div class="meta">${esc(mo.div.name)} ${ROUND_LABEL[mo.rName]||mo.rName}${mo.bout&&mo.bout.n?' · #'+esc(mo.bout.n):''} ${mo.onMat?`<span class="cue live">on the mat · ${esc(mo.live.clock)}</span>`:isNow?'<span class="cue live">on the mat</span>':mode==='live'?'':`<button type="button" class="chip small" data-now="${mo.key}">mark on the mat</button>`}</div>
+      <div><div class="meta">${esc(mo.div.name)} ${ROUND_LABEL[mo.rName]||mo.rName}${mo.bout&&mo.bout.n?' · #'+esc(mo.bout.n):''} ${mo.onMat?`<span class="cue live">on the mat · ${esc(mo.live.clock)}</span>`:isNow?'<span class="cue live">on the mat</span>':`<button type="button" class="chip small" data-now="${mo.key}">set as now</button>`}</div>
       <div class="vs">${pName(mo.a,mo,0)}${pName(mo.b,mo,1)}</div></div></div>`;
   });
   if(q.length) h+=`</div>`;
-  h+=`<div class="note">results arrive from FloArena automatically. tap a name only if the feed is behind — it advances the bracket here until FloArena confirms it.${mode==='live'?'':' if the live feed is quiet, "mark on the mat" on the bout you can see re-projects the times from now.'}</div>`;
+  h+=`<div class="note">results arrive from FloArena automatically. tap a name only if the feed is behind — it advances the bracket here until FloArena confirms it. "set as now" on the bout you can see re-projects every time from now.</div>`;
   if(S.anchor) h+=`<div class="actions"><button type="button" class="chip" id="clearAnchor">clear "now" anchor</button></div>`;
   return h;
 }
