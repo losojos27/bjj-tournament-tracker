@@ -1,0 +1,2066 @@
+{
+ "updated": "2026-09-12T20:24:38.242Z",
+ "event": {
+  "id": "52703b65-bade-46e2-9ce2-399dd32d93e4",
+  "name": "2026 ADCC World Championships",
+  "status": "live",
+  "tz": "Europe/Warsaw",
+  "start": "2026-09-12T09:00:00+0000",
+  "end": "2026-09-13T11:00:00+0000"
+ },
+ "divs": [
+  {
+   "id": "m99p",
+   "name": "+99kg",
+   "sex": "m",
+   "kind": "pro",
+   "size": 16,
+   "flo": {
+    "division": "Professional Male",
+    "weightClass": "+99",
+    "wcGuid": "1f612b25-b0e9-4088-9e65-06aaac0654a5"
+   },
+   "rounds": [
+    {
+     "name": "R16",
+     "bouts": [
+      {
+       "n": "1",
+       "a": {
+        "name": "Felipe Pena",
+        "seed": 1,
+        "team": "Brazil"
+       },
+       "b": {
+        "name": "Belal Etiabari",
+        "seed": 16,
+        "team": "New Zealand"
+       },
+       "w": 0,
+       "decided": true,
+       "result": "6-0 6:53",
+       "winType": "SUB",
+       "mat": "Mat 1"
+      },
+      {
+       "n": "2",
+       "a": {
+        "name": "Haisam Rida",
+        "seed": 9,
+        "team": "Ghana"
+       },
+       "b": {
+        "name": "Nick Hartman",
+        "seed": 8,
+        "team": "USA"
+       },
+       "w": 1,
+       "decided": true,
+       "result": "0-0 14:17 TB1",
+       "winType": "REF",
+       "mat": "Mat 2"
+      },
+      {
+       "n": "3",
+       "a": {
+        "name": "Josh Saunders",
+        "seed": 5,
+        "team": "Australia"
+       },
+       "b": {
+        "name": "Francis Pana",
+        "seed": 12,
+        "team": "Canada"
+       },
+       "w": 0,
+       "decided": true,
+       "result": "5-0 15:00 TB1",
+       "winType": "SCORE",
+       "mat": "Mat 3"
+      },
+      {
+       "n": "4",
+       "a": {
+        "name": "Roosevelt Sousa",
+        "seed": 13,
+        "team": "Brazil"
+       },
+       "b": {
+        "name": "Brandon Reed",
+        "seed": 4,
+        "team": "USA"
+       },
+       "w": 0,
+       "decided": true,
+       "result": "0-0 8:27",
+       "winType": "SUB",
+       "mat": "Mat 1"
+      },
+      {
+       "n": "5",
+       "a": {
+        "name": "Daniel Manasoiu",
+        "seed": 3,
+        "team": "USA"
+       },
+       "b": {
+        "name": "Pedro Lucas",
+        "seed": 14,
+        "team": "Brazil"
+       },
+       "w": 0,
+       "decided": true,
+       "result": "0-0 3:05",
+       "winType": "SUB",
+       "mat": "Mat 2"
+      },
+      {
+       "n": "6",
+       "a": {
+        "name": "Pouya Rahmani",
+        "seed": 11,
+        "team": "Iran"
+       },
+       "b": {
+        "name": "Mark Macqueen",
+        "seed": 6,
+        "team": "Scotland"
+       },
+       "w": 1,
+       "decided": true,
+       "result": "2-0 15:00 TB1",
+       "winType": "SCORE",
+       "mat": "Mat 3"
+      },
+      {
+       "n": "7",
+       "a": {
+        "name": "Victor Hugo",
+        "seed": 7,
+        "team": "Brazil"
+       },
+       "b": {
+        "name": "Heikki Jussila",
+        "seed": 10,
+        "team": "Finland"
+       },
+       "w": 0,
+       "decided": true,
+       "result": "0-0 5:47",
+       "winType": "SUB",
+       "mat": "Mat 1"
+      },
+      {
+       "n": "8",
+       "a": {
+        "name": "Ruslan Abdulaev",
+        "seed": 15,
+        "team": "Russia"
+       },
+       "b": {
+        "name": "Tito John Carle",
+        "seed": 2,
+        "team": "Australia"
+       },
+       "w": 0,
+       "decided": true,
+       "result": "2-0 8:56",
+       "winType": "SUB",
+       "mat": "Mat 2"
+      }
+     ]
+    },
+    {
+     "name": "QF",
+     "bouts": [
+      {
+       "n": "53",
+       "a": {
+        "name": "Felipe Pena",
+        "seed": 1,
+        "team": "Brazil"
+       },
+       "b": {
+        "name": "Nick Hartman",
+        "seed": 8,
+        "team": "USA"
+       },
+       "w": 0,
+       "decided": true,
+       "result": "9-0 7:54",
+       "winType": "SUB",
+       "mat": "Mat 2"
+      },
+      {
+       "n": "54",
+       "a": {
+        "name": "Josh Saunders",
+        "seed": 5,
+        "team": "Australia"
+       },
+       "b": {
+        "name": "Roosevelt Sousa",
+        "seed": 13,
+        "team": "Brazil"
+       },
+       "w": 0,
+       "decided": true,
+       "result": "0-0 15:00 TB1",
+       "winType": "REF",
+       "mat": "Mat 3"
+      },
+      {
+       "n": "55",
+       "a": {
+        "name": "Daniel Manasoiu",
+        "seed": 3,
+        "team": "USA"
+       },
+       "b": {
+        "name": "Mark Macqueen",
+        "seed": 6,
+        "team": "Scotland"
+       },
+       "w": 1,
+       "decided": true,
+       "result": "3-0 10:00",
+       "winType": "SCORE",
+       "mat": "Mat 1"
+      },
+      {
+       "n": "56",
+       "a": {
+        "name": "Victor Hugo",
+        "seed": 7,
+        "team": "Brazil"
+       },
+       "b": {
+        "name": "Ruslan Abdulaev",
+        "seed": 15,
+        "team": "Russia"
+       },
+       "w": 0,
+       "decided": true,
+       "result": "0-0 5:38",
+       "winType": "SUB",
+       "mat": "Mat 2"
+      }
+     ]
+    },
+    {
+     "name": "SF",
+     "bouts": [
+      {
+       "n": "73",
+       "a": {
+        "name": "Felipe Pena",
+        "seed": 1,
+        "team": "Brazil"
+       },
+       "b": {
+        "name": "Josh Saunders",
+        "seed": 5,
+        "team": "Australia"
+       },
+       "w": null,
+       "decided": false,
+       "result": null,
+       "winType": null,
+       "mat": null
+      },
+      {
+       "n": "74",
+       "a": {
+        "name": "Mark Macqueen",
+        "seed": 6,
+        "team": "Scotland"
+       },
+       "b": {
+        "name": "Victor Hugo",
+        "seed": 7,
+        "team": "Brazil"
+       },
+       "w": null,
+       "decided": false,
+       "result": null,
+       "winType": null,
+       "mat": null
+      }
+     ]
+    },
+    {
+     "name": "F",
+     "bouts": [
+      {
+       "n": null,
+       "a": null,
+       "b": null,
+       "w": null,
+       "decided": false,
+       "result": null,
+       "winType": null,
+       "mat": null
+      }
+     ]
+    }
+   ],
+   "third": {
+    "n": null,
+    "a": null,
+    "b": null,
+    "w": null,
+    "decided": false,
+    "result": null,
+    "winType": null,
+    "mat": null
+   }
+  },
+  {
+   "id": "m99",
+   "name": "-99kg",
+   "sex": "m",
+   "kind": "pro",
+   "size": 16,
+   "flo": {
+    "division": "Professional Male",
+    "weightClass": "-99",
+    "wcGuid": "eaa274e5-9797-4a4c-9bde-c61fa70d9aa1"
+   },
+   "rounds": [
+    {
+     "name": "R16",
+     "bouts": [
+      {
+       "n": "9",
+       "a": {
+        "name": "Kaynan Duarte",
+        "seed": 1,
+        "team": "Brazil"
+       },
+       "b": {
+        "name": "Nico Maglicic",
+        "seed": 16,
+        "team": "Australia"
+       },
+       "w": 0,
+       "decided": true,
+       "result": "0-0 5:26",
+       "winType": "SUB",
+       "mat": "Mat 1"
+      },
+      {
+       "n": "10",
+       "a": {
+        "name": "Javier Zaruski",
+        "seed": 9,
+        "team": "Uruguay"
+       },
+       "b": {
+        "name": "Vinicius Lessa",
+        "seed": 8,
+        "team": "Brazil"
+       },
+       "w": 0,
+       "decided": true,
+       "result": "3-0 9:31",
+       "winType": "SUB",
+       "mat": "Mat 2"
+      },
+      {
+       "n": "11",
+       "a": {
+        "name": "Michael Pixley",
+        "seed": 5,
+        "team": "USA"
+       },
+       "b": {
+        "name": "Daniel Schuardt",
+        "seed": 12,
+        "team": "Australia"
+       },
+       "w": 1,
+       "decided": true,
+       "result": "0-0 5:11",
+       "winType": "SUB",
+       "mat": "Mat 3"
+      },
+      {
+       "n": "12",
+       "a": {
+        "name": "Eoghan O'flanaghan",
+        "seed": 13,
+        "team": "United Kingdom"
+       },
+       "b": {
+        "name": "Adam Wardzinski",
+        "seed": 4,
+        "team": "Poland"
+       },
+       "w": 0,
+       "decided": true,
+       "result": "0-0 6:13",
+       "winType": "SUB",
+       "mat": "Mat 1"
+      },
+      {
+       "n": "13",
+       "a": {
+        "name": "Luke Griffith",
+        "seed": 3,
+        "team": "South Africa"
+       },
+       "b": {
+        "name": "Marcin Maciulewicz",
+        "seed": 14,
+        "team": "Poland"
+       },
+       "w": 0,
+       "decided": true,
+       "result": "0-0 1:47",
+       "winType": "SUB",
+       "mat": "Mat 3"
+      },
+      {
+       "n": "14",
+       "a": {
+        "name": "Steffen Banta",
+        "seed": 11,
+        "team": "USA"
+       },
+       "b": {
+        "name": "Patrick Gaudio",
+        "seed": 6,
+        "team": "Brazil"
+       },
+       "w": 0,
+       "decided": true,
+       "result": "5-0 10:00",
+       "winType": "SCORE",
+       "mat": "Mat 1"
+      },
+      {
+       "n": "15",
+       "a": {
+        "name": "Roberto Abreu",
+        "seed": 7,
+        "team": "Brazil"
+       },
+       "b": {
+        "name": "Eli Braz",
+        "seed": 10,
+        "team": "Brazil"
+       },
+       "w": 0,
+       "decided": true,
+       "result": "0-0 15:00 TB1",
+       "winType": "REF",
+       "mat": "Mat 2"
+      },
+      {
+       "n": "16",
+       "a": {
+        "name": "Declan Moody",
+        "seed": 15,
+        "team": "Australia"
+       },
+       "b": {
+        "name": "Achilles Rocha",
+        "seed": 2,
+        "team": "Brazil"
+       },
+       "w": 1,
+       "decided": true,
+       "result": "12-0 9:45",
+       "winType": "SUB",
+       "mat": "Mat 3"
+      }
+     ]
+    },
+    {
+     "name": "QF",
+     "bouts": [
+      {
+       "n": "57",
+       "a": {
+        "name": "Kaynan Duarte",
+        "seed": 1,
+        "team": "Brazil"
+       },
+       "b": {
+        "name": "Javier Zaruski",
+        "seed": 9,
+        "team": "Uruguay"
+       },
+       "w": 0,
+       "decided": true,
+       "result": "3-0 5:38",
+       "winType": "SUB",
+       "mat": "Mat 3"
+      },
+      {
+       "n": "58",
+       "a": {
+        "name": "Daniel Schuardt",
+        "seed": 12,
+        "team": "Australia"
+       },
+       "b": {
+        "name": "Eoghan O'flanaghan",
+        "seed": 13,
+        "team": "United Kingdom"
+       },
+       "w": 0,
+       "decided": true,
+       "result": "0-0 8:18",
+       "winType": "SUB",
+       "mat": "Mat 2"
+      },
+      {
+       "n": "59",
+       "a": {
+        "name": "Luke Griffith",
+        "seed": 3,
+        "team": "South Africa"
+       },
+       "b": {
+        "name": "Steffen Banta",
+        "seed": 11,
+        "team": "USA"
+       },
+       "w": 0,
+       "decided": true,
+       "result": "0-0 15:00 TB1",
+       "winType": "SCORE",
+       "mat": "Mat 1"
+      },
+      {
+       "n": "60",
+       "a": {
+        "name": "Roberto Abreu",
+        "seed": 7,
+        "team": "Brazil"
+       },
+       "b": {
+        "name": "Achilles Rocha",
+        "seed": 2,
+        "team": "Brazil"
+       },
+       "w": 1,
+       "decided": true,
+       "result": "0-0 15:00 TB1",
+       "winType": "REF",
+       "mat": "Mat 3"
+      }
+     ]
+    },
+    {
+     "name": "SF",
+     "bouts": [
+      {
+       "n": "77",
+       "a": {
+        "name": "Kaynan Duarte",
+        "seed": 1,
+        "team": "Brazil"
+       },
+       "b": {
+        "name": "Daniel Schuardt",
+        "seed": 12,
+        "team": "Australia"
+       },
+       "w": null,
+       "decided": false,
+       "result": null,
+       "winType": null,
+       "mat": null
+      },
+      {
+       "n": "78",
+       "a": {
+        "name": "Luke Griffith",
+        "seed": 3,
+        "team": "South Africa"
+       },
+       "b": {
+        "name": "Achilles Rocha",
+        "seed": 2,
+        "team": "Brazil"
+       },
+       "w": null,
+       "decided": false,
+       "result": null,
+       "winType": null,
+       "mat": null
+      }
+     ]
+    },
+    {
+     "name": "F",
+     "bouts": [
+      {
+       "n": null,
+       "a": null,
+       "b": null,
+       "w": null,
+       "decided": false,
+       "result": null,
+       "winType": null,
+       "mat": null
+      }
+     ]
+    }
+   ],
+   "third": {
+    "n": null,
+    "a": null,
+    "b": null,
+    "w": null,
+    "decided": false,
+    "result": null,
+    "winType": null,
+    "mat": null
+   }
+  },
+  {
+   "id": "m88",
+   "name": "-88kg",
+   "sex": "m",
+   "kind": "pro",
+   "size": 16,
+   "flo": {
+    "division": "Professional Male",
+    "weightClass": "-88",
+    "wcGuid": "3de08149-a041-446b-b8e9-5f367a3489b6"
+   },
+   "rounds": [
+    {
+     "name": "R16",
+     "bouts": [
+      {
+       "n": "17",
+       "a": {
+        "name": "Felipe Costa",
+        "seed": 1,
+        "team": "Brazil"
+       },
+       "b": {
+        "name": "Mateusz Mazur",
+        "seed": 16,
+        "team": "Poland"
+       },
+       "w": 0,
+       "decided": true,
+       "result": "0-0 1:42",
+       "winType": "SUB",
+       "mat": "Mat 1"
+      },
+      {
+       "n": "18",
+       "a": {
+        "name": "Pawel Jaworski",
+        "seed": 9,
+        "team": "Poland"
+       },
+       "b": {
+        "name": "Roberto Frias",
+        "seed": 8,
+        "team": "Australia"
+       },
+       "w": 0,
+       "decided": true,
+       "result": "0-0 6:10",
+       "winType": "SUB",
+       "mat": "Mat 1"
+      },
+      {
+       "n": "19",
+       "a": {
+        "name": "Matheus Diniz",
+        "seed": 5,
+        "team": "Brazil"
+       },
+       "b": {
+        "name": "Lucas Kanard",
+        "seed": 12,
+        "team": "Australia"
+       },
+       "w": 1,
+       "decided": true,
+       "result": "3-2 10:00",
+       "winType": "SCORE",
+       "mat": "Mat 3"
+      },
+      {
+       "n": "20",
+       "a": {
+        "name": "Jon Blank",
+        "seed": 13,
+        "team": "USA"
+       },
+       "b": {
+        "name": "Gabriel Brod",
+        "seed": 4,
+        "team": "Brazil"
+       },
+       "w": 1,
+       "decided": true,
+       "result": "9-0 10:00",
+       "winType": "SCORE",
+       "mat": "Mat 2"
+      },
+      {
+       "n": "21",
+       "a": {
+        "name": "Chris Wojcik",
+        "seed": 3,
+        "team": "USA"
+       },
+       "b": {
+        "name": "Santeri Lillius",
+        "seed": 14,
+        "team": "Finland"
+       },
+       "w": 0,
+       "decided": true,
+       "result": "3-0 14:39 TB1",
+       "winType": "SUB",
+       "mat": "Mat 1"
+      },
+      {
+       "n": "22",
+       "a": {
+        "name": "Jozef Chen",
+        "seed": 11,
+        "team": "South Africa"
+       },
+       "b": {
+        "name": "Franco Diaz",
+        "seed": 6,
+        "team": "Peru"
+       },
+       "w": 0,
+       "decided": true,
+       "result": "3-0 10:00",
+       "winType": "SCORE",
+       "mat": "Mat 3"
+      },
+      {
+       "n": "23",
+       "a": {
+        "name": "Marlon Tajik",
+        "seed": 7,
+        "team": "Sweden"
+       },
+       "b": {
+        "name": "Faris Ben-lamkadem",
+        "seed": 10,
+        "team": "Morocco"
+       },
+       "w": 0,
+       "decided": true,
+       "result": "3-0 14:42 TB1",
+       "winType": "SUB",
+       "mat": "Mat 2"
+      },
+      {
+       "n": "24",
+       "a": {
+        "name": "Gustavo Batista",
+        "seed": 15,
+        "team": "Brazil"
+       },
+       "b": {
+        "name": "Nathan Haddad",
+        "seed": 2,
+        "team": "USA"
+       },
+       "w": 1,
+       "decided": true,
+       "result": "3-0 10:00",
+       "winType": "SCORE",
+       "mat": "Mat 3"
+      }
+     ]
+    },
+    {
+     "name": "QF",
+     "bouts": [
+      {
+       "n": "61",
+       "a": {
+        "name": "Felipe Costa",
+        "seed": 1,
+        "team": "Brazil"
+       },
+       "b": {
+        "name": "Pawel Jaworski",
+        "seed": 9,
+        "team": "Poland"
+       },
+       "w": 1,
+       "decided": true,
+       "result": "0-0 3:55",
+       "winType": "SUB",
+       "mat": "Mat 2"
+      },
+      {
+       "n": "62",
+       "a": {
+        "name": "Lucas Kanard",
+        "seed": 12,
+        "team": "Australia"
+       },
+       "b": {
+        "name": "Gabriel Brod",
+        "seed": 4,
+        "team": "Brazil"
+       },
+       "w": 1,
+       "decided": true,
+       "result": "3-0 8:43",
+       "winType": "SUB",
+       "mat": "Mat 1"
+      },
+      {
+       "n": "63",
+       "a": {
+        "name": "Chris Wojcik",
+        "seed": 3,
+        "team": "USA"
+       },
+       "b": {
+        "name": "Jozef Chen",
+        "seed": 11,
+        "team": "South Africa"
+       },
+       "w": 1,
+       "decided": true,
+       "result": "6-0 10:00",
+       "winType": "SCORE",
+       "mat": "Mat 2"
+      },
+      {
+       "n": "64",
+       "a": {
+        "name": "Marlon Tajik",
+        "seed": 7,
+        "team": "Sweden"
+       },
+       "b": {
+        "name": "Nathan Haddad",
+        "seed": 2,
+        "team": "USA"
+       },
+       "w": 0,
+       "decided": true,
+       "result": "0-0 4:43",
+       "winType": "SUB",
+       "mat": "Mat 3"
+      }
+     ]
+    },
+    {
+     "name": "SF",
+     "bouts": [
+      {
+       "n": "79",
+       "a": {
+        "name": "Pawel Jaworski",
+        "seed": 9,
+        "team": "Poland"
+       },
+       "b": {
+        "name": "Gabriel Brod",
+        "seed": 4,
+        "team": "Brazil"
+       },
+       "w": null,
+       "decided": false,
+       "result": null,
+       "winType": null,
+       "mat": null
+      },
+      {
+       "n": "80",
+       "a": {
+        "name": "Jozef Chen",
+        "seed": 11,
+        "team": "South Africa"
+       },
+       "b": {
+        "name": "Marlon Tajik",
+        "seed": 7,
+        "team": "Sweden"
+       },
+       "w": null,
+       "decided": false,
+       "result": null,
+       "winType": null,
+       "mat": null
+      }
+     ]
+    },
+    {
+     "name": "F",
+     "bouts": [
+      {
+       "n": null,
+       "a": null,
+       "b": null,
+       "w": null,
+       "decided": false,
+       "result": null,
+       "winType": null,
+       "mat": null
+      }
+     ]
+    }
+   ],
+   "third": {
+    "n": null,
+    "a": null,
+    "b": null,
+    "w": null,
+    "decided": false,
+    "result": null,
+    "winType": null,
+    "mat": null
+   }
+  },
+  {
+   "id": "m77",
+   "name": "-77kg",
+   "sex": "m",
+   "kind": "pro",
+   "size": 16,
+   "flo": {
+    "division": "Professional Male",
+    "weightClass": "-77",
+    "wcGuid": "fb3f5172-4fed-4dbe-b587-3969675a49a8"
+   },
+   "rounds": [
+    {
+     "name": "R16",
+     "bouts": [
+      {
+       "n": "25",
+       "a": {
+        "name": "Vagner Rocha",
+        "seed": 1,
+        "team": "Brazil"
+       },
+       "b": {
+        "name": "Michael Sainz",
+        "seed": 16,
+        "team": "USA"
+       },
+       "w": 0,
+       "decided": true,
+       "result": "0-0 10:00 TB1",
+       "winType": "SCORE",
+       "mat": "Mat 1"
+      },
+      {
+       "n": "26",
+       "a": {
+        "name": "Alexandre De Jesus",
+        "seed": 9,
+        "team": "Brazil"
+       },
+       "b": {
+        "name": "Magomed Dzharbaev",
+        "seed": 8,
+        "team": "Russia"
+       },
+       "w": 1,
+       "decided": true,
+       "result": "3-0 10:00",
+       "winType": "SCORE",
+       "mat": "Mat 2"
+      },
+      {
+       "n": "27",
+       "a": {
+        "name": "Elijah Dorsey",
+        "seed": 5,
+        "team": "USA"
+       },
+       "b": {
+        "name": "Mateusz Gamrot",
+        "seed": 12,
+        "team": "Poland"
+       },
+       "w": 0,
+       "decided": true,
+       "result": "3-0 8:51",
+       "winType": "SUB",
+       "mat": "Mat 3"
+      },
+      {
+       "n": "28",
+       "a": {
+        "name": "Mateusz Szczecinski",
+        "seed": 13,
+        "team": "Poland"
+       },
+       "b": {
+        "name": "Julio Martins",
+        "seed": 4,
+        "team": "Brazil"
+       },
+       "w": 0,
+       "decided": true,
+       "result": "0-0 14:30 TB1",
+       "winType": "SUB",
+       "mat": "Mat 1"
+      },
+      {
+       "n": "29",
+       "a": {
+        "name": "Pj Barch",
+        "seed": 3,
+        "team": "USA"
+       },
+       "b": {
+        "name": "Kaya Rudolph",
+        "seed": 14,
+        "team": "New Zealand"
+       },
+       "w": 0,
+       "decided": true,
+       "result": "2-0 15:00 TB1",
+       "winType": "SCORE",
+       "mat": "Mat 2"
+      },
+      {
+       "n": "30",
+       "a": {
+        "name": "Tommy Langaker",
+        "seed": 11,
+        "team": "Norway"
+       },
+       "b": {
+        "name": "Taylor Pearman",
+        "seed": 6,
+        "team": "United Kingdom"
+       },
+       "w": 0,
+       "decided": true,
+       "result": "3-0 10:00",
+       "winType": "SCORE",
+       "mat": "Mat 3"
+      },
+      {
+       "n": "31",
+       "a": {
+        "name": "Dante Leon",
+        "seed": 7,
+        "team": "Canada"
+       },
+       "b": {
+        "name": "Nikolay Vetrov",
+        "seed": 10,
+        "team": "Russia"
+       },
+       "w": 0,
+       "decided": true,
+       "result": "2-2 9:41",
+       "winType": "SUB",
+       "mat": "Mat 1"
+      },
+      {
+       "n": "32",
+       "a": {
+        "name": "Oliver Taza",
+        "seed": 15,
+        "team": "Canada"
+       },
+       "b": {
+        "name": "Jacob Bornemann",
+        "seed": 2,
+        "team": "USA"
+       },
+       "w": 1,
+       "decided": true,
+       "result": "3-0 10:00",
+       "winType": "SCORE",
+       "mat": "Mat 3"
+      }
+     ]
+    },
+    {
+     "name": "QF",
+     "bouts": [
+      {
+       "n": "65",
+       "a": {
+        "name": "Vagner Rocha",
+        "seed": 1,
+        "team": "Brazil"
+       },
+       "b": {
+        "name": "Magomed Dzharbaev",
+        "seed": 8,
+        "team": "Russia"
+       },
+       "w": 1,
+       "decided": true,
+       "result": "0-0 15:00 TB1",
+       "winType": "REF",
+       "mat": "Mat 1"
+      },
+      {
+       "n": "66",
+       "a": {
+        "name": "Elijah Dorsey",
+        "seed": 5,
+        "team": "USA"
+       },
+       "b": {
+        "name": "Mateusz Szczecinski",
+        "seed": 13,
+        "team": "Poland"
+       },
+       "w": 1,
+       "decided": true,
+       "result": "0-0 10:00 TB1",
+       "winType": "SCORE",
+       "mat": "Mat 2"
+      },
+      {
+       "n": "67",
+       "a": {
+        "name": "Pj Barch",
+        "seed": 3,
+        "team": "USA"
+       },
+       "b": {
+        "name": "Tommy Langaker",
+        "seed": 11,
+        "team": "Norway"
+       },
+       "w": 0,
+       "decided": true,
+       "result": "8-0 10:00",
+       "winType": "SCORE",
+       "mat": "Mat 3"
+      },
+      {
+       "n": "68",
+       "a": {
+        "name": "Dante Leon",
+        "seed": 7,
+        "team": "Canada"
+       },
+       "b": {
+        "name": "Jacob Bornemann",
+        "seed": 2,
+        "team": "USA"
+       },
+       "w": 1,
+       "decided": true,
+       "result": "0-0 15:00 TB1",
+       "winType": "REF",
+       "mat": "Mat 2"
+      }
+     ]
+    },
+    {
+     "name": "SF",
+     "bouts": [
+      {
+       "n": "83",
+       "a": {
+        "name": "Magomed Dzharbaev",
+        "seed": 8,
+        "team": "Russia"
+       },
+       "b": {
+        "name": "Mateusz Szczecinski",
+        "seed": 13,
+        "team": "Poland"
+       },
+       "w": null,
+       "decided": false,
+       "result": null,
+       "winType": null,
+       "mat": null
+      },
+      {
+       "n": "84",
+       "a": {
+        "name": "Pj Barch",
+        "seed": 3,
+        "team": "USA"
+       },
+       "b": {
+        "name": "Jacob Bornemann",
+        "seed": 2,
+        "team": "USA"
+       },
+       "w": null,
+       "decided": false,
+       "result": null,
+       "winType": null,
+       "mat": null
+      }
+     ]
+    },
+    {
+     "name": "F",
+     "bouts": [
+      {
+       "n": null,
+       "a": null,
+       "b": null,
+       "w": null,
+       "decided": false,
+       "result": null,
+       "winType": null,
+       "mat": null
+      }
+     ]
+    }
+   ],
+   "third": {
+    "n": null,
+    "a": null,
+    "b": null,
+    "w": null,
+    "decided": false,
+    "result": null,
+    "winType": null,
+    "mat": null
+   }
+  },
+  {
+   "id": "m66",
+   "name": "-66kg",
+   "sex": "m",
+   "kind": "pro",
+   "size": 16,
+   "flo": {
+    "division": "Professional Male",
+    "weightClass": "-66",
+    "wcGuid": "843cedf9-ab4c-4322-8c23-39e3e5921d1d"
+   },
+   "rounds": [
+    {
+     "name": "R16",
+     "bouts": [
+      {
+       "n": "33",
+       "a": {
+        "name": "Diego Pato",
+        "seed": 1,
+        "team": "Brazil"
+       },
+       "b": {
+        "name": "Jakub Wiklacz",
+        "seed": 16,
+        "team": "Poland"
+       },
+       "w": 0,
+       "decided": true,
+       "result": "6-0 7:00",
+       "winType": "SUB",
+       "mat": "Mat 2"
+      },
+      {
+       "n": "34",
+       "a": {
+        "name": "Gianni Grippo",
+        "seed": 9,
+        "team": "USA"
+       },
+       "b": {
+        "name": "Felipe Machado",
+        "seed": 8,
+        "team": "Brazil"
+       },
+       "w": 0,
+       "decided": true,
+       "result": "3-0 10:00",
+       "winType": "SCORE",
+       "mat": "Mat 1"
+      },
+      {
+       "n": "35",
+       "a": {
+        "name": "Fabricio Andrey",
+        "seed": 5,
+        "team": "Brazil"
+       },
+       "b": {
+        "name": "David Santos",
+        "seed": 12,
+        "team": "Brazil"
+       },
+       "w": 0,
+       "decided": true,
+       "result": "0-0 6:00",
+       "winType": "SUB",
+       "mat": "Mat 3"
+      },
+      {
+       "n": "36",
+       "a": {
+        "name": "Kennedy Maciel",
+        "seed": 13,
+        "team": "Brazil"
+       },
+       "b": {
+        "name": "Kamil Wilk",
+        "seed": 4,
+        "team": "Poland"
+       },
+       "w": 0,
+       "decided": true,
+       "result": "10-0 10:00",
+       "winType": "SCORE",
+       "mat": "Mat 2"
+      },
+      {
+       "n": "37",
+       "a": {
+        "name": "Owen Jones",
+        "seed": 3,
+        "team": "United Kingdom"
+       },
+       "b": {
+        "name": "Ryoma Anraku",
+        "seed": 14,
+        "team": "Japan"
+       },
+       "w": 1,
+       "decided": true,
+       "result": "0-0 15:00 TB1",
+       "winType": "REF",
+       "mat": "Mat 1"
+      },
+      {
+       "n": "38",
+       "a": {
+        "name": "Nikodem Mikuliszyn",
+        "seed": 11,
+        "team": "Poland"
+       },
+       "b": {
+        "name": "Gavin Corbe",
+        "seed": 6,
+        "team": "USA"
+       },
+       "w": 1,
+       "decided": true,
+       "result": "0-0 15:00 TB1",
+       "winType": "REF",
+       "mat": "Mat 3"
+      },
+      {
+       "n": "39",
+       "a": {
+        "name": "Dorian Olivarez",
+        "seed": 7,
+        "team": "USA"
+       },
+       "b": {
+        "name": "Bekzat Kapashov",
+        "seed": 10,
+        "team": "Kazakhstan"
+       },
+       "w": null,
+       "decided": true,
+       "result": null,
+       "winType": "DQ",
+       "mat": "Mat 2"
+      },
+      {
+       "n": "40",
+       "a": {
+        "name": "Dominic Mejia",
+        "seed": 15,
+        "team": "USA"
+       },
+       "b": {
+        "name": "Yigit Hanay",
+        "seed": 2,
+        "team": "Turkey"
+       },
+       "w": 0,
+       "decided": true,
+       "result": "7-0 10:00",
+       "winType": "SCORE",
+       "mat": "Mat 1"
+      }
+     ]
+    },
+    {
+     "name": "QF",
+     "bouts": [
+      {
+       "n": "69",
+       "a": {
+        "name": "Diego Pato",
+        "seed": 1,
+        "team": "Brazil"
+       },
+       "b": {
+        "name": "Gianni Grippo",
+        "seed": 9,
+        "team": "USA"
+       },
+       "w": 0,
+       "decided": true,
+       "result": "6-0 10:00",
+       "winType": "SCORE",
+       "mat": "Mat 3"
+      },
+      {
+       "n": "70",
+       "a": {
+        "name": "Fabricio Andrey",
+        "seed": 5,
+        "team": "Brazil"
+       },
+       "b": {
+        "name": "Kennedy Maciel",
+        "seed": 13,
+        "team": "Brazil"
+       },
+       "w": 1,
+       "decided": true,
+       "result": "0-0 15:00 TB1",
+       "winType": "REF",
+       "mat": "Mat 1"
+      },
+      {
+       "n": "71",
+       "a": {
+        "name": "Ryoma Anraku",
+        "seed": 14,
+        "team": "Japan"
+       },
+       "b": {
+        "name": "Gavin Corbe",
+        "seed": 6,
+        "team": "USA"
+       },
+       "w": 1,
+       "decided": true,
+       "result": "0-0 7:10",
+       "winType": "SUB",
+       "mat": "Mat 3"
+      },
+      {
+       "n": "72",
+       "a": {
+        "name": "Owen Jones",
+        "seed": 3,
+        "team": "United Kingdom"
+       },
+       "b": {
+        "name": "Dominic Mejia",
+        "seed": 15,
+        "team": "USA"
+       },
+       "w": 1,
+       "decided": true,
+       "result": "3-0 10:00",
+       "winType": "SCORE",
+       "mat": "Mat 2"
+      }
+     ]
+    },
+    {
+     "name": "SF",
+     "bouts": [
+      {
+       "n": "87",
+       "a": {
+        "name": "Diego Pato",
+        "seed": 1,
+        "team": "Brazil"
+       },
+       "b": {
+        "name": "Kennedy Maciel",
+        "seed": 13,
+        "team": "Brazil"
+       },
+       "w": null,
+       "decided": false,
+       "result": null,
+       "winType": null,
+       "mat": null
+      },
+      {
+       "n": "88",
+       "a": {
+        "name": "Gavin Corbe",
+        "seed": 6,
+        "team": "USA"
+       },
+       "b": {
+        "name": "Dominic Mejia",
+        "seed": 15,
+        "team": "USA"
+       },
+       "w": null,
+       "decided": false,
+       "result": null,
+       "winType": null,
+       "mat": null
+      }
+     ]
+    },
+    {
+     "name": "F",
+     "bouts": [
+      {
+       "n": null,
+       "a": null,
+       "b": null,
+       "w": null,
+       "decided": false,
+       "result": null,
+       "winType": null,
+       "mat": null
+      }
+     ]
+    }
+   ],
+   "third": {
+    "n": null,
+    "a": null,
+    "b": null,
+    "w": null,
+    "decided": false,
+    "result": null,
+    "winType": null,
+    "mat": null
+   }
+  },
+  {
+   "id": "w65p",
+   "name": "W +65kg",
+   "sex": "w",
+   "kind": "pro",
+   "size": 8,
+   "flo": {
+    "division": "Professional Female",
+    "weightClass": "+65",
+    "wcGuid": "f9a269a3-05b3-4e4f-97f9-146a18736e7a"
+   },
+   "rounds": [
+    {
+     "name": "QF",
+     "bouts": [
+      {
+       "n": "41",
+       "a": {
+        "name": "Helena Crevar",
+        "seed": 1,
+        "team": "USA"
+       },
+       "b": {
+        "name": "Matilda Reid",
+        "seed": 8,
+        "team": "Australia"
+       },
+       "w": 0,
+       "decided": true,
+       "result": "10-0 9:11",
+       "winType": "SUB",
+       "mat": "Mat 1"
+      },
+      {
+       "n": "42",
+       "a": {
+        "name": "Nia Blackman",
+        "seed": 5,
+        "team": "Barbados"
+       },
+       "b": {
+        "name": "Elizabeth Mitrovic",
+        "seed": 4,
+        "team": "USA"
+       },
+       "w": 1,
+       "decided": true,
+       "result": "7-0 15:00 TB1",
+       "winType": "SCORE",
+       "mat": "Mat 2"
+      },
+      {
+       "n": "43",
+       "a": {
+        "name": "Anabel Lopez",
+        "seed": 3,
+        "team": "Spain"
+       },
+       "b": {
+        "name": "Gabi Pessanha",
+        "seed": 6,
+        "team": "Brazil"
+       },
+       "w": 0,
+       "decided": true,
+       "result": "0-0 15:00 TB1",
+       "winType": "REF",
+       "mat": "Mat 3"
+      },
+      {
+       "n": "44",
+       "a": {
+        "name": "Paige Ivette Clymer",
+        "seed": 7,
+        "team": "USA"
+       },
+       "b": {
+        "name": "Yara Soares",
+        "seed": 2,
+        "team": "Brazil"
+       },
+       "w": 0,
+       "decided": true,
+       "result": "0-0 5:17",
+       "winType": "SUB",
+       "mat": "Mat 1"
+      }
+     ]
+    },
+    {
+     "name": "SF",
+     "bouts": [
+      {
+       "n": "75",
+       "a": {
+        "name": "Helena Crevar",
+        "seed": 1,
+        "team": "USA"
+       },
+       "b": {
+        "name": "Elizabeth Mitrovic",
+        "seed": 4,
+        "team": "USA"
+       },
+       "w": null,
+       "decided": false,
+       "result": null,
+       "winType": null,
+       "mat": null
+      },
+      {
+       "n": "76",
+       "a": {
+        "name": "Anabel Lopez",
+        "seed": 3,
+        "team": "Spain"
+       },
+       "b": {
+        "name": "Paige Ivette Clymer",
+        "seed": 7,
+        "team": "USA"
+       },
+       "w": null,
+       "decided": false,
+       "result": null,
+       "winType": null,
+       "mat": null
+      }
+     ]
+    },
+    {
+     "name": "F",
+     "bouts": [
+      {
+       "n": null,
+       "a": null,
+       "b": null,
+       "w": null,
+       "decided": false,
+       "result": null,
+       "winType": null,
+       "mat": null
+      }
+     ]
+    }
+   ],
+   "third": {
+    "n": null,
+    "a": null,
+    "b": null,
+    "w": null,
+    "decided": false,
+    "result": null,
+    "winType": null,
+    "mat": null
+   }
+  },
+  {
+   "id": "w65",
+   "name": "W -65kg",
+   "sex": "w",
+   "kind": "pro",
+   "size": 8,
+   "flo": {
+    "division": "Professional Female",
+    "weightClass": "-65",
+    "wcGuid": "c869a1c1-98d4-4beb-8897-27128b42ab97"
+   },
+   "rounds": [
+    {
+     "name": "QF",
+     "bouts": [
+      {
+       "n": "45",
+       "a": {
+        "name": "Ana Carolina Vieira",
+        "seed": 1,
+        "team": "Brazil"
+       },
+       "b": {
+        "name": "Nadia Frankland",
+        "seed": 8,
+        "team": "Australia"
+       },
+       "w": 0,
+       "decided": true,
+       "result": "2-0 15:00 TB1",
+       "winType": "SCORE",
+       "mat": "Mat 1"
+      },
+      {
+       "n": "46",
+       "a": {
+        "name": "Ane Svendsen",
+        "seed": 5,
+        "team": "Norway"
+       },
+       "b": {
+        "name": "Mo Black",
+        "seed": 4,
+        "team": "USA"
+       },
+       "w": 1,
+       "decided": true,
+       "result": "0-0 15:00 TB1",
+       "winType": "REF",
+       "mat": "Mat 2"
+      },
+      {
+       "n": "47",
+       "a": {
+        "name": "Sarah Galvao",
+        "seed": 3,
+        "team": "Brazil"
+       },
+       "b": {
+        "name": "Livia Barasine",
+        "seed": 6,
+        "team": "Brazil"
+       },
+       "w": 0,
+       "decided": true,
+       "result": "0-0 6:05",
+       "winType": "SUB",
+       "mat": "Mat 3"
+      },
+      {
+       "n": "48",
+       "a": {
+        "name": "Injana Goodman",
+        "seed": 7,
+        "team": "United Kingdom"
+       },
+       "b": {
+        "name": "Joslyn Molina",
+        "seed": 2,
+        "team": "USA"
+       },
+       "w": 1,
+       "decided": true,
+       "result": "4-0 10:00",
+       "winType": "SCORE",
+       "mat": "Mat 3"
+      }
+     ]
+    },
+    {
+     "name": "SF",
+     "bouts": [
+      {
+       "n": "81",
+       "a": {
+        "name": "Ana Carolina Vieira",
+        "seed": 1,
+        "team": "Brazil"
+       },
+       "b": {
+        "name": "Mo Black",
+        "seed": 4,
+        "team": "USA"
+       },
+       "w": null,
+       "decided": false,
+       "result": null,
+       "winType": null,
+       "mat": null
+      },
+      {
+       "n": "82",
+       "a": {
+        "name": "Sarah Galvao",
+        "seed": 3,
+        "team": "Brazil"
+       },
+       "b": {
+        "name": "Joslyn Molina",
+        "seed": 2,
+        "team": "USA"
+       },
+       "w": null,
+       "decided": false,
+       "result": null,
+       "winType": null,
+       "mat": null
+      }
+     ]
+    },
+    {
+     "name": "F",
+     "bouts": [
+      {
+       "n": null,
+       "a": null,
+       "b": null,
+       "w": null,
+       "decided": false,
+       "result": null,
+       "winType": null,
+       "mat": null
+      }
+     ]
+    }
+   ],
+   "third": {
+    "n": null,
+    "a": null,
+    "b": null,
+    "w": null,
+    "decided": false,
+    "result": null,
+    "winType": null,
+    "mat": null
+   }
+  },
+  {
+   "id": "w55",
+   "name": "W -55kg",
+   "sex": "w",
+   "kind": "pro",
+   "size": 8,
+   "flo": {
+    "division": "Professional Female",
+    "weightClass": "-55",
+    "wcGuid": "3d92044d-428b-4eb0-b576-863cdaf5f4f9"
+   },
+   "rounds": [
+    {
+     "name": "QF",
+     "bouts": [
+      {
+       "n": "49",
+       "a": {
+        "name": "Jasmine Rocha",
+        "seed": 1,
+        "team": "Brazil"
+       },
+       "b": {
+        "name": "Kanae Ikeda",
+        "seed": 8,
+        "team": "Japan"
+       },
+       "w": 0,
+       "decided": true,
+       "result": "3-0 6:53",
+       "winType": "SUB",
+       "mat": "Mat 1"
+      },
+      {
+       "n": "50",
+       "a": {
+        "name": "Ana Mayordomo",
+        "seed": 5,
+        "team": "Spain"
+       },
+       "b": {
+        "name": "Sheliah Lindsey",
+        "seed": 4,
+        "team": "USA"
+       },
+       "w": 0,
+       "decided": true,
+       "result": "3-0 10:00",
+       "winType": "SCORE",
+       "mat": "Mat 2"
+      },
+      {
+       "n": "51",
+       "a": {
+        "name": "Mayssa Bastos",
+        "seed": 3,
+        "team": "Brazil"
+       },
+       "b": {
+        "name": "Valerie Hamilton",
+        "seed": 6,
+        "team": "USA"
+       },
+       "w": 0,
+       "decided": true,
+       "result": "3-0 9:28",
+       "winType": "SUB",
+       "mat": "Mat 3"
+      },
+      {
+       "n": "52",
+       "a": {
+        "name": "Ana Rodrigues",
+        "seed": 7,
+        "team": "Brazil"
+       },
+       "b": {
+        "name": "Janette Gloger",
+        "seed": 2,
+        "team": "Germany"
+       },
+       "w": 0,
+       "decided": true,
+       "result": "0-0 15:00 TB1",
+       "winType": "REF",
+       "mat": "Mat 1"
+      }
+     ]
+    },
+    {
+     "name": "SF",
+     "bouts": [
+      {
+       "n": "85",
+       "a": {
+        "name": "Jasmine Rocha",
+        "seed": 1,
+        "team": "Brazil"
+       },
+       "b": {
+        "name": "Ana Mayordomo",
+        "seed": 5,
+        "team": "Spain"
+       },
+       "w": null,
+       "decided": false,
+       "result": null,
+       "winType": null,
+       "mat": null
+      },
+      {
+       "n": "86",
+       "a": {
+        "name": "Mayssa Bastos",
+        "seed": 3,
+        "team": "Brazil"
+       },
+       "b": {
+        "name": "Ana Rodrigues",
+        "seed": 7,
+        "team": "Brazil"
+       },
+       "w": null,
+       "decided": false,
+       "result": null,
+       "winType": null,
+       "mat": null
+      }
+     ]
+    },
+    {
+     "name": "F",
+     "bouts": [
+      {
+       "n": null,
+       "a": null,
+       "b": null,
+       "w": null,
+       "decided": false,
+       "result": null,
+       "winType": null,
+       "mat": null
+      }
+     ]
+    }
+   ],
+   "third": {
+    "n": null,
+    "a": null,
+    "b": null,
+    "w": null,
+    "decided": false,
+    "result": null,
+    "winType": null,
+    "mat": null
+   }
+  },
+  {
+   "id": "sf-super-fight-sun",
+   "name": "Super fight",
+   "sex": "m",
+   "kind": "sf",
+   "size": 2,
+   "flo": {
+    "division": "Super Fight",
+    "weightClass": "Super Fight Sun",
+    "wcGuid": "498cc24c-96d7-458b-8b55-0e69961b6c55"
+   },
+   "rounds": [
+    {
+     "name": "F",
+     "bouts": [
+      {
+       "n": null,
+       "a": {
+        "name": "Yuri Simoes",
+        "seed": null,
+        "team": "Brazil"
+       },
+       "b": {
+        "name": "Kaynan Duarte",
+        "seed": null,
+        "team": "Brazil"
+       },
+       "w": null,
+       "decided": false,
+       "result": null,
+       "winType": null,
+       "mat": null
+      }
+     ]
+    }
+   ],
+   "third": null
+  }
+ ],
+ "mats": [
+  {
+   "name": "Mat 1",
+   "upcoming": []
+  },
+  {
+   "name": "Mat 2",
+   "upcoming": []
+  },
+  {
+   "name": "Mat 3",
+   "upcoming": []
+  }
+ ]
+}

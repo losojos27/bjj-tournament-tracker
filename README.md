@@ -1,22 +1,35 @@
 # ADCC 2026 tracker
 
-Single-file web app (`index.html`) that tracks the ADCC World Championship 2026 brackets
-(Kraków, Sept 12–13) and projects match start times per mat.
+Bracket and schedule tracker for the ADCC World Championship 2026 (Kraków, Sept 12–13).
+Results come from FloArena automatically; the page projects mat times and shows what is on
+each mat right now.
 
-- **Run locally:** open `index.html` in a browser. No build, no dependencies.
-- **Host:** any static host (GitHub Pages, Netlify). Results persist in the browser's
-  localStorage, so each viewer has their own copy of tapped results.
-- **Publish as a Claude artifact:** `scripts/build-artifact.sh` writes `dist/artifact.html`
-  (the page minus the document wrapper the artifact host supplies).
+**Live page:** https://losojos27.github.io/adcc-tracker/
 
-Layout:
+## How it stays live
+- `scripts/sync.mjs` pulls every division's bouts from FloArena's JSON endpoints and writes
+  `data/results.json`. A GitHub Actions cron (`.github/workflows/sync.yml`) runs it every
+  5 minutes and commits when something changed; GitHub Pages redeploys on push.
+- The page also polls FloArena's public Firebase feed (`/<event>/mats.json`) every 15 s for
+  the bout currently on each mat: clock, score, and the winner the moment it ends. That
+  result is applied to the bracket immediately, ahead of the next sync.
+- Tapping a name records a result locally, only for bouts the feeds haven't decided yet.
+  Taps, followed athletes, and settings live in the viewer's own browser.
 
+## Run it yourself
+```
+node scripts/sync.mjs          # refresh data/results.json
+python3 -m http.server 8000    # then open http://localhost:8000
+```
+No build step, no dependencies (Node 18+ for the sync script).
+
+## Layout
 | Path | What |
 | --- | --- |
-| `index.html` | The app. Bracket data, results, and schedule engine are all inline. |
-| `CLAUDE.md` | Handoff notes, data model, ground truth, and working rules. |
-| `scripts/build-artifact.sh` | Builds the artifact fragment into `dist/`. |
-| `archive/adcc-tracker.zip` | Original handoff bundle from the Claude chat (Sept 12, 2026). |
-
-See `CLAUDE.md` for how results are stored, how the schedule projection works, and what
-data is still missing.
+| `index.html` | The app: bracket engine, schedule projection, live mats. |
+| `data/results.json` | Current bracket state from FloArena (written by the sync). |
+| `scripts/sync.mjs` | FloArena → results.json. |
+| `scripts/build-artifact.sh` | Builds `dist/artifact.html` for publishing as a Claude artifact. |
+| `.github/workflows/sync.yml` | Cron that runs the sync and commits changes. |
+| `CLAUDE.md` | Handoff notes, data sources, known issues. |
+| `archive/` | Original Claude-chat handoff bundle. |

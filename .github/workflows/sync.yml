@@ -1,0 +1,27 @@
+name: sync results from FloArena
+on:
+  schedule:
+    - cron: '*/5 * * * *'   # GitHub's minimum; real cadence is usually 5-15 min
+  workflow_dispatch:
+permissions:
+  contents: write
+concurrency:
+  group: sync
+  cancel-in-progress: false
+jobs:
+  sync:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+      - run: node scripts/sync.mjs
+      - name: Commit if results changed
+        run: |
+          if git diff --quiet -- data/results.json; then echo "no change"; exit 0; fi
+          git config user.name "flo-sync"
+          git config user.email "actions@users.noreply.github.com"
+          git add data/results.json
+          git commit -m "sync: results $(date -u +%Y-%m-%dT%H:%MZ)"
+          git push

@@ -15,55 +15,50 @@ while Lee was in the arena; moved here Sept 12 evening so it can be hosted and i
   migration condition in `load()`, or existing viewers' stored state will shadow them.
 - The Reset button uses a two-tap confirm; native `confirm()` is blocked in the artifact iframe.
 
-## What it does
-- Three tabs: **Next up** (followed athletes' next match + ETA, then the projected queue),
-  **Brackets** (all 8 divisions, tap a name to record the winner), **Settings**.
-- All bracket data is inline in `DIVS`. Men's divisions are 16-man, women's 8-woman.
-  `-66kg` has a `fixed` QF because Flo's published R16 layout didn't match FloArena's
-  actual QF field (Jones and Anraku both reached the QF despite being listed as R16
-  opponents; Olivarez isn't in the field). Rounds below a fixed round are hidden ("dead").
-- Results live in `DEFAULT.winners` as `{divId: {roundIdx: {matchIdx: 0|1}}}` (0 = top
-  slot won). `third` holds 3rd-place results. Winners propagate; changing a result clears
-  downstream results in that division.
-- Schedule engine (`queue()`): runs blocks in `DEFAULT_BLOCKS` order (editable in
-  Settings), assigns unplayed matches to the earliest-free mat, slot length per round
-  from `dur`. `anchor` = {key, at}: the match that was on the mat at time `at`;
-  everything before it is treated as run. If the anchored match is already complete and
-  `at` is in the past, projection starts from now (never projects into the past).
-- Persistence: `window.storage` (Claude artifact API) if present, else `localStorage`.
-  **Inside the Claude app's file viewer neither persisted across reopen** — that's why
-  results are baked into `DEFAULT` and a `v` counter + migration in `load()` merges new
-  baked results over any stored state.
-- Has apple-mobile-web-app meta tags; intended to be hosted (GitHub Pages / Netlify) and
-  added to the iOS home screen. Then localStorage works and taps persist.
+## Where things live
+- **Live page (share this):** https://losojos27.github.io/adcc-tracker/ (GitHub Pages, repo `losojos27/adcc-tracker`)
+- Claude artifact snapshot: https://claude.ai/code/artifact/78d4a9a4-2636-4548-9de6-b03be85ae72e
+  (no live feed there: the artifact CSP blocks fetches; results are as of the last republish)
+- `index.html` app · `data/results.json` bracket state · `scripts/sync.mjs` FloArena→JSON ·
+  `.github/workflows/sync.yml` cron · `scripts/build-artifact.sh` → `dist/artifact.html`.
 
-## Ground truth as of ~17:00 local, Sept 12 (baked into index.html)
-- All men's R16 results (from FloArena screenshots).
-- All women's QFs complete. Semis: +65 Crevar–Mitrovic, Lopez–Clymer; -65 Vieira–Black,
-  Galvão–Molina; -55 Rocha–Mayordomo, Bastos–Rodrigues.
-- Men's +99 QF complete: Pena–Saunders, Macqueen–**Victor Hugo** in the semis.
-- Men's -88 QF #61: Jaworski def. **Felipe Costa** (leg lock). Other -88 QFs unknown.
-- Men's -99, -77, -66 QF results: unknown at handoff.
-- Followed athletes: Felipe Costa (out), Victor Hugo (semi tomorrow).
+## Data flow (rebuilt Sept 12 evening)
+- **FloArena JSON (no auth, not CDN-cached):** base `https://arena.flograppling.com`, event
+  `52703b65-bade-46e2-9ce2-399dd32d93e4`.
+  - `bracket/<event>` → divisions → weightClasses → boutPools (guids).
+  - `bracket/<event>/bouts/<weightClassGuid>/pool/<poolGuid>` → every bout: `boutNumber`,
+    `roundName.displayName`, `topWrestler`/`bottomWrestler` (+seed), `winnerWrestlerGuid`,
+    `result`, `winType`, `mat.name`, `winnerToBoutGuid`/`winnerToTop` (tree links).
+  - `event/<event>/upcoming-bouts` → per-mat upcoming list (was empty at end of Day 1; the sync
+    records it under `mats[].upcoming` as a hint, shape unverified).
+  - `event/<event>/recent-results` is CDN-cached 20 min (`s-maxage=1200`) — don't rely on it.
+- **FloArena Firebase (public, CORS ok):** `https://floarena.firebaseio.com/<event>/mats.json`
+  → one entry per mat: red/blue names+seeds+scores, `clock` (counts down), `period`
+  (`1`, `TB1`…), `isMatchOver`, `winner` (`red`|`blue`), `boutNumber`, `updated` (epoch ms).
+  red = FloArena top slot, blue = bottom. `boutupdates.json` exists but carries no winners.
+- `scripts/sync.mjs` orders each round positionally by following `winnerToBoutGuid` links
+  from the final backwards (so bout m in round r feeds bout m>>1), falls back to bout number.
+  A bout with `winType` but a winner guid matching neither athlete (double DQ, -66 #39) is
+  emitted `decided:true, w:null`; the page shows both as out.
+- Page precedence per bout: FloArena result → live-feed result (`isMatchOver`+`winner`) →
+  local tap. Taps are refused once a feed has the result.
+- Schedule: live in-progress bouts anchor the projection at "now" (mat free at now +
+  remaining clock + 2 min); else the manual anchor (clamped to now); else the day's start
+  time on the event's calendar date.
 
-## Observed running order (Sept 12)
-- 3 mats. Match numbers: men's R16 #1–40, women's QF #41–52 (+65, -65, -55), men's QF
-  #53–72 (+99, -99, -88, -77, -66). Heaviest → lightest within a round.
-- Women's QF bouts were 15:00 regulation; two went the distance. 20 min/slot incl.
-  walkouts is realistic; 12 was too tight.
-- Day 2 assumed to be SF → 3rd → F. Block order in `DEFAULT_BLOCKS` is a guess — check
-  FloArena's "Upcoming" tab and fix.
+## Running order (Sept 12 observed; Day 2 assumed)
+- 3 mats. Bout numbers: men's R16 #1–40, women's QF #41–52, men's QF #53–72, SF #73–88.
+- Day 2 blocks in `DEFAULT_BLOCKS` are a guess (Men SF → Women SF → 3rds → Finals → Absolute →
+  super fight). If `upcoming-bouts` populates tomorrow, use it to fix the order.
+- Absolute division exists in FloArena with 0 bouts as of Sept 12 night; the sync picks it up
+  automatically (id `mabs`) once bouts appear. Super fight: Yuri Simoes v Kaynan Duarte.
 
-## Data sources (what works, what doesn't)
-- FloArena bracket page: `https://arena.flograppling.com/event/52703b65-bade-46e2-9ce2-399dd32d93e4?page=brackets`
-  is live and accurate but a JS shell; brackets load from an API not yet identified.
-  Browser cross-origin blocks calling it from the page anyway. Worth investigating from
-  a machine: network tab → find the JSON endpoint → a small poller could sync results.
-- `https://www.flograppling.com/events/14687695/results` — Flo's results page; was 404ing
-  ("Results not found" from api.flosports.tv) on the afternoon of Sept 12 after working
-  earlier. If it recovers it may be the easiest structured source.
-- Flo article pages (brackets/results, live blog) are cached hours behind — useless live.
-- Current workflow: screenshots of FloArena → results transcribed into `DEFAULT.winners`.
+## Known issues
+- Times are the viewer's local time; day starts are Kraków 11:00 expressed in local hours.
+- GitHub cron is "every 5 min" nominally, often 5–15 in practice. Pages redeploys on each
+  sync commit (~1 min). Soft limit 10 Pages builds/hour — the sync only commits on change.
+- Each viewer's taps/settings are local. There is no shared state between viewers.
+- Restore-from-JSON only accepts `taps` and `anchor`.
 
 ## Lee's rules for this project
 - Predicted times are estimates; make the anchor/"set as now" lever obvious.
@@ -85,9 +80,6 @@ while Lee was in the arena; moved here Sept 12 evening so it can be hosted and i
 - Restore-from-JSON does an unvalidated `Object.assign` (self-XSS only; not a sharing risk).
 
 ## Next steps (suggested)
-1. ~~Host it~~ Published as a Claude artifact (see above). GitHub Pages is a `gh repo create` away
-   if a plain URL / iOS home-screen install is wanted.
-2. Find the FloArena JSON endpoint and add a sync (server-side or a proxy), or at least
-   a "paste results" import that's faster than editing `DEFAULT`.
-3. Verify Day 2 block order against FloArena's Upcoming tab before Sept 13 starts.
-4. Fill in the men's -99/-77/-66/-88 QF results.
+1. Before 11:00 Sept 13: check `event/<event>/upcoming-bouts` and fix the Day 2 block order.
+2. Watch the first Actions run of the day (`gh run list -w sync.yml`) to confirm the cron fires.
+3. If shared taps are ever wanted, that needs a backend (e.g. the artifact `db` capability).
