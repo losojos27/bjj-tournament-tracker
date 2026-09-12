@@ -41,7 +41,9 @@
   .topbar .title{font-family:var(--font-heading);font-weight:650;font-size:1.05rem;letter-spacing:-.02em;white-space:nowrap}
   .status{flex:1;min-width:0;font-size:var(--fs-eyebrow);color:var(--text-muted);text-align:right;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
   .status .bad{color:var(--cue-warning)}
+  .bad-note{color:var(--cue-warning)}
   .status b{color:var(--live);font-weight:650}
+  @media (max-width:480px){ .status .sync{display:none} }
   .section-title{font-size:var(--fs-meta);font-weight:600;color:var(--text-muted);margin:18px 0 8px}
   main > .section-title:first-child{margin-top:2px}
   .panel{background:var(--bg-card);border-radius:var(--radius-md);padding:12px 14px}
@@ -75,6 +77,8 @@
   .name .nm{overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
   .flag{display:inline-block;width:1.25em;text-align:center;flex-shrink:0;font-size:1.05em;line-height:1}
   .big .flag{margin-right:.35em;font-size:.9em}
+  .copy-name{background:none;border:0;padding:0;margin:0;font:inherit;color:inherit;cursor:pointer;-webkit-tap-highlight-color:transparent;border-radius:var(--radius-sm)}
+  .copy-name:active{background:var(--bg-card-hover)}
   .mat .who-l{display:flex;align-items:center;gap:6px;min-width:0;background:none;border:0;padding:0;font:inherit;color:inherit;text-align:left;cursor:pointer;-webkit-tap-highlight-color:transparent}
   .mat .who .nm{overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
   .seed{font-size:var(--fs-eyebrow);color:var(--text-muted);min-width:18px;text-align:right;font-variant-numeric:tabular-nums}
@@ -360,7 +364,7 @@ function renderNext(){
   const {list:q,mode,floOrder,matCount:matsInUse}=queue(); const d=today();
   // the day is done when nothing is queued and every bout in today's blocks is decided
   const dayDone=!q.length && blocks().filter(b=>b.day===d).some(b=>allMatches(b).length) && blocks().filter(b=>b.day===d).every(b=>allMatches(b).every(mo=>mo.w!==null));
-  let h=`<div class="topline"><div class="chip-row">${[1,2].map(x=>`<button type="button" class="chip ${d===x?'active':''}" data-day="${x}" aria-pressed="${d===x}">day ${x}</button>`).join('')}</div><span class="note" style="margin:0">${matsInUse} mat${matsInUse===1?'':'s'}${floOrder?'':' (assumed)'} · times are estimates${mode==='live'?' · following the live feed':''}${floOrder?' · order from FloArena':''}</span></div>`;
+  let h=`<div class="topline"><div class="chip-row">${[1,2].map(x=>`<button type="button" class="chip ${d===x?'active':''}" data-day="${x}" aria-pressed="${d===x}">day ${x}</button>`).join('')}</div><span class="note" style="margin:0">${dayDone?'':`${matsInUse} mat${matsInUse===1?'':'s'}${floOrder?'':' (assumed)'} · times are estimates${mode==='live'?' · following the live feed':''}${floOrder?' · order from FloArena':''}`}</span></div>`;
   h+=renderMats();
   const fl=S.follow.filter(Boolean);
   const cards=[]; const seen=new Set();
@@ -370,7 +374,7 @@ function renderNext(){
     if(mine.length){
       for(const mo of mine){ const me=hit(mo.a)?mo.a:mo.b, opp=me===mo.a?mo.b:mo.a; if(seen.has(me.name)) continue; seen.add(me.name);
         const when=mo.onMat?`on mat ${mo.mat} now`:`${fmt(mo.at)} · ${rel(mo.at)} · mat ${mo.mat}`;
-        cards.push({at:mo.at,html:`<div class="panel follow-card"><span class="pin"></span><div><div class="big">${flagHtml(me.team)}${esc(me.name)}${mo.onMat?'':' · '+fmt(mo.at)}</div><div class="sub">${when} · ${esc(mo.div.name)} ${rl(mo.rName)} · vs ${opp.tbd?esc(opp.label):esc(opp.name)}</div></div></div>`}); }
+        cards.push({at:mo.at,html:`<div class="panel follow-card"><span class="pin"></span><div><div class="big"><button type="button" class="copy-name" data-copy="${esc(me.name)}" title="copy name">${flagHtml(me.team)}${esc(me.name)}</button>${mo.onMat?' · '+'':' · '+fmt(mo.at)}</div><div class="sub">${when} · ${esc(mo.div.name)} ${rl(mo.rName)} · vs ${opp.tbd?esc(opp.label):esc(opp.name)}</div></div></div>`}); }
     } else {
       // still alive somewhere (e.g. tomorrow, or a division with no bouts yet)? champion? otherwise eliminated: no card
       let status='no match in today’s queue', out=false, champ=false;
@@ -390,7 +394,7 @@ function renderNext(){
   q.slice(0,48).forEach(mo=>{
     const fol=isFollow(mo.a)||isFollow(mo.b);
     h+=`<div class="panel row ${mo.onMat?'now':''} ${fol?'fol':''}"><div class="t">${mo.onMat?'now':fmt(mo.at)}<small>mat ${mo.mat}</small></div>
-      <div><div class="meta">${esc(mo.div.name)} ${ROUND_LABEL[mo.rName]||mo.rName}${mo.bout&&mo.bout.n?' · #'+esc(mo.bout.n):''} ${mo.onMat?`<span class="cue live">on the mat · ${esc(mo.live.clock)}</span>`:''}</div>
+      <div><div class="meta">${esc(mo.div.name)} ${ROUND_LABEL[mo.rName]||mo.rName} ${mo.onMat?`<span class="cue live">on the mat · ${esc(mo.live.clock)}</span>`:''}</div>
       <div class="vs">${pName(mo.a,mo,0)}${pName(mo.b,mo,1)}</div></div></div>`;
   });
   if(q.length) h+=`</div>`;
@@ -402,6 +406,7 @@ function currentDiv(){
   return ds.find(x=>x.id===S.bracketDiv) || ds.find(d=>d.rounds.some(r=>r.bouts.some(b=>isFollow(b.a)||isFollow(b.b)))) || ds[0];
 }
 let PROJ=new Map();   // key -> queued match, for the bracket's unfought boxes
+let bracketFresh=false; // set when the division changes: open on the first unfought round, chip in view
 function box(mo){
   const b=mo.bout||{};
   let res='';
@@ -416,10 +421,11 @@ function box(mo){
 }
 function renderBrackets(){
   const ds=divs(); const div=currentDiv(); if(!div) return `<div class="panel">no bracket data yet.</div>`;
-  PROJ=new Map(queue().list.map(mo=>[mo.key,mo]));
+  PROJ=new Map(); { const saved=S.day; for(const dd of [1,2]){ S.day=dd; for(const mo of queue().list) if(!PROJ.has(mo.key)) PROJ.set(mo.key,mo); } S.day=saved; }   // both days: the day chip on next up must not blank the bracket
   let h=`<div class="chips">${ds.map(d=>{ const rn=rounds(d); const c=winnerOf(d,rn[rn.length-1],0); return `<button type="button" data-bdiv="${esc(d.id)}" class="chip ${d.id===div.id?'active':''}">${esc(d.name)}${c!==null&&c>=0?' 🥇':''}</button>`; }).join('')}</div>`;
   const n1=div.rounds[0].bouts.length;
-  h+=`<div class="bwrap"><div class="bracket" style="--n1:${n1}">`;
+  let firstOpen=div.rounds.findIndex(r=>r.bouts.some((b,m)=>winnerOf(div,r.name,m)===null)); if(firstOpen<0) firstOpen=div.rounds.length-1;
+  h+=`<div class="bwrap" data-first-open="${firstOpen}"><div class="bracket" style="--n1:${n1}">`;
   for(const r of div.rounds){
     h+=`<div class="col"><h3>${ROUND_HEAD[r.name]||r.name}</h3><div class="slots">`;
     for(let m=0;m<r.bouts.length;m++) h+=`<div class="slot">${box(matchObj(div,r.name,m))}</div>`;
@@ -434,12 +440,18 @@ function themeMode(){ try{ const t=localStorage.getItem('bjjTracker.theme'); ret
 function setThemeMode(v){ // theme.js owns the switch; cycle it until the stored mode matches
   for(let i=0;i<3&&themeMode()!==v;i++) window.AppTheme&&window.AppTheme.cycle();
 }
+function unmatchedFollows(){
+  if(!DATA) return [];
+  const people=[]; for(const d of divs()){ for(const r of d.rounds) for(const b of r.bouts) people.push(b.a,b.b); if(d.third) people.push(d.third.a,d.third.b); }
+  return S.follow.filter(f=>f&&!people.some(p=>p&&p.name&&(p.name.toLowerCase().includes(f.toLowerCase())||String(p.team||'').toLowerCase().includes(f.toLowerCase()))));
+}
 function renderSettings(){
   const synced=DATA?fmt(new Date(DATA.updated)):'not loaded';
   return `
   <h2 class="section-title">following</h2>
   <div class="panel">
     <input class="field" id="follow" value="${esc(S.follow.join(', '))}" placeholder="names or countries, comma separated" aria-label="following" autocomplete="off" autocapitalize="words">
+    ${unmatchedFollows().map(f=>`<div class="note bad-note">no fighter or country matches “${esc(f)}”</div>`).join('')}
     <div class="note">partial names work. a country (USA, Poland) follows everyone from it. followed fighters are highlighted everywhere and get a card at the top of next up while they’re still in it.</div>
   </div>
   <h2 class="section-title">appearance</h2>
@@ -465,15 +477,23 @@ function renderStatus(){
   const dataTxt = DATA ? `synced ${dataErr?'<span class="bad">stale</span> ':''}${fmt(new Date(DATA.updated))}` : (dataErr?'<span class="bad">results failed</span>':'loading…');
   const n=liveInProgress().length;
   const liveTxt = liveState==='ok' ? (n?`<b>${n===1?'1 bout':n+' bouts'} on the mats</b>`:'nothing on the mats') : liveState==='bad' ? `<span class="bad">live feed lost</span>` : `live feed off`;
-  s.innerHTML=`${liveTxt} · ${dataTxt}`;
+  s.innerHTML=`${liveTxt}<span class="sync"> · ${dataTxt}</span>`;
 }
 function render(){
   document.querySelectorAll('.tabs .tab').forEach(b=>b.classList.toggle('active',b.dataset.tab===tab));
   renderStatus();
   if(!DATA){ $('#main').innerHTML = dataErr ? `<div class="panel">couldn’t load the bracket (${esc(dataErr.message)}). retrying every minute.</div>` : `<div class="panel">loading bracket…</div>`; return; }
-  const bw=$('#main').querySelector('.bwrap'); const keepX=bw?bw.scrollLeft:0;   // redraws (live poll) must not lose where the bracket was scrolled to
+  // redraws (live poll) must not lose where the bracket or the chip row was scrolled to
+  const bw=$('#main').querySelector('.bwrap'); const keepX=bw&&!bracketFresh?bw.scrollLeft:-1;
+  const ch=$('#main').querySelector('.chips'); const keepC=ch&&!bracketFresh?ch.scrollLeft:-1;
+  bracketFresh=false;
   $('#main').innerHTML = tab==='next'?renderNext():tab==='brackets'?renderBrackets():renderSettings();
-  const bw2=$('#main').querySelector('.bwrap'); if(bw2&&keepX) bw2.scrollLeft=keepX;
+  if(tab==='brackets'){
+    const bw2=$('#main').querySelector('.bwrap'), ch2=$('#main').querySelector('.chips');
+    if(keepC>=0) ch2.scrollLeft=keepC; else ch2.querySelector('.chip.active')?.scrollIntoView({inline:'center',block:'nearest'});
+    if(keepX>=0) bw2.scrollLeft=keepX;
+    else { const i=+bw2.dataset.firstOpen||0; const col=bw2.querySelectorAll('.col')[i]; if(col&&i>0) bw2.scrollLeft=Math.max(0,col.offsetLeft-parseInt(getComputedStyle(bw2).paddingLeft)||0); }  // fresh open: start at the first round with something left to fight
+  }
 }
 async function copyText(t){
   try{ if(navigator.clipboard&&window.isSecureContext){ await navigator.clipboard.writeText(t); toast(`copied ${t}`); return; } }catch(e){}
@@ -485,7 +505,7 @@ function toast(t){ const e=$('#toast'); e.textContent=t; e.classList.add('show')
 document.querySelector('.tabs').addEventListener('click',e=>{ const b=e.target.closest('[data-tab]'); if(b){ tab=b.dataset.tab; render(); window.scrollTo(0,0);} });
 $('#main').addEventListener('click',e=>{
   const dy=e.target.closest('[data-day]'); if(dy){ S.day=+dy.dataset.day; save(); render(); return; }
-  const bd=e.target.closest('[data-bdiv]'); if(bd){ S.bracketDiv=bd.dataset.bdiv; save(); render(); return; }
+  const bd=e.target.closest('[data-bdiv]'); if(bd){ S.bracketDiv=bd.dataset.bdiv; bracketFresh=true; save(); render(); return; }
   const cp=e.target.closest('[data-copy]'); if(cp){ copyText(cp.dataset.copy); return; }
   const th=e.target.closest('[data-theme-set]'); if(th){ setThemeMode(th.dataset.themeSet); render(); return; }
   if(e.target.id==='reset'){ // two-tap confirm: native confirm() is blocked in sandboxed iframes
