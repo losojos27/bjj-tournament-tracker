@@ -1,85 +1,109 @@
-# ADCC 2026 bracket + schedule tracker — handoff
+# CLAUDE.md
 
-Single-file web app (`index.html`) that tracks the ADCC World Championship 2026 brackets
-(Kraków, Sept 12–13) and projects match start times. Built in a Claude chat on Sept 12
-while Lee was in the arena; moved here Sept 12 evening so it can be hosted and iterated.
+This file provides guidance to Claude Code (claude.ai/code) when working with code in this repository.
 
-## Repo layout & publishing
-- `index.html` — the app. `README.md` — public-facing overview. `archive/` — original chat handoff zip.
-- `scripts/build-artifact.sh` → `dist/artifact.html` (gitignored): `index.html` minus the
-  doctype/html/head/body wrapper, which the Claude artifact host supplies itself.
-- **Published:** https://claude.ai/code/artifact/78d4a9a4-2636-4548-9de6-b03be85ae72e
-  Republish after any change: run the build script, then `Artifact` on `dist/artifact.html`
-  (same path keeps the URL). Persistence there is localStorage, per viewer, per browser.
-- When baking new results into `DEFAULT.winners`, **bump `DEFAULT.v`** and extend the
-  migration condition in `load()`, or existing viewers' stored state will shadow them.
-- The Reset button uses a two-tap confirm; native `confirm()` is blocked in the artifact iframe.
+## What this is
 
-## Where things live
-- **Live page (share this):** https://losojos27.github.io/bjj-tournament-tracker/ (GitHub Pages, repo `losojos27/bjj-tournament-tracker`)
-- Claude artifact snapshot: https://claude.ai/code/artifact/78d4a9a4-2636-4548-9de6-b03be85ae72e
-  (no live feed there: the artifact CSP blocks fetches; results are as of the last republish)
-- `index.html` app · `data/results.json` bracket state · `scripts/sync.mjs` FloArena→JSON ·
-  `.github/workflows/sync.yml` cron · `scripts/build-artifact.sh` → `dist/artifact.html`.
+A dependency-free, single-file web app (`index.html`) that tracks BJJ tournament brackets and
+projects mat times, fed by FloArena. First event: ADCC World Championship 2026, Kraków,
+Sept 12–13. Lee uses it on a phone in the arena; other people get the link. The folder name
+is deliberately generic (`bjj-tournament-tracker`) because it will cover more than ADCC.
 
-## Data flow (rebuilt Sept 12 evening)
-- **FloArena JSON (no auth, not CDN-cached):** base `https://arena.flograppling.com`, event
-  `52703b65-bade-46e2-9ce2-399dd32d93e4`.
-  - `bracket/<event>` → divisions → weightClasses → boutPools (guids).
-  - `bracket/<event>/bouts/<weightClassGuid>/pool/<poolGuid>` → every bout: `boutNumber`,
-    `roundName.displayName`, `topWrestler`/`bottomWrestler` (+seed), `winnerWrestlerGuid`,
-    `result`, `winType`, `mat.name`, `winnerToBoutGuid`/`winnerToTop` (tree links).
-  - `event/<event>/upcoming-bouts` → per-mat upcoming list (was empty at end of Day 1; the sync
-    records it under `mats[].upcoming` as a hint, shape unverified).
-  - `event/<event>/recent-results` is CDN-cached 20 min (`s-maxage=1200`) — don't rely on it.
-- **FloArena Firebase (public, CORS ok):** `https://floarena.firebaseio.com/<event>/mats.json`
-  → one entry per mat: red/blue names+seeds+scores, `clock` (counts down), `period`
-  (`1`, `TB1`…), `isMatchOver`, `winner` (`red`|`blue`), `boutNumber`, `updated` (epoch ms).
-  red = FloArena top slot, blue = bottom. `boutupdates.json` exists but carries no winners.
-- `scripts/sync.mjs` orders each round positionally by following `winnerToBoutGuid` links
-  from the final backwards (so bout m in round r feeds bout m>>1), falls back to bout number.
-  A bout with `winType` but a winner guid matching neither athlete (double DQ, -66 #39) is
-  emitted `decided:true, w:null`; the page shows both as out.
-- Page precedence per bout: FloArena result → live-feed result (`isMatchOver`+`winner`) →
-  local tap. Taps are refused once a feed has the result.
-- Schedule: live in-progress bouts anchor the projection at "now" (mat free at now +
-  remaining clock + 2 min); else the manual anchor (clamped to now); else the day's start
-  time on the event's calendar date.
+- **Live page (the one to share):** https://losojos27.github.io/bjj-tournament-tracker/
+- Claude artifact snapshot (no live feeds, results as of last republish):
+  https://claude.ai/code/artifact/78d4a9a4-2636-4548-9de6-b03be85ae72e
 
-## Running order (Sept 12 observed; Day 2 assumed)
+## Commands
+
+```
+node scripts/sync.mjs                       # FloArena -> data/results.json (Node 18+, no deps)
+python3 -m http.server 8000                 # serve locally; open http://localhost:8000
+node --check <(sed -n '/<script>/,/<\/script>/p' index.html | sed '1d;$d')   # syntax-check the inline script
+scripts/build-artifact.sh                   # index.html -> dist/artifact.html (strips the document wrapper the artifact host adds)
+gh workflow run sync.yml                    # trigger a sync on GitHub now
+gh run list -w sync.yml -L5                 # is the cron firing?
+```
+
+There are no tests and no build. Deploy is `git push` to `main`; GitHub Pages redeploys in about
+a minute. To update the artifact snapshot: run the build script, then publish `dist/artifact.html`
+with `data/results.json` attached as a supporting file.
+
+`fetch()` of a relative file fails from `file://`, so always test through a local server.
+
+## Architecture
+
+Three layers, all read-only except the last:
+
+1. **`scripts/sync.mjs` → `data/results.json`.** Pulls every bout from FloArena's JSON and
+   normalizes it: `divs[]` each with `rounds[]` (`R16`/`QF`/`SF`/`F`) of bouts
+   `{n, a, b, w, decided, result, winType, mat}` plus a `third` bout. `w` is `0` (top/`a` won),
+   `1`, or `null`. Round order is positional: bout `m` in round `r` feeds bout `m>>1` in `r+1`,
+   derived by walking FloArena's `winnerToBoutGuid` links backwards from the final (bout-number
+   order is the fallback). The GitHub Actions cron (`.github/workflows/sync.yml`, every 5 min,
+   really 5–15) runs it and commits only when content changed, to stay under the Pages
+   build limit (10/hour).
+2. **Browser polling in `index.html`.** `results.json` every 60 s, and FloArena's public
+   Firebase `mats.json` every 15 s for the bout on each mat (clock, score, `isMatchOver`,
+   `winner`). Neither poll re-renders while the Settings tab is open (`quiet()`).
+3. **Local overlay (`S`, in localStorage).** `taps` (results the user recorded), follow list,
+   mats, day, start times, slot durations, block order, manual anchor, chosen bracket division.
+   `S.v` is a schema version; bump it and extend the migration in `loadState()` when the shape
+   of `S` changes.
+
+Result precedence per bout, in `winnerInfo()`: FloArena → live feed (`isMatchOver` + `winner`)
+→ tap. Taps are refused once a feed has the result. `w === -1` means decided with no winner
+(double DQ); both athletes render as out and nothing propagates.
+
+Participants come from FloArena's own per-round lists when present (`slot()`), and are only
+propagated from earlier winners when FloArena hasn't filled the slot. This is what makes odd
+brackets work: at -66kg bout #39 was a double DQ and FloArena slotted the loser of #37 into the
+QF instead. Don't add hand-coded bracket overrides; fix the sync or the slot logic.
+
+Schedule (`queue()`): today's matches in `DEFAULT_BLOCKS` order (day 1 / day 2, editable in
+Settings), assigned to the earliest-free mat with per-round slot lengths. Start point, in
+priority: a live in-progress bout (mat free at now + remaining clock + 2 min) → the manual
+"set as now" anchor, clamped to now → the day's configured start on the event's calendar date
+(`DAY_DATES`). Never projects into the past.
+
+## FloArena data sources (found by watching the arena page's network traffic)
+
+Base `https://arena.flograppling.com`, event `52703b65-bade-46e2-9ce2-399dd32d93e4`, no auth.
+- `bracket/<event>` → divisions → weightClasses → boutPools (guids for the next call).
+- `bracket/<event>/bouts/<wcGuid>/pool/<poolGuid>` → all bouts for a division. Not CDN-cached.
+  Winner is `winnerWrestlerGuid` (no `winner` object). `roundName.displayName` is the round.
+- `event/<event>/upcoming-bouts` → per-mat upcoming order. Empty at the end of Day 1; the sync
+  stores it under `mats[].upcoming` but its bout shape is unverified.
+- `event/<event>/recent-results` is CDN-cached 20 min (`s-maxage=1200`). Don't use it.
+- Firebase `https://floarena.firebaseio.com/<event>/mats.json`: public, CORS-open, no-cache.
+  `red` = FloArena top slot (`a`), `blue` = bottom (`b`). `clock` counts down; `period` is
+  `1` or `TB1`… `boutupdates.json` exists but has no winners.
+- The arena page itself (`?page=brackets`) is a JS shell; nothing useful in its HTML.
+- The artifact host's CSP blocks all outbound fetches, so the artifact copy has no live layer.
+
+Names in FloArena differ from Flo's published brackets (e.g. "Belal Etiabari", "Francis Pana");
+FloArena is the source of truth here. Seeds are unique within a division; match on seed, not name.
+
+## Event facts (ADCC 2026)
+
 - 3 mats. Bout numbers: men's R16 #1–40, women's QF #41–52, men's QF #53–72, SF #73–88.
-- Day 2 blocks in `DEFAULT_BLOCKS` are a guess (Men SF → Women SF → 3rds → Finals → Absolute →
-  super fight). If `upcoming-bouts` populates tomorrow, use it to fix the order.
-- Absolute division exists in FloArena with 0 bouts as of Sept 12 night; the sync picks it up
-  automatically (id `mabs`) once bouts appear. Super fight: Yuri Simoes v Kaynan Duarte.
-
-## Known issues
-- Times are the viewer's local time; day starts are Kraków 11:00 expressed in local hours.
-- GitHub cron is "every 5 min" nominally, often 5–15 in practice. Pages redeploys on each
-  sync commit (~1 min). Soft limit 10 Pages builds/hour — the sync only commits on change.
-- Each viewer's taps/settings are local. There is no shared state between viewers.
-- Restore-from-JSON only accepts `taps` and `anchor`.
+  Day 2 block order in `DEFAULT_BLOCKS` is a guess; verify against `upcoming-bouts` on the day.
+- "Absolute Male" is a separate FloArena division from the Sunday "Super Fight" (one bout,
+  Simoes v Duarte). Absolute had 0 bouts as of Sept 12 night; the sync picks it up (id `mabs`)
+  once bouts appear and the page already has Day 2 blocks for its rounds.
 
 ## Lee's rules for this project
-- Predicted times are estimates; make the anchor/"set as now" lever obvious.
-- Don't re-litigate settled decisions; execute.
+
+- Predicted times are estimates; keep the "set as now" lever obvious.
 - One tap per result. No burdensome workarounds.
+- Don't re-litigate settled decisions; execute.
 - Flag uncertainty explicitly.
+- UI choices already made: Day 1/Day 2 is a switch on the Next up tab, not in Settings; the
+  Brackets tab is a real column bracket with a division picker, not an accordion.
 
-## Known issues (found in the Sept 12 evening review)
-- Stale anchor: if the anchored match has no recorded result and `anchor.at` is in the past,
-  `queue()` still projects from `anchor.at` (into the past). Only completed anchors jump to now.
-  Only bites on Day 1; the Day 2 queue ignores the Day 1 anchor key entirely.
-- `DEFAULT.anchor.at` is computed as *today* 16:30 on every fresh load, so a first-time viewer
-  on Day 1 morning would see a future-dated anchor. Harmless from Day 2 on.
-- "Clear now anchor" button still shows on Day 2 even though the anchor is inert there.
-- Times are the *viewer's* local time. `dayStart` uses local 11:00, so viewers outside CEST
-  get wrong Day 2 start projections until someone taps "set as now".
-- Each viewer has their own localStorage; results Lee taps do not reach other viewers unless
-  baked into `DEFAULT` and republished. Shared state would need a backend (artifact `db`).
-- Restore-from-JSON does an unvalidated `Object.assign` (self-XSS only; not a sharing risk).
+## Known limitations
 
-## Next steps (suggested)
-1. Before 11:00 Sept 13: check `event/<event>/upcoming-bouts` and fix the Day 2 block order.
-2. Watch the first Actions run of the day (`gh run list -w sync.yml`) to confirm the cron fires.
-3. If shared taps are ever wanted, that needs a backend (e.g. the artifact `db` capability).
+- Every viewer's taps and settings are local to their browser. Shared state needs a backend.
+- Times display in the viewer's local zone; the configured day start is Kraków 11:00 expressed
+  in local hours, so viewers outside CEST see wrong projections until a live bout anchors it.
+- The Reset button uses a two-tap confirm because native `confirm()` is blocked in the
+  artifact's sandboxed iframe.
