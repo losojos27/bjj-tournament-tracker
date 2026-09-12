@@ -42,6 +42,7 @@
   .status{flex:1;min-width:0;font-size:var(--fs-eyebrow);color:var(--text-muted);text-align:right;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
   .status .bad{color:var(--cue-warning)}
   .section-title{font-size:var(--fs-meta);font-weight:600;color:var(--text-muted);margin:18px 0 8px}
+  main > .section-title:first-child{margin-top:2px}
   .panel{background:var(--bg-card);border-radius:var(--radius-md);padding:12px 14px}
   .stack{display:flex;flex-direction:column;gap:6px}
   .chip.warn{background:var(--cue-warning);color:var(--accent-contrast)}
@@ -426,22 +427,26 @@ function setThemeMode(v){ // theme.js owns the switch; cycle it until the stored
 function renderSettings(){
   const synced=DATA?fmt(new Date(DATA.updated)):'not loaded';
   return `
+  <h2 class="section-title">following</h2>
   <div class="panel">
-    <label for="follow">following (names or countries, comma separated)</label><input class="field" id="follow" value="${esc(S.follow.join(', '))}" autocomplete="off" autocapitalize="words">
-    <div class="note">partial names work. a country (e.g. USA, Poland) follows everyone from it. followed fighters are highlighted everywhere and get a card at the top of next up while they’re still in it.</div>
+    <input class="field" id="follow" value="${esc(S.follow.join(', '))}" placeholder="names or countries, comma separated" aria-label="following" autocomplete="off" autocapitalize="words">
+    <div class="note">partial names work. a country (USA, Poland) follows everyone from it. followed fighters are highlighted everywhere and get a card at the top of next up while they’re still in it.</div>
   </div>
   <h2 class="section-title">appearance</h2>
-  <div class="panel"><div class="chip-row">${[['auto','auto'],['light','light'],['dark','dark']].map(([v,l])=>`<button type="button" class="chip ${themeMode()===v?'active':''}" data-theme-set="${v}">${l}</button>`).join('')}</div></div>
-  <h2 class="section-title">projection (only used when FloArena hasn’t published the order)</h2>
+  <div class="panel">
+    <div class="chip-row">${['auto','light','dark'].map(v=>`<button type="button" class="chip ${themeMode()===v?'active':''}" data-theme-set="${v}">${v}</button>`).join('')}</div>
+  </div>
+  <h2 class="section-title">projection</h2>
   <div class="panel">
     <div class="fields">
       <label for="mats">mats running</label><input class="field" id="mats" type="number" inputmode="numeric" min="1" max="6" value="${+S.mats||3}">
       ${['R16','QF','SF','3','F'].map(k=>`<label for="dur-${k}">${ROUND_LABEL[k]||k} minutes</label><input class="field" id="dur-${k}" data-dur="${k}" type="number" inputmode="numeric" min="1" value="${+S.dur[k]||12}">`).join('')}
     </div>
-    <div class="note">minutes per match slot including the changeover.</div>
+    <div class="note">used only until FloArena publishes the running order. minutes are per match slot, including the changeover.</div>
   </div>
-  <div class="panel" style="margin-top:10px">
-    <div class="note" style="margin:0">bracket, results, and mat order come from FloArena (last synced ${synced}); live scores and the clock come from FloArena’s mat feed. times are projected from that, never typed in. the follow list and these settings live in this browser only.</div>
+  <h2 class="section-title">data</h2>
+  <div class="panel">
+    <div class="note" style="margin:0">bracket, results, and mat order come from FloArena (last synced ${synced}). live scores and the clock come from FloArena’s mat feed. times are projected from that, never typed in. the follow list and these settings live in this browser only.</div>
     <div class="actions"><button type="button" class="chip warn" id="reset">reset everything</button></div>
   </div>`;
 }
