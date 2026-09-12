@@ -386,7 +386,8 @@ function renderNext(){
       if(champ||alive||!out) cards.push({at:new Date(8.64e15),html:`<div class="panel follow-card"><span class="pin"></span><div><div class="big">${esc(f)}</div><div class="sub">${status}</div></div></div>`});
     }
   }
-  cards.sort((x,y)=>x.at-y.at); h+=cards.map(c=>c.html).join('');
+  cards.sort((x,y)=>x.at-y.at);
+  if(cards.length) h+=`<h2 class="section-title">following</h2><div class="stack">${cards.map(c=>c.html).join('')}</div>`;
   h+=`<h2 class="section-title">up next</h2>`;
   if(dayDone) h+=`<div class="panel">day ${d} is done. results are in brackets.</div>`;
   else if(!q.length) h+=`<div class="panel">nothing in the queue for day ${d} yet.</div>`;
