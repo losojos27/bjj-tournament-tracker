@@ -275,19 +275,24 @@ function queue(){
   else if(S.anchor){ const i=full.findIndex(x=>x.key===S.anchor.key);
     if(i>=0){ from=i; startAt=new Date(S.anchor.at); mode='anchor'; if(Date.now()>startAt.getTime()) startAt=new Date(); } }
   else if(Date.now()>startAt.getTime()) startAt=new Date();
-  const nMats=Math.max(1,S.mats|0, ...inProg.map(l=>l.matIdx+1));
+  // FloArena's published per-mat order, when it exists, beats the block-order guess
+  const byN=new Map(full.filter(mo=>mo.bout&&mo.bout.n).map(mo=>[String(mo.bout.n),mo]));
+  const upMats=(DATA.mats||[]).map(m=>({idx:(parseInt(String(m.name||'').replace(/\D/g,''),10)||1)-1, list:(m.upcoming||[]).map(u=>byN.get(String(u.n))).filter(Boolean)})).filter(m=>m.list.length);
+  const nMats=Math.max(1,S.mats|0, ...inProg.map(l=>l.matIdx+1), ...upMats.map(m=>m.idx+1));
   const mats=Array.from({length:nMats},()=>startAt.getTime());
   for(const l of inProg) mats[l.matIdx]=Date.now()+(Math.min(clockSecs(l.clock),20*60)+120)*1000; // remaining time + changeover
-  const out=[];
+  const out=[], placed=new Set();
+  const place=(mo,mi)=>{ mo.at=new Date(mats[mi]); mo.mat=mi+1; mats[mi]+=(S.dur[mo.rName]||12)*60000; out.push(mo); placed.add(mo.key); };
+  const onMat=mo=>{ const l=mo.live; if(l&&!l.over&&inProg.includes(l)){ mo.at=new Date(); mo.mat=l.matIdx+1; mo.onMat=true; out.push(mo); placed.add(mo.key); return true; } return false; };
+  if(upMats.length){ mode= mode==='live'?'live':'flo';
+    for(const m of upMats) for(const mo of m.list){ if(placed.has(mo.key)||onMat(mo)||mo.w!==null) continue; place(mo,m.idx); } }
   for(let i=from;i<full.length;i++){
-    const mo=full[i];
-    const l=mo.live; if(l&&!l.over&&inProg.includes(l)){ mo.at=new Date(); mo.mat=l.matIdx+1; mo.onMat=true; out.push(mo); continue; }
-    if(mo.w!==null) continue;
+    const mo=full[i]; if(placed.has(mo.key)||onMat(mo)||mo.w!==null) continue;
     let mi=0; for(let k=1;k<mats.length;k++) if(mats[k]<mats[mi]) mi=k;
-    mo.at=new Date(mats[mi]); mo.mat=mi+1; mats[mi]+= (S.dur[mo.rName]||12)*60000; out.push(mo);
+    place(mo,mi);
   }
   out.sort((a,b)=>a.at-b.at||a.mat-b.mat);
-  return {list:out, mode};
+  return {list:out, mode, floOrder:upMats.length>0};
 }
 function isFollow(p){ return p&&p.name && S.follow.some(f=>f && p.name.toLowerCase().includes(f.toLowerCase())); }
 function fmt(dt){ return dt.toLocaleTimeString([], {hour:'numeric',minute:'2-digit'}); }
@@ -321,8 +326,8 @@ function renderMats(){
   return h+`</div>`;
 }
 function renderNext(){
-  const {list:q,mode}=queue(); const d=today();
-  let h=`<div class="topline"><div class="seg" role="tablist">${[1,2].map(x=>`<button data-day="${x}" class="${d===x?'on':''}" aria-pressed="${d===x}">Day ${x}</button>`).join('')}</div><span class="note" style="margin:0">${S.mats} mats · times are estimates${mode==='live'?' · anchored to the live feed':mode==='anchor'?' · anchored manually':''}</span></div>`;
+  const {list:q,mode,floOrder}=queue(); const d=today();
+  let h=`<div class="topline"><div class="seg" role="tablist">${[1,2].map(x=>`<button data-day="${x}" class="${d===x?'on':''}" aria-pressed="${d===x}">Day ${x}</button>`).join('')}</div><span class="note" style="margin:0">${S.mats} mats · times are estimates${mode==='live'?' · anchored to the live feed':mode==='anchor'?' · anchored manually':''}${floOrder?' · order from FloArena':''}</span></div>`;
   h+=renderMats();
   const fl=S.follow.filter(Boolean);
   for(const f of fl){

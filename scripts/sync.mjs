@@ -91,9 +91,13 @@ for (const d of bracket.divisions) {
 let mats = [];
 try {
   const up = await get(`event/${EVENT}/upcoming-bouts`);
-  mats = (up || []).filter(m => m && m.name).map(m => ({ name: m.name, upcoming: (m.bouts || []).map(x => ({
-    n: x.boutNumber || null, weightClass: x.weightClass?.name || x.weightClass || null, round: ROUND[x.roundName?.displayName] || x.roundName?.displayName || null,
-    a: person(x.topWrestler)?.name || null, b: person(x.bottomWrestler)?.name || null })) }));
+  mats = (up || []).filter(m => m && m.name).map(m => ({ name: m.name, upcoming: (m.bouts || []).map(x => {
+    const b = x.bout || x; // defensive: shape unverified until FloArena publishes an order
+    return { n: b.boutNumber ?? b.number ?? null, weightClass: b.weightClass?.name || (typeof b.weightClass === 'string' ? b.weightClass : null),
+      round: ROUND[b.roundName?.displayName] || b.roundName?.displayName || b.round || null,
+      a: person(b.topWrestler)?.name || null, b: person(b.bottomWrestler)?.name || null };
+  }) }));
+  if (mats.some(m => m.upcoming.length)) console.log('upcoming sample:', JSON.stringify((up.find(m => m.bouts?.length) || {}).bouts[0]).slice(0, 600));
 } catch (e) { console.warn('upcoming-bouts unavailable:', e.message); }
 
 const out = { updated: new Date().toISOString(), event: { id: EVENT, name: info.name, status: info.status, tz: info.timeZone, start: info.startDate, end: info.endDate }, divs, mats };
