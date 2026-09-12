@@ -1,0 +1,327 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="ADCC">
+<meta name="theme-color" content="#1b2230">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>ADCC 2026 — Kraków</title>
+<style>
+  :root{
+    --bg:#1b2230; --panel:#242d3d; --line:#33405a; --ink:#e8ecf2; --dim:#94a0b8;
+    --follow:#f2b84b; --win:#5ec27a; --now:#e0563f; --tbd:#6f7d99;
+  }
+  *{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+  html,body{margin:0;background:var(--bg);color:var(--ink);font:16px/1.4 -apple-system,system-ui,"Segoe UI",Roboto,sans-serif}
+  header{position:sticky;top:0;z-index:5;background:var(--bg);border-bottom:1px solid var(--line);padding:env(safe-area-inset-top) 0 0}
+  .tabs{display:flex}
+  .tabs button{flex:1;background:none;border:0;color:var(--dim);font:inherit;font-size:15px;padding:14px 4px 12px;border-bottom:3px solid transparent}
+  .tabs button.on{color:var(--ink);border-bottom-color:var(--follow);font-weight:600}
+  main{padding:12px 12px 80px}
+  h2{font-size:13px;font-weight:600;color:var(--dim);margin:18px 0 8px;letter-spacing:.02em}
+  .card{background:var(--panel);border-radius:10px;padding:12px;margin-bottom:10px}
+  .follow-card{border-left:4px solid var(--follow)}
+  .big{font-size:26px;font-weight:700;line-height:1.1}
+  .sub{color:var(--dim);font-size:14px;margin-top:2px}
+  .row{display:grid;grid-template-columns:62px 1fr;gap:10px;padding:10px 0;border-bottom:1px solid var(--line)}
+  .row:last-child{border-bottom:0}
+  .row.now{background:linear-gradient(90deg,rgba(224,86,63,.18),transparent);margin:0 -12px;padding-left:12px;padding-right:12px;border-radius:8px}
+  .t{font-weight:700;font-size:17px;line-height:1.1}
+  .t small{display:block;color:var(--dim);font-weight:500;font-size:12px}
+  .meta{color:var(--dim);font-size:12px;margin-bottom:3px}
+  .vs{display:flex;flex-direction:column;gap:4px}
+  .name{display:flex;align-items:center;gap:8px;background:none;border:0;color:var(--ink);font:inherit;font-size:16px;text-align:left;padding:5px 6px;border-radius:6px;width:100%}
+  .name:active{background:var(--line)}
+  .name.tbd{color:var(--tbd);font-style:italic}
+  .name.follow{color:var(--follow);font-weight:600}
+  .name.win{color:var(--win);font-weight:700}
+  .name.lose{color:var(--dim);text-decoration:line-through}
+  .seed{font-size:11px;color:var(--dim);min-width:18px;text-align:right}
+  .pill{font-size:11px;padding:2px 7px;border-radius:99px;background:var(--line);color:var(--dim);margin-left:auto}
+  .pill.now{background:var(--now);color:#fff}
+  .actions{display:flex;gap:8px;margin-top:6px}
+  .btn{background:var(--line);color:var(--ink);border:0;border-radius:8px;padding:8px 12px;font:inherit;font-size:14px}
+  .btn.warn{background:var(--now);color:#fff}
+  .btn.ghost{background:none;border:1px solid var(--line);color:var(--dim)}
+  details{margin-bottom:8px}
+  summary{list-style:none;cursor:pointer;background:var(--panel);border-radius:10px;padding:12px;font-weight:600;display:flex;justify-content:space-between}
+  summary::-webkit-details-marker{display:none}
+  .round{margin:8px 0 4px 6px}
+  .round h3{font-size:13px;color:var(--dim);font-weight:600;margin:10px 0 4px}
+  .m{background:var(--panel);border-radius:8px;padding:6px 8px;margin-bottom:6px}
+  .m .meta{margin:0 0 2px 6px}
+  label{display:block;margin:12px 0 4px;color:var(--dim);font-size:13px}
+  input,textarea,select{width:100%;background:var(--bg);border:1px solid var(--line);color:var(--ink);border-radius:8px;padding:9px;font:inherit;font-size:16px}
+  textarea{min-height:90px;font-family:ui-monospace,Menlo,monospace;font-size:13px}
+  .grid2{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+  .blocklist div{display:flex;align-items:center;gap:8px;padding:8px 0;border-bottom:1px solid var(--line)}
+  .blocklist span{flex:1}
+  .blocklist button{width:36px;height:36px;border-radius:8px;border:0;background:var(--line);color:var(--ink);font-size:16px}
+  .note{font-size:13px;color:var(--dim);margin-top:6px}
+  .toast{position:fixed;bottom:18px;left:50%;transform:translateX(-50%);background:var(--ink);color:var(--bg);padding:10px 16px;border-radius:99px;font-size:14px;opacity:0;transition:opacity .2s;pointer-events:none}
+  .toast.show{opacity:1}
+  @media (prefers-reduced-motion:reduce){.toast{transition:none}}
+</style>
+</head>
+<body>
+<header>
+  <div class="tabs">
+    <button data-tab="next" class="on">Next up</button>
+    <button data-tab="brackets">Brackets</button>
+    <button data-tab="settings">Settings</button>
+  </div>
+</header>
+<main id="main"></main>
+<div class="toast" id="toast"></div>
+
+<script>
+// ---------- Bracket data (FloGrappling bracket reveal, Sept 11 2026) ----------
+const DIVS = [
+ {id:'m99p', name:'+99kg', sex:'m', r1:[['Felipe Pena',1,'Ben Etiabari',16],['Haisam Rida',9,'Nick Hartman',8],['Josh Saunders',5,'Frederic Pana',12],['Roosevelt Sousa',13,'Brandon Reed',4],['Dan Manasoiu',3,'Pedro Lucas',14],['Pouya Rahmani',11,'Mark Macqueen',6],['Victor Hugo',7,'Heikki Jussila',10],['Ruslan Abdulaev',15,'Thomas John Carle',2]]},
+ {id:'m99', name:'-99kg', sex:'m', r1:[['Kaynan Duarte',1,'Nikki Maglicic',16],['Javier Zaruski',9,'Vinicius Lessa',8],['Michael Pixley',5,'Declan Schuardt',12],["Eoghan O'Flanagan",13,'Adam Wardzinski',4],['Luke Griffith',3,'Maciej Maciulewicz',14],['Steve Banta',11,'Patrick Gaudio',6],['Roberto Abreu',7,'Elder Cruz Braz',10],['Declan Moody',15,'Anderson Munis Rocha',2]]},
+ {id:'m88', name:'-88kg', sex:'m', r1:[['Felipe Costa',1,'Maciej Mazur',16],['Pawel Jaworski',9,'River Frias',8],['Matheus Diniz',5,'Lucas Kanard',12],['Jon Blank',13,'Gabriel Brod',4],['Chris Wojcik',3,'Santeri Lilius',14],['Jozef Chen',11,'Felipe Diaz',6],['Max Lindblad Tajik',7,'Fouad Ben-Lamkadem',10],['Gabriel Batista',15,'Nabil Haddad',2]]},
+ {id:'m77', name:'-77kg', sex:'m', r1:[['Vagner Rocha',1,'Max Sainz',16],['Alexandre de Jesus',9,'Magomed Dhzarbaev',8],['Elijah Dorsey',5,'Mateusz Gamrot',12],['Mateusz Szczeciński',13,'Jeferson Martins',4],['PJ Barch',3,'Kieran Rudolph',14],['Tommy Langaker',11,'Taylor Pearman',6],['Dante Leon',7,'Nikita Vetrov',10],['Oliver Taza',15,'Jacob Bornemann',2]]},
+ {id:'m66', name:'-66kg', sex:'m', r1:[['Diego Pato',1,'Jakub Wikłacz',16],['Gianni Grippo',9,'Fabricio Machado',8],['Fabricio Andrey',5,'Diogo Reis',12],['Kennedy Maciel',13,'Kamil Wilk',4],['Owen Jones',3,'Riki Anraku',14],['Norbert Miduliszyn',11,'Gabriel Corbe',6],['Dorian Olivarez',7,'Bekzhan Kapashov',10],['Diego Mejia',15,'Yahya Hanay',2]], fixed:{1:[['Diego Pato',1,'Gianni Grippo',9],['Fabricio Andrey',5,'Kennedy Maciel',13],['Riki Anraku',14,'Gabriel Corbe',6],['Owen Jones',3,'Diego Mejia',15]]}},
+ {id:'w65p', name:'W +65kg', sex:'w', r1:[['Helena Crevar',1,'Matilda Reid',8],['Nia Blackman',5,'Elizabeth Mitrovic',4],['Anabel Lopez',3,'Gabi Pessanha',6],['Paige Ivette Clymer',7,'Yara Soares',2]]},
+ {id:'w65', name:'W -65kg', sex:'w', r1:[['Ana Carolina Vieira',1,'Nadia Frankland',8],['Ane Svendsen',5,'Mo Black',4],['Sarah Galvão',3,'Livia Barasine',6],['Injana Goodman',7,'Joslyn Molina',2]]},
+ {id:'w55', name:'W -55kg', sex:'w', r1:[['Jasmine Rocha',1,'Kanae Ikeda',8],['Ana Mayordomo',5,'Sheliah Lindsey',4],['Mayssa Bastos',3,'Valerie Hamilton',6],['Ana Rodrigues',7,'Janette Gloger',2]]},
+];
+const ROUND_NAMES = {8:['R16','QF','SF','F'], 4:['QF','SF','F']};
+
+// Schedule blocks: order the day runs in. Editable in Settings.
+const DEFAULT_BLOCKS = [
+  {id:'m-R16', label:"Men R16",  sex:'m', round:'R16', day:1},
+  {id:'w-QF',  label:"Women QF", sex:'w', round:'QF',  day:1},
+  {id:'m-QF',  label:"Men QF",   sex:'m', round:'QF',  day:1},
+  {id:'m-SF',  label:"Men SF",   sex:'m', round:'SF',  day:2},
+  {id:'w-SF',  label:"Women SF", sex:'w', round:'SF',  day:2},
+  {id:'w-3',   label:"Women 3rd",sex:'w', round:'3',   day:2},
+  {id:'m-3',   label:"Men 3rd",  sex:'m', round:'3',   day:2},
+  {id:'w-F',   label:"Women F",  sex:'w', round:'F',   day:2},
+  {id:'m-F',   label:"Men F",    sex:'m', round:'F',   day:2},
+];
+
+const DEFAULT = {
+  winners:{ // divId -> {roundIdx:{matchIdx: 0|1}}   (pre-entered from Flo live blog, Sept 12 morning)
+    m99p:{0:{0:0,1:1,2:0,3:0,4:0,5:1,6:0,7:0},1:{0:0,1:0,2:1,3:0}}, m99:{0:{0:0,1:0,2:1,3:0,4:0,5:0,6:0,7:1}}, m88:{0:{0:0,1:0,2:1,3:1,4:0,5:0,6:0,7:1},1:{0:1}}, m77:{0:{0:0,1:1,2:0,3:0,4:0,5:0,6:0,7:1}}, w65p:{0:{0:0,1:1,2:0,3:0}}, w65:{0:{0:0,1:1,2:0,3:1}}, w55:{0:{0:0,1:0,2:0,3:0}}
+  },
+  third:{}, // divId -> 0|1 winner of 3rd-place match
+  follow:['Felipe Costa','Victor Hugo'],
+  mats:3, day:null, // null = auto by date
+  start1:'11:00', start2:'11:00',
+  dur:{R16:12, QF:20, SF:20, '3':20, F:30},
+  blocks:DEFAULT_BLOCKS.map(b=>b.id),
+  anchor:{key:'m99|1|0', at:(()=>{const a=new Date(); a.setHours(16,30,0,0); return a.toISOString();})()},
+  v:8,
+};
+let S = JSON.parse(JSON.stringify(DEFAULT));
+let tab='next';
+
+// ---------- persistence ----------
+// storage: Claude's window.storage inside the Claude app; the browser's own storage when hosted elsewhere
+const store = (typeof window.storage!=='undefined' && window.storage && window.storage.get) ? window.storage
+  : { get:async k=>{const v=localStorage.getItem(k); if(v===null) throw new Error('none'); return {key:k,value:v};}, set:async(k,v)=>{localStorage.setItem(k,v); return {key:k,value:v};} };
+async function load(){
+  try{ const r = await store.get('adcc26'); if(r&&r.value){ S = Object.assign({}, DEFAULT, JSON.parse(r.value)); S.dur=Object.assign({},DEFAULT.dur,S.dur||{});} }catch(e){}
+  if((S.v||0)<8 || !S.anchor){ for(const k in DEFAULT.winners){ S.winners[k]=S.winners[k]||{}; for(const r in DEFAULT.winners[k]) S.winners[k][r]=Object.assign({},S.winners[k][r]||{},DEFAULT.winners[k][r]); } delete S.winners.m66; S.mats=3; S.dur=Object.assign({},S.dur,DEFAULT.dur); S.anchor=DEFAULT.anchor; S.v=8; save(); }
+  render();
+}
+let saveT;
+function save(){ clearTimeout(saveT); saveT=setTimeout(async()=>{ try{ await store.set('adcc26', JSON.stringify(S)); }catch(e){} },150); }
+
+// ---------- bracket engine ----------
+function rounds(div){ return ROUND_NAMES[div.r1.length]; }
+function winnerOf(div,r,m){ const w=(S.winners[div.id]||{})[r]; return w&&w[m]!==undefined ? w[m] : null; }
+// returns {name,seed} or {tbd:'Winner of ...'} for slot s (0/1) of match m in round r
+function minRound(div){ return div.fixed?Math.min(...Object.keys(div.fixed).map(Number)):0; }
+function slot(div,r,m,s){
+  if(div.fixed&&div.fixed[r]){ const p=div.fixed[r][m]; return {name:p[s*2], seed:p[s*2+1]}; }
+  if(r===0){ const p=div.r1[m]; return {name:p[s*2], seed:p[s*2+1]}; }
+  const pm=m*2+s, w=winnerOf(div,r-1,pm);
+  if(w===null) return {tbd:true, label:`${rounds(div)[r-1]} ${pm+1}`};
+  return slot(div,r-1,pm,w);
+}
+function loserSlot(div,m){ // loser of SF m
+  const r=rounds(div).length-2, w=winnerOf(div,r,m);
+  if(w===null) return {tbd:true,label:`SF ${m+1} loser`};
+  return slot(div,r,m,1-w);
+}
+function matchObj(div,rName,m){
+  const rn=rounds(div);
+  if(rName==='3'){ return {div,rName,r:'3',m:0,key:`${div.id}|3|0`, a:loserSlot(div,0), b:loserSlot(div,1), w:S.third[div.id]??null}; }
+  const r=rn.indexOf(rName);
+  return {div,rName,r,m,key:`${div.id}|${r}|${m}`, a:slot(div,r,m,0), b:slot(div,r,m,1), w:winnerOf(div,r,m), dead:r<minRound(div)};
+}
+function allMatches(block){
+  const out=[];
+  for(const div of DIVS){ if(div.sex!==block.sex) continue;
+    const rn=rounds(div);
+    if(block.round==='3'){ out.push(matchObj(div,'3',0)); continue; }
+    const r=rn.indexOf(block.round); if(r<0) continue;
+    const n=div.r1.length>>r;
+    for(let m=0;m<n;m++) out.push(matchObj(div,block.round,m));
+  }
+  return out;
+}
+function setWinner(mo,s){
+  if(mo.rName==='3'){ S.third[mo.div.id] = (S.third[mo.div.id]===s)?undefined:s; }
+  else{
+    S.winners[mo.div.id]=S.winners[mo.div.id]||{}; const R=S.winners[mo.div.id];
+    R[mo.r]=R[mo.r]||{};
+    if(R[mo.r][mo.m]===s){ delete R[mo.r][mo.m]; }
+    else R[mo.r][mo.m]=s;
+    // clear downstream results that depended on this match
+    for(let r=mo.r+1;r<rounds(mo.div).length;r++){ const mm=mo.m>>(r-mo.r); if(R[r]) delete R[r][mm]; }
+    if(mo.r>=rounds(mo.div).length-2) delete S.third[mo.div.id];
+  }
+  save(); render();
+}
+
+// ---------- schedule engine ----------
+function today(){ return S.day || (new Date().toISOString().slice(0,10)<='2026-09-12'?1:2); }
+function dayStart(d){ const t=(d===1?S.start1:S.start2).split(':'); const dt=new Date(); dt.setHours(+t[0],+t[1],0,0); return dt; }
+function blocks(){ return S.blocks.map(id=>DEFAULT_BLOCKS.find(b=>b.id===id)).filter(Boolean); }
+function queue(){
+  const d=today(); const full=[];
+  for(const b of blocks()){ if(b.day!==d) continue; for(const mo of allMatches(b)) if(!mo.dead) full.push(mo); }
+  // anchor: the anchored match (played or not) marks where "now" was; everything before it is treated as run
+  let startAt=dayStart(d), from=0;
+  if(S.anchor){ const i=full.findIndex(x=>x.key===S.anchor.key);
+    if(i>=0){ from=i; startAt=new Date(S.anchor.at);
+      if(full[i].w!==null && Date.now()>startAt.getTime()) startAt=new Date(); } }
+  const mats=Array.from({length:Math.max(1,S.mats|0)},()=>startAt.getTime());
+  const out=[];
+  for(let i=from;i<full.length;i++){
+    const mo=full[i]; if(mo.w!==null) continue;
+    let mi=0; for(let k=1;k<mats.length;k++) if(mats[k]<mats[mi]) mi=k;
+    mo.at=new Date(mats[mi]); mo.mat=mi+1; mats[mi]+= (S.dur[mo.rName]||12)*60000; out.push(mo);
+  }
+  return out;
+}
+function isFollow(p){ return p&&p.name && S.follow.some(f=>f && p.name.toLowerCase().includes(f.toLowerCase())); }
+function fmt(dt){ return dt.toLocaleTimeString([], {hour:'numeric',minute:'2-digit'}); }
+function rel(dt){ const m=Math.round((dt-Date.now())/60000); if(m<=0) return 'now'; if(m<60) return `in ${m} min`; return `in ${Math.floor(m/60)}h ${m%60}m`; }
+
+// ---------- rendering ----------
+const $=s=>document.querySelector(s);
+function esc(s){ return String(s).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c])); }
+function pName(p,cls,mo,s){
+  if(p.tbd) return `<span class="name tbd">${esc(p.label)}</span>`;
+  const c=['name',cls, isFollow(p)?'follow':'', mo.w===s?'win':'', (mo.w!==null&&mo.w!==s)?'lose':''].join(' ');
+  return `<button class="${c}" data-win="${mo.key}|${s}"><span class="seed">${p.seed||''}</span>${esc(p.name)}</button>`;
+}
+function renderNext(){
+  const q=queue(); const d=today();
+  let h=`<h2>Day ${d} · ${S.mats} mats · times are estimates</h2>`;
+  // followed athletes
+  const fl=S.follow.filter(Boolean);
+  if(fl.length){
+    for(const f of fl){
+      const mo=q.find(x=>isFollow(x.a)&&x.a.name.toLowerCase().includes(f.toLowerCase()) || isFollow(x.b)&&x.b.name.toLowerCase().includes(f.toLowerCase()));
+      if(mo){
+        const opp = mo.a.name&&mo.a.name.toLowerCase().includes(f.toLowerCase()) ? mo.b : mo.a;
+        h+=`<div class="card follow-card"><div class="big">${esc(f)} · ${fmt(mo.at)}</div><div class="sub">${rel(mo.at)} · Mat ${mo.mat} · ${esc(mo.div.name)} ${mo.rName} · vs ${opp.tbd?esc(opp.label):esc(opp.name)}</div></div>`;
+      } else {
+        // still alive but nothing queued today, or eliminated?
+        let status='No match left in today\u2019s queue';
+        for(const div of DIVS) for(let r=0;r<rounds(div).length;r++) for(let m=0;m<(div.r1.length>>r);m++){
+          const mo=matchObj(div,rounds(div)[r],m); const w=mo.w;
+          if(w!==null){ const l=w===0?mo.b:mo.a; if(l.name&&l.name.toLowerCase().includes(f.toLowerCase())) status=`Eliminated in ${div.name} ${mo.rName}`; }
+        }
+        h+=`<div class="card follow-card"><div class="big">${esc(f)}</div><div class="sub">${status}</div></div>`;
+      }
+    }
+  }
+  h+=`<h2>Up next</h2>`;
+  if(!q.length) h+=`<div class="card">Nothing left in today\u2019s queue. Check the block order in Settings, or change the day.</div>`;
+  h+=`<div class="card">`;
+  q.slice(0,40).forEach((mo,i)=>{
+    const isNow=S.anchor&&S.anchor.key===mo.key;
+    h+=`<div class="row ${isNow?'now':''}"><div class="t">${fmt(mo.at)}<small>Mat ${mo.mat}</small></div>
+      <div><div class="meta">${esc(mo.div.name)} ${mo.rName} ${isNow?'<span class="pill now">on the mat</span>':`<button class="btn ghost" style="padding:2px 8px;font-size:12px;margin-left:6px" data-now="${mo.key}">set as now</button>`}</div>
+      <div class="vs">${pName(mo.a,'',mo,0)}${pName(mo.b,'',mo,1)}</div></div></div>`;
+  });
+  h+=`</div><div class="note">Tap a name to record the winner — it drops out of the queue and advances in the bracket. "Set as now" re-projects everything from that match starting at the current time.</div>`;
+  if(S.anchor) h+=`<div class="actions"><button class="btn ghost" id="clearAnchor">Clear "now" anchor</button></div>`;
+  return h;
+}
+function renderBrackets(){
+  let h='';
+  for(const div of DIVS){
+    const rn=rounds(div); const champ=winnerOf(div,rn.length-1,0);
+    const champName=champ!==null?slot(div,rn.length-1,0,champ).name:'';
+    h+=`<details ${div.r1.some(p=>isFollow({name:p[0]})||isFollow({name:p[2]}))?'open':''}><summary>${esc(div.name)}<span class="pill">${champName?esc(champName)+' 🥇':rn.length*0+''}</span></summary><div class="round">`;
+    for(let r=minRound(div);r<rn.length;r++){
+      h+=`<h3>${rn[r]}</h3>`;
+      for(let m=0;m<(div.r1.length>>r);m++){ const mo=matchObj(div,rn[r],m);
+        h+=`<div class="m"><div class="meta">${rn[r]} ${m+1}</div><div class="vs">${pName(mo.a,'',mo,0)}${pName(mo.b,'',mo,1)}</div></div>`;
+      }
+      if(r===rn.length-2){ const mo=matchObj(div,'3',0);
+        h+=`<h3>3rd place</h3><div class="m"><div class="vs">${pName(mo.a,'',mo,0)}${pName(mo.b,'',mo,1)}</div></div>`; }
+    }
+    h+=`</div></details>`;
+  }
+  return h;
+}
+function renderSettings(){
+  const b=blocks();
+  return `
+  <div class="card">
+    <label>Following (comma separated, partial names ok)</label><input id="follow" value="${esc(S.follow.join(', '))}">
+    <div class="grid2">
+      <div><label>Mats running</label><input id="mats" type="number" min="1" max="4" value="${S.mats}"></div>
+      <div><label>Day</label><select id="day"><option value="">Auto (${today()})</option><option value="1" ${S.day===1?'selected':''}>Day 1</option><option value="2" ${S.day===2?'selected':''}>Day 2</option></select></div>
+      <div><label>Day 1 first match</label><input id="start1" type="time" value="${S.start1}"></div>
+      <div><label>Day 2 first match</label><input id="start2" type="time" value="${S.start2}"></div>
+    </div>
+    <label>Minutes per match slot, incl. changeover</label>
+    <div class="grid2">
+      ${['R16','QF','SF','3','F'].map(k=>`<div><label style="margin-top:4px">${k==='3'?'3rd place':k}</label><input data-dur="${k}" type="number" value="${S.dur[k]}"></div>`).join('')}
+    </div>
+  </div>
+  <div class="card"><label style="margin-top:0">Running order (assumed — fix it as the day reveals itself)</label>
+    <div class="blocklist">${b.map((x,i)=>`<div><span>Day ${x.day} · ${esc(x.label)}</span><button data-up="${i}">↑</button><button data-dn="${i}">↓</button></div>`).join('')}</div>
+  </div>
+  <div class="card"><label style="margin-top:0">Backup / restore (paste JSON to restore)</label>
+    <textarea id="dump">${esc(JSON.stringify({winners:S.winners,third:S.third,anchor:S.anchor}))}</textarea>
+    <div class="actions"><button class="btn" id="restore">Restore from text</button><button class="btn warn" id="reset">Reset everything</button></div>
+    <div class="note">Bracket seeds and first-round pairings came from FloGrappling's Sept 11 bracket reveal. Loaded from FloArena screenshots: all men's R16, women's +65 QF, all women's QFs, men's +99 QF, -88 QF #61 (as of ~17:00 Sept 12). Send Claude new screenshots and the next version carries them; taps between updates are kept unless a screenshot contradicts them.</div>
+  </div>`;
+}
+function render(){
+  document.querySelectorAll('.tabs button').forEach(b=>b.classList.toggle('on',b.dataset.tab===tab));
+  $('#main').innerHTML = tab==='next'?renderNext():tab==='brackets'?renderBrackets():renderSettings();
+}
+function toast(t){ const e=$('#toast'); e.textContent=t; e.classList.add('show'); setTimeout(()=>e.classList.remove('show'),1400); }
+
+// ---------- events ----------
+document.querySelector('.tabs').addEventListener('click',e=>{ const b=e.target.closest('button'); if(b){ tab=b.dataset.tab; render(); window.scrollTo(0,0);} });
+$('#main').addEventListener('click',e=>{
+  const w=e.target.closest('[data-win]'); if(w){ const [divId,r,m,s]=w.dataset.win.split('|'); const div=DIVS.find(d=>d.id===divId);
+    const mo = r==='3'?matchObj(div,'3',0):matchObj(div,rounds(div)[+r],+m); setWinner(mo,+s); return; }
+  const n=e.target.closest('[data-now]'); if(n){ S.anchor={key:n.dataset.now, at:new Date().toISOString()}; save(); render(); toast('Re-projected from now'); return; }
+  if(e.target.id==='clearAnchor'){ S.anchor=null; save(); render(); return; }
+  const up=e.target.closest('[data-up]'), dn=e.target.closest('[data-dn]');
+  if(up||dn){ const i=+(up||dn).dataset[up?'up':'dn'], j=up?i-1:i+1; if(j<0||j>=S.blocks.length) return; [S.blocks[i],S.blocks[j]]=[S.blocks[j],S.blocks[i]]; save(); render(); return; }
+  if(e.target.id==='restore'){ try{ const o=JSON.parse($('#dump').value); Object.assign(S,o); save(); render(); toast('Restored'); }catch(err){ toast('That JSON didn\u2019t parse'); } return; }
+  if(e.target.id==='reset'){ // two-tap confirm: native confirm() is blocked in sandboxed iframes (e.g. artifact hosting)
+    if(e.target.dataset.armed){ S=JSON.parse(JSON.stringify(DEFAULT)); save(); render(); toast('Reset to baked-in results'); }
+    else{ e.target.dataset.armed='1'; e.target.textContent='Tap again to wipe everything'; setTimeout(()=>{ if(e.target.isConnected){ delete e.target.dataset.armed; e.target.textContent='Reset everything'; } },4000); }
+    return; }
+});
+$('#main').addEventListener('change',e=>{
+  const t=e.target;
+  if(t.id==='follow') S.follow=t.value.split(',').map(x=>x.trim()).filter(Boolean);
+  if(t.id==='mats') S.mats=Math.max(1,+t.value||1);
+  if(t.id==='day') S.day=t.value?+t.value:null;
+  if(t.id==='start1') S.start1=t.value; if(t.id==='start2') S.start2=t.value;
+  if(t.dataset.dur) S.dur[t.dataset.dur]=+t.value||12;
+  save();
+});
+setInterval(()=>{ if(tab==='next') render(); },60000);
+load();
+</script>
+</body>
+</html>
