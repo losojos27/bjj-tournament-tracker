@@ -13,8 +13,8 @@ each mat right now.
 - The page also polls FloArena's public Firebase feed (`/<event>/mats.json`) every 15 s for
   the bout currently on each mat: clock, score, and the winner the moment it ends. That
   result is applied to the bracket immediately, ahead of the next sync.
-- Tapping a name records a result locally, only for bouts the feeds haven't decided yet.
-  Taps, followed athletes, and settings live in the viewer's own browser.
+- Nothing is entered by hand. The follow list and a couple of projection settings live in
+  the viewer's own browser.
 
 ## Run it yourself
 ```

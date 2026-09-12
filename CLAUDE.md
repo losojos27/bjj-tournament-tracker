@@ -47,8 +47,9 @@ Three layers, all read-only:
    Firebase `mats.json` every 15 s for the bout on each mat (clock, score, `isMatchOver`,
    `winner`). Neither poll re-renders while the Settings tab is open (`quiet()`).
 3. **Local preferences (`S`, in localStorage).** Follow list, day, mats, slot durations,
-   chosen bracket division. Nothing about results is entered by hand (taps were removed Sept 12). Start times and block order are
-   defaults in `DEFAULT` with no UI (Settings is the follow list, mats, slot minutes, reset).
+   chosen bracket division. Nothing about results is entered by hand (taps were removed
+   Sept 12). Start times live in `DEFAULT`, the block order in `DEFAULT_BLOCKS`; neither has
+   a UI (Settings is the follow list, mats, slot minutes, reset).
    `S.v` is a schema version; bump it and extend the migration in `loadState()` when the shape
    of `S` changes.
 

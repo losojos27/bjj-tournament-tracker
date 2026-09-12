@@ -137,7 +137,7 @@ let liveState='off';      // 'ok' | 'bad' | 'off'
 let dataErr=null, lastLive=0;
 const quiet=()=>tab==='settings'&&DATA; // don't re-render under the user's fingers on Settings
 
-// Schedule blocks: the order the day runs in. Editable in Settings. `kind` matches results.json divisions.
+// Schedule blocks: the assumed order each day runs in, used only until FloArena publishes its own. `kind` matches results.json divisions.
 const DEFAULT_BLOCKS = [
   {id:'m-R16', label:"men round of 16",   kind:'pro', sex:'m', round:'R16', day:1},
   {id:'w-QF',  label:"women quarterfinals",  kind:'pro', sex:'w', round:'QF',  day:1},
@@ -162,7 +162,6 @@ const DEFAULT = {
   // projection defaults (no UI: the live feed and Flo's published order override them as the day runs)
   mats:3, start1:'11:00', start2:'11:00',
   dur:{R32:12, R16:12, QF:20, SF:20, '3':20, F:30},
-  blocks:DEFAULT_BLOCKS.map(b=>b.id),
   bracketDiv:null,                 // division shown on the Brackets tab
   v:9,
 };
@@ -175,11 +174,9 @@ function loadState(){
   try{ const v=store.get('adcc26'); if(v){ const o=JSON.parse(v); S=Object.assign({},DEFAULT,o); S.dur=Object.assign({},DEFAULT.dur,o.dur||{}); } }catch(e){}
   if((S.v||0)<9){ // results used to be baked into the page; they now come from FloArena
     delete S.winners; delete S.third;
-    S.blocks=DEFAULT.blocks.slice(); S.v=9; save();
+    S.v=9; save();
   }
-  delete S.anchor; delete S.taps;
-  S.blocks=S.blocks.filter(id=>DEFAULT_BLOCKS.some(b=>b.id===id));
-  for(const b of DEFAULT_BLOCKS) if(!S.blocks.includes(b.id)) S.blocks.splice(DEFAULT_BLOCKS.indexOf(b),0,b.id);
+  delete S.anchor; delete S.taps; delete S.blocks;
 }
 let saveT;
 function save(){ clearTimeout(saveT); saveT=setTimeout(()=>store.set('adcc26', JSON.stringify(S)),150); }
@@ -249,7 +246,7 @@ function localDate(){ const d=new Date(); return `${d.getFullYear()}-${String(d.
 function today(){ return S.day || (localDate()<=DAY_DATES[1]?1:2); }
 const DAY_DATES={1:'2026-09-12',2:'2026-09-13'};
 function dayStart(d){ const t=(d===1?S.start1:S.start2).split(':'); const [y,mo,da]=DAY_DATES[d].split('-').map(Number); return new Date(y,mo-1,da,+t[0]||11,+t[1]||0,0,0); }
-function blocks(){ return S.blocks.map(id=>DEFAULT_BLOCKS.find(b=>b.id===id)).filter(Boolean); }
+function blocks(){ return DEFAULT_BLOCKS; }
 function clockSecs(c){ const m=String(c||'').match(/(\d+):(\d+)/); return m? (+m[1])*60+(+m[2]) : 0; }
 function liveInProgress(){ const cut=Date.now()-3*3600e3; return Object.values(LIVE).filter(l=>!l.over&&l.updated>cut).sort((a,b)=>a.matIdx-b.matIdx); }
 function queue(){
@@ -355,7 +352,7 @@ function renderNext(){
     }
   }
   h+=`<h2 class="section-title">up next</h2>`;
-  if(!q.length) h+=`<div class="panel">nothing left in today’s queue. check the running order in settings, or change the day.</div>`;
+  if(!q.length) h+=`<div class="panel">nothing left in today’s queue.</div>`;
   else h+=`<div class="stack">`;
   q.slice(0,48).forEach(mo=>{
     const fol=isFollow(mo.a)||isFollow(mo.b);
@@ -446,7 +443,7 @@ $('#main').addEventListener('change',e=>{
   if(t.id==='mats'){ S.mats=Math.max(1,+t.value||1); save(); }
   if(t.dataset.dur){ S.dur[t.dataset.dur]=+t.value||12; save(); }
 });
-// refresh loops: results every 60s, live mats every 15s; the Settings tab is left alone while you type
+// refresh loops: results every 60s, live mats every 15s; the settings tab is left alone while you type
 setInterval(()=>{ if(!quiet()) loadData(); },60000);
 setInterval(()=>{ if(!quiet()) loadLive(); },15000);
 document.addEventListener('visibilitychange',()=>{ if(!document.hidden){ loadData(); loadLive(); } });
