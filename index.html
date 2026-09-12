@@ -41,6 +41,7 @@
   .topbar .title{font-family:var(--font-heading);font-weight:650;font-size:1.05rem;letter-spacing:-.02em;white-space:nowrap}
   .status{flex:1;min-width:0;font-size:var(--fs-eyebrow);color:var(--text-muted);text-align:right;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
   .status .bad{color:var(--cue-warning)}
+  .status b{color:var(--live);font-weight:650}
   .section-title{font-size:var(--fs-meta);font-weight:600;color:var(--text-muted);margin:18px 0 8px}
   main > .section-title:first-child{margin-top:2px}
   .panel{background:var(--bg-card);border-radius:var(--radius-md);padding:12px 14px}
@@ -106,6 +107,8 @@
   .bx .meta{font-size:.76rem;line-height:1.4;margin:0 0 1px 2px;min-height:15px;white-space:nowrap;display:flex;justify-content:space-between;gap:6px}
   .bx .meta .num{color:var(--text-muted)}
   .bx .meta .res{margin-left:auto;color:var(--text-primary);font-weight:600;overflow:hidden;text-overflow:ellipsis}
+  .bx .meta span.res:not(:empty){color:var(--text-secondary);font-weight:500}   /* a projected time is quieter than a result */
+  .bx .meta a.res{color:var(--text-primary);font-weight:600}
   .bx .meta a.res{text-decoration:underline;text-decoration-color:var(--text-muted);text-underline-offset:3px}
   .bx .name{font-size:.94rem;line-height:1.35;padding:2px 0;gap:5px}
   .bx .seed{min-width:16px;font-size:.7rem}
@@ -324,14 +327,14 @@ function pName(p,mo,s){
   const c=['name', isFollow(p)?'follow':'', mo.w===s?'win':'', (mo.w!==null&&mo.w!==s)?'lose':''].join(' ');
   return `<button type="button" class="${c}" data-copy="${esc(p.name)}" title="copy name">${flagHtml(p.team)}<span class="seed">${p.seed||''}</span><span class="nm">${esc(p.name)}</span></button>`;
 }
-// "SUB" + "6-0 6:53" -> "sub · 6:53"; "SCORE" + "5-0 15:00 TB1" -> "5-0 pts · OT"; "REF" -> "ref decision"
+// "SUB" + "6-0 6:53" -> "submission 6:53"; "SCORE" + "5-0 15:00 TB1" -> "5-0 points · overtime"; "REF" -> "ref decision"
 function fmtResult(winType,result){
-  const r=String(result||''); const score=(r.match(/^(\d+-\d+)/)||[])[1]; const time=(r.match(/(\d+:\d+)/)||[])[1]; const ot=/TB|OT/i.test(r)?' · OT':'';
+  const r=String(result||''); const score=(r.match(/^(\d+-\d+)/)||[])[1]; const time=(r.match(/(\d+:\d+)/)||[])[1]; const ot=/TB|OT/i.test(r)?' · overtime':'';
   const t=String(winType||'').toUpperCase();
-  if(t==='SUB') return `sub${time?' · '+time:''}${ot}`;
-  if(t==='SCORE'||t==='PTS'||t==='DEC') return `${score?score+' pts':'on points'}${ot}`;
+  if(t==='SUB') return `submission${time?' '+time:''}${ot}`;
+  if(t==='SCORE'||t==='PTS'||t==='DEC') return `${score?score+' points':'on points'}${ot}`;
   if(t==='REF') return `ref decision${ot}`;
-  if(t==='DQ') return 'dq';
+  if(t==='DQ') return 'disqualified';
   if(t==='INJ'||t==='MED') return 'injury';
   if(t==='WO'||t==='FF') return 'walkover';
   return [t.toLowerCase(),r].filter(Boolean).join(' ');
@@ -355,6 +358,8 @@ function renderMats(){
 }
 function renderNext(){
   const {list:q,mode,floOrder,matCount:matsInUse}=queue(); const d=today();
+  // the day is done when nothing is queued and every bout in today's blocks is decided
+  const dayDone=!q.length && blocks().filter(b=>b.day===d).some(b=>allMatches(b).length) && blocks().filter(b=>b.day===d).every(b=>allMatches(b).every(mo=>mo.w!==null));
   let h=`<div class="topline"><div class="chip-row">${[1,2].map(x=>`<button type="button" class="chip ${d===x?'active':''}" data-day="${x}" aria-pressed="${d===x}">day ${x}</button>`).join('')}</div><span class="note" style="margin:0">${matsInUse} mat${matsInUse===1?'':'s'}${floOrder?'':' (assumed)'} · times are estimates${mode==='live'?' · following the live feed':''}${floOrder?' · order from FloArena':''}</span></div>`;
   h+=renderMats();
   const fl=S.follow.filter(Boolean);
@@ -373,12 +378,14 @@ function renderNext(){
         if(mo.w!==null&&mo.w>=0){ const l=mo.w===0?mo.b:mo.a; if(hit(l)) out=true; } }
       for(const div of divs()){ const rn=rounds(div); const w=winnerOf(div,rn[rn.length-1],0); if(w!==null&&w>=0&&hit(slot(div,rn[rn.length-1],0,w))){ champ=true; status=`${div.name} champion 🥇`; } }
       const alive=divs().some(div=>div.rounds.some(r=>r.bouts.some((b,m)=>winnerOf(div,r.name,m)===null&&(hit(b.a)||hit(b.b)))));
+      if(dayDone&&!champ) continue;   // a finished day: don't say "no match in today's queue"
       if(champ||alive||!out) cards.push({at:new Date(8.64e15),html:`<div class="panel follow-card"><span class="pin"></span><div><div class="big">${esc(f)}</div><div class="sub">${status}</div></div></div>`});
     }
   }
   cards.sort((x,y)=>x.at-y.at); h+=cards.map(c=>c.html).join('');
   h+=`<h2 class="section-title">up next</h2>`;
-  if(!q.length) h+=`<div class="panel">nothing left in today’s queue.</div>`;
+  if(dayDone) h+=`<div class="panel">day ${d} is done. results are in brackets.</div>`;
+  else if(!q.length) h+=`<div class="panel">nothing in the queue for day ${d} yet.</div>`;
   else h+=`<div class="stack">`;
   q.slice(0,48).forEach(mo=>{
     const fol=isFollow(mo.a)||isFollow(mo.b);
@@ -394,9 +401,11 @@ function currentDiv(){
   const ds=divs(); if(!ds.length) return null;
   return ds.find(x=>x.id===S.bracketDiv) || ds.find(d=>d.rounds.some(r=>r.bouts.some(b=>isFollow(b.a)||isFollow(b.b)))) || ds[0];
 }
+let PROJ=new Map();   // key -> queued match, for the bracket's unfought boxes
 function box(mo){
   const b=mo.bout||{};
   let res='';
+  const pj=PROJ.get(mo.key); if(pj&&mo.w===null&&!(mo.live&&!mo.live.over)) res=pj.onMat?`on mat ${pj.mat}`:`${fmt(pj.at)} · mat ${pj.mat}`;
   if(mo.src==='flo'&&(b.winType||b.result)) res=fmtResult(b.winType,b.result);
   else if(mo.src==='live'&&mo.live) res=fmtResult(mo.live.winType,mo.live.finalScore)+' · live';
   const live=mo.live&&!mo.live.over;
@@ -407,6 +416,7 @@ function box(mo){
 }
 function renderBrackets(){
   const ds=divs(); const div=currentDiv(); if(!div) return `<div class="panel">no bracket data yet.</div>`;
+  PROJ=new Map(queue().list.map(mo=>[mo.key,mo]));
   let h=`<div class="chips">${ds.map(d=>{ const rn=rounds(d); const c=winnerOf(d,rn[rn.length-1],0); return `<button type="button" data-bdiv="${esc(d.id)}" class="chip ${d.id===div.id?'active':''}">${esc(d.name)}${c!==null&&c>=0?' 🥇':''}</button>`; }).join('')}</div>`;
   const n1=div.rounds[0].bouts.length;
   h+=`<div class="bwrap"><div class="bracket" style="--n1:${n1}">`;
@@ -452,15 +462,18 @@ function renderSettings(){
 }
 function renderStatus(){
   const s=$('#status'); if(!s) return;
-  const dataTxt = DATA ? `results ${dataErr?'<span class="bad">stale</span> ':''}${fmt(new Date(DATA.updated))}` : (dataErr?'<span class="bad">results failed</span>':'loading…');
-  const liveTxt = liveState==='ok' ? `live ${lastLive?ago(lastLive):''}` : liveState==='bad' ? `<span class="bad">live feed lost</span>` : `live feed off`;
-  s.innerHTML=`${dataTxt} · ${liveTxt}`;
+  const dataTxt = DATA ? `synced ${dataErr?'<span class="bad">stale</span> ':''}${fmt(new Date(DATA.updated))}` : (dataErr?'<span class="bad">results failed</span>':'loading…');
+  const n=liveInProgress().length;
+  const liveTxt = liveState==='ok' ? (n?`<b>${n===1?'1 bout':n+' bouts'} on the mats</b>`:'nothing on the mats') : liveState==='bad' ? `<span class="bad">live feed lost</span>` : `live feed off`;
+  s.innerHTML=`${liveTxt} · ${dataTxt}`;
 }
 function render(){
   document.querySelectorAll('.tabs .tab').forEach(b=>b.classList.toggle('active',b.dataset.tab===tab));
   renderStatus();
   if(!DATA){ $('#main').innerHTML = dataErr ? `<div class="panel">couldn’t load the bracket (${esc(dataErr.message)}). retrying every minute.</div>` : `<div class="panel">loading bracket…</div>`; return; }
+  const bw=$('#main').querySelector('.bwrap'); const keepX=bw?bw.scrollLeft:0;   // redraws (live poll) must not lose where the bracket was scrolled to
   $('#main').innerHTML = tab==='next'?renderNext():tab==='brackets'?renderBrackets():renderSettings();
+  const bw2=$('#main').querySelector('.bwrap'); if(bw2&&keepX) bw2.scrollLeft=keepX;
 }
 async function copyText(t){
   try{ if(navigator.clipboard&&window.isSecureContext){ await navigator.clipboard.writeText(t); toast(`copied ${t}`); return; } }catch(e){}
