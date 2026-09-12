@@ -15,17 +15,24 @@
   /* App styles on top of field-manual-theme. Colour with meaning comes from the theme's
      category and cue tokens; everything else is tone and spacing (no borders, no shadows). */
   :root{ --follow:var(--type-e); --win:var(--type-a); --lose:var(--text-muted); --live:var(--cue-warning); } /* type-e and type-a are re-lit per theme */
+  /* Phone-first scale: the kit's defaults read small in the arena. Bump the root and the type tokens together. */
+  html{font-size:17px}
+  :root{ --fs-body:1rem; --fs-meta:.86rem; --fs-eyebrow:.8rem; --fs-card-title:1.05rem; }
+  /* Dark cards sit too close to the ground tone; lift them (and the muted text on them). Both dark blocks, kept in sync. */
+  @media (prefers-color-scheme: dark){ :root:not([data-theme="light"]){ --bg-card:#454340; --bg-card-hover:#504e4a; --chip-bg:#454340; --text-muted:#979289; } }
+  :root[data-theme="dark"]{ --bg-card:#454340; --bg-card-hover:#504e4a; --chip-bg:#454340; --text-muted:#979289; }
+  .chip{font-size:.88rem}
+  .chip.small{padding:4px 10px;font-size:.78rem}
   .container{max-width:720px}
   main.container{padding-top:2px;padding-bottom:calc(var(--bottom-nav-h) + env(safe-area-inset-bottom) + 28px)}
   .topbar{display:flex;align-items:center;gap:10px;padding-bottom:4px}
-  .topbar .title{font-family:var(--font-heading);font-weight:650;font-size:1rem;letter-spacing:-.02em;white-space:nowrap}
+  .topbar .title{font-family:var(--font-heading);font-weight:650;font-size:1.05rem;letter-spacing:-.02em;white-space:nowrap}
   .status{flex:1;min-width:0;font-size:var(--fs-eyebrow);color:var(--text-muted);text-align:right;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
   .status .bad{color:var(--cue-warning)}
   .topbar .icon-btn{width:38px;height:38px}
   .section-title{font-size:var(--fs-meta);font-weight:600;color:var(--text-muted);margin:18px 0 8px}
   .panel{background:var(--bg-card);border-radius:var(--radius-md);padding:12px 14px}
   .stack{display:flex;flex-direction:column;gap:6px}
-  .chip.small{padding:3px 9px;font-size:.72rem}
   .chip.warn{background:var(--cue-warning);color:var(--accent-contrast)}
   .chip:focus-visible,.name:focus-visible,.nav-item:focus-visible{outline:2px solid var(--accent-soft);outline-offset:1px}
   .topline{display:flex;align-items:center;justify-content:space-between;gap:10px;flex-wrap:wrap;margin:4px 0 12px}
@@ -33,26 +40,28 @@
   .actions{display:flex;gap:8px;margin-top:10px;flex-wrap:wrap}
   /* followed athletes */
   .follow-card{display:flex;align-items:center;gap:12px}
-  .follow-card .pin{width:10px;height:10px;flex-shrink:0;border-radius:var(--radius-sm);background:var(--follow)}
-  .big{font-family:var(--font-heading);font-size:1.25rem;font-weight:650;letter-spacing:-.02em;line-height:1.15}
+  .follow-card .pin{width:12px;height:12px;flex-shrink:0;border-radius:var(--radius-sm);background:var(--follow)}
+  .big{font-family:var(--font-heading);font-size:1.35rem;font-weight:650;letter-spacing:-.02em;line-height:1.15}
   .sub{font-size:var(--fs-meta);color:var(--text-muted);margin-top:2px}
   /* queue rows */
-  .row{display:grid;grid-template-columns:84px 1fr;gap:10px}
+  .row{display:grid;grid-template-columns:96px 1fr;gap:10px}
   .row.now,.bx.now{background:color-mix(in srgb, var(--cue-warning) 12%, var(--bg-card))}
-  .t{font-family:var(--font-heading);font-weight:650;font-size:1rem;line-height:1.15;font-variant-numeric:tabular-nums}
+  .t{font-family:var(--font-heading);font-weight:650;font-size:1.1rem;line-height:1.15;font-variant-numeric:tabular-nums}
   .t small{display:block;color:var(--text-muted);font-weight:400;font-size:var(--fs-eyebrow)}
   .meta{color:var(--text-muted);font-size:var(--fs-eyebrow);margin-bottom:2px;display:flex;align-items:center;gap:6px;flex-wrap:wrap}
   .vs{display:flex;flex-direction:column;gap:2px}
   .name{display:flex;align-items:center;gap:8px;background:none;border:0;color:var(--text-primary);font:inherit;font-size:var(--fs-body);text-align:left;padding:4px 6px;margin:0 -6px;border-radius:var(--radius-sm);width:calc(100% + 12px);cursor:pointer;-webkit-tap-highlight-color:transparent}
   .name:active{background:var(--bg-card-hover)}
   .name.tbd{color:var(--text-muted);font-style:italic;cursor:default}
-  .name.follow{color:var(--follow);font-weight:600}
   .name.win{color:var(--win);font-weight:600}
   .name.lose{color:var(--lose);text-decoration:line-through}
+  .name.follow{color:var(--follow);font-weight:650}   /* after win/lose: a followed fighter stays highlighted */
+  .row.fol,.bx.fol,.panel.follow-card{background:color-mix(in srgb, var(--follow) 16%, var(--bg-card))}
+  .row.fol.now,.bx.fol.now{background:color-mix(in srgb, var(--cue-warning) 14%, color-mix(in srgb, var(--follow) 16%, var(--bg-card)))}
   .name .nm{overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
   .seed{font-size:var(--fs-eyebrow);color:var(--text-muted);min-width:18px;text-align:right;font-variant-numeric:tabular-nums}
   .res{margin-left:auto;color:var(--text-secondary)}
-  .cue{font-size:.62rem;padding:1px 6px;margin:0}
+  .cue{font-size:.68rem;padding:1px 7px;margin:0}
   .cue.live{background:var(--live)}
   /* live mats */
   .mats{display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:8px;margin-bottom:12px}
@@ -68,8 +77,8 @@
   .chips::-webkit-scrollbar{display:none}
   .chips .chip{flex:0 0 auto}
   .bwrap{overflow-x:auto;-webkit-overflow-scrolling:touch;padding-bottom:10px;margin:0 calc(-1*var(--spacing));padding-left:var(--spacing)}
-  .bracket{display:flex;gap:26px;width:max-content;--pitch:78px;--gap:26px;padding-right:var(--spacing)}
-  .col{width:172px;flex:0 0 auto}
+  .bracket{display:flex;gap:26px;width:max-content;--pitch:92px;--gap:26px;padding-right:var(--spacing)}
+  .col{width:204px;flex:0 0 auto}
   .col h3{font-size:var(--fs-eyebrow);font-weight:600;color:var(--text-muted);margin:0 0 8px;text-align:center}
   .slots{display:flex;flex-direction:column;height:calc(var(--n1)*var(--pitch))}
   .slot{flex:1;display:flex;align-items:center;position:relative}
@@ -77,9 +86,9 @@
   .col+.col .slot::before{content:"";position:absolute;left:calc(-1*var(--gap));width:calc(var(--gap)/2);top:25%;height:50%;border:2px solid var(--hairline-strong);border-left:0;border-radius:0 3px 3px 0}
   .col+.col .slot::after{content:"";position:absolute;left:calc(var(--gap)/-2);width:calc(var(--gap)/2);top:50%;border-top:2px solid var(--hairline-strong)}
   .bx{background:var(--bg-card);border-radius:var(--radius-md);padding:4px 7px 5px;width:100%;position:relative;z-index:1}
-  .bx .meta{font-size:.66rem;line-height:1.4;margin:0 0 1px 2px;min-height:14px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;display:block}
-  .bx .name{font-size:.8rem;line-height:1.35;padding:2px 4px;margin:0 -4px;width:calc(100% + 8px);gap:5px}
-  .bx .seed{min-width:14px;font-size:.62rem}
+  .bx .meta{font-size:.76rem;line-height:1.4;margin:0 0 1px 2px;min-height:14px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;display:block}
+  .bx .name{font-size:.94rem;line-height:1.35;padding:2px 4px;margin:0 -4px;width:calc(100% + 8px);gap:5px}
+  .bx .seed{min-width:16px;font-size:.7rem}
   /* settings */
   label{display:block;margin:12px 0 5px;color:var(--text-muted);font-size:var(--fs-meta)}
   .field,textarea{width:100%;background:var(--bg-primary);border:0;color:var(--text-primary);border-radius:var(--radius-pill);padding:10px 12px;font:inherit;font-size:var(--fs-body);outline:none}
@@ -350,7 +359,8 @@ function renderNext(){
   else h+=`<div class="stack">`;
   q.slice(0,48).forEach(mo=>{
     const isNow=mo.onMat||(mode==='anchor'&&S.anchor&&S.anchor.key===mo.key);
-    h+=`<div class="panel row ${isNow?'now':''}"><div class="t">${mo.onMat?'now':fmt(mo.at)}<small>mat ${mo.mat}</small></div>
+    const fol=isFollow(mo.a)||isFollow(mo.b);
+    h+=`<div class="panel row ${isNow?'now':''} ${fol?'fol':''}"><div class="t">${mo.onMat?'now':fmt(mo.at)}<small>mat ${mo.mat}</small></div>
       <div><div class="meta">${esc(mo.div.name)} ${ROUND_LABEL[mo.rName]||mo.rName}${mo.bout&&mo.bout.n?' · #'+esc(mo.bout.n):''} ${mo.onMat?`<span class="cue live">on the mat · ${esc(mo.live.clock)}</span>`:isNow?'<span class="cue live">on the mat</span>':`<button type="button" class="chip small" data-now="${mo.key}">set as now</button>`}</div>
       <div class="vs">${pName(mo.a,mo,0)}${pName(mo.b,mo,1)}</div></div></div>`;
   });
@@ -372,7 +382,8 @@ function box(mo){
   const live=mo.live&&!mo.live.over;
   const now=!live&&S.anchor&&S.anchor.key===mo.key;
   const meta=(live?`<span class="cue live">on the mat · ${esc(mo.live.clock)}</span> `:'')+(esc(bits.join(' · '))||(live?'':'&nbsp;'));
-  return `<div class="bx ${now?'now':''}"><div class="meta">${meta}</div>${pName(mo.a,mo,0)}${pName(mo.b,mo,1)}</div>`;
+  const fol=isFollow(mo.a)||isFollow(mo.b);
+  return `<div class="bx ${now?'now':''} ${fol?'fol':''}"><div class="meta">${meta}</div>${pName(mo.a,mo,0)}${pName(mo.b,mo,1)}</div>`;
 }
 function renderBrackets(){
   const ds=divs(); const div=currentDiv(); if(!div) return `<div class="panel">no bracket data yet.</div>`;
