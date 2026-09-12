@@ -33,7 +33,7 @@ attached as supporting files.
 
 ## Architecture
 
-Three layers, all read-only except the last:
+Three layers, all read-only:
 
 1. **`scripts/sync.mjs` → `data/results.json`.** Pulls every bout from FloArena's JSON and
    normalizes it: `divs[]` each with `rounds[]` (`R16`/`QF`/`SF`/`F`) of bouts
@@ -46,15 +46,15 @@ Three layers, all read-only except the last:
 2. **Browser polling in `index.html`.** `results.json` every 60 s, and FloArena's public
    Firebase `mats.json` every 15 s for the bout on each mat (clock, score, `isMatchOver`,
    `winner`). Neither poll re-renders while the Settings tab is open (`quiet()`).
-3. **Local overlay (`S`, in localStorage).** `taps` (results the user recorded), follow list,
-   day, mats, slot durations, chosen bracket division. Start times and block order are
+3. **Local preferences (`S`, in localStorage).** Follow list, day, mats, slot durations,
+   chosen bracket division. Nothing about results is entered by hand (taps were removed Sept 12). Start times and block order are
    defaults in `DEFAULT` with no UI (Settings is the follow list, mats, slot minutes, reset).
    `S.v` is a schema version; bump it and extend the migration in `loadState()` when the shape
    of `S` changes.
 
-Result precedence per bout, in `winnerInfo()`: FloArena → live feed (`isMatchOver` + `winner`)
-→ tap. Taps are refused once a feed has the result. `w === -1` means decided with no winner
-(double DQ); both athletes render as out and nothing propagates.
+Result precedence per bout, in `winnerInfo()`: FloArena → live feed (`isMatchOver` + `winner`).
+`w === -1` means decided with no winner (double DQ); both athletes render as out and nothing
+propagates.
 
 Participants come from FloArena's own per-round lists when present (`slot()`), and are only
 propagated from earlier winners when FloArena hasn't filled the slot. This is what makes odd
@@ -125,7 +125,7 @@ its "Rules the look depends on" are binding here:
 
 - Predicted times are estimates. Automation and glanceability beat to-the-second accuracy:
   no manual levers for the projection.
-- One tap per result. No burdensome workarounds.
+- Nothing entered by hand: results come from the feeds or not at all.
 - Don't re-litigate settled decisions; execute.
 - Flag uncertainty explicitly.
 - UI choices already made: Day 1/Day 2 is a switch on the Next up tab; the Brackets tab is a
@@ -134,7 +134,7 @@ its "Rules the look depends on" are binding here:
 
 ## Known limitations
 
-- Every viewer's taps and settings are local to their browser. Shared state needs a backend.
+- Every viewer's follow list and settings are local to their browser.
 - Times display in the viewer's local zone; the configured day start is Kraków 11:00 expressed
   in local hours, so viewers outside CEST see wrong projections until a live bout anchors it.
 - The Reset button uses a two-tap confirm because native `confirm()` is blocked in the

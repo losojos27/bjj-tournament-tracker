@@ -36,7 +36,7 @@
   .panel{background:var(--bg-card);border-radius:var(--radius-md);padding:12px 14px}
   .stack{display:flex;flex-direction:column;gap:6px}
   .chip.warn{background:var(--cue-warning);color:var(--accent-contrast)}
-  .chip:focus-visible,.name:focus-visible,.nav-item:focus-visible{outline:2px solid var(--accent-soft);outline-offset:1px}
+  .chip:focus-visible,.nav-item:focus-visible{outline:2px solid var(--accent-soft);outline-offset:1px}
   .topline{display:flex;align-items:center;justify-content:space-between;gap:10px;flex-wrap:wrap;margin:4px 0 12px}
   .note{font-size:var(--fs-meta);color:var(--text-muted);margin-top:8px}
   .actions{display:flex;gap:8px;margin-top:10px;flex-wrap:wrap}
@@ -52,9 +52,8 @@
   .t small{display:block;color:var(--text-muted);font-weight:400;font-size:var(--fs-eyebrow)}
   .meta{color:var(--text-muted);font-size:var(--fs-eyebrow);margin-bottom:2px;display:flex;align-items:center;gap:6px;flex-wrap:wrap}
   .vs{display:flex;flex-direction:column;gap:2px}
-  .name{display:flex;align-items:center;gap:8px;background:none;border:0;color:var(--text-primary);font:inherit;font-size:var(--fs-body);text-align:left;padding:4px 6px;margin:0 -6px;border-radius:var(--radius-sm);width:calc(100% + 12px);cursor:pointer;-webkit-tap-highlight-color:transparent}
-  .name:active{background:var(--bg-card-hover)}
-  .name.tbd{color:var(--text-muted);font-style:italic;cursor:default}
+  .name{display:flex;align-items:center;gap:8px;color:var(--text-primary);font-size:var(--fs-body);padding:4px 0}
+  .name.tbd{color:var(--text-muted);font-style:italic}
   .name.win{color:var(--win);font-weight:600}
   .name.lose{color:var(--lose);text-decoration:line-through}
   .name.follow{color:var(--follow);font-weight:650}   /* after win/lose: a followed fighter stays highlighted */
@@ -91,7 +90,7 @@
   .bx .meta{font-size:.76rem;line-height:1.4;margin:0 0 1px 2px;min-height:15px;white-space:nowrap;display:flex;justify-content:space-between;gap:6px}
   .bx .meta .num{color:var(--text-muted)}
   .bx .meta .res{margin-left:auto;color:var(--text-primary);font-weight:600;overflow:hidden;text-overflow:ellipsis}
-  .bx .name{font-size:.94rem;line-height:1.35;padding:2px 4px;margin:0 -4px;width:calc(100% + 8px);gap:5px}
+  .bx .name{font-size:.94rem;line-height:1.35;padding:2px 0;gap:5px}
   .bx .seed{min-width:16px;font-size:.7rem}
   /* settings */
   label{display:block;margin:12px 0 5px;color:var(--text-muted);font-size:var(--fs-meta)}
@@ -102,7 +101,7 @@
   .field:focus{box-shadow:0 0 0 2px var(--accent-soft)}
   .toast{position:fixed;bottom:calc(var(--bottom-nav-h) + env(safe-area-inset-bottom) + 14px);left:50%;transform:translateX(-50%);background:var(--accent);color:var(--accent-contrast);padding:8px 14px;border-radius:var(--radius-pill);font-size:var(--fs-meta);opacity:0;transition:opacity .2s;pointer-events:none;z-index:300}
   .toast.show{opacity:1}
-  @media (prefers-reduced-motion:reduce){.toast,.chip,.icon-btn,.name{transition:none}}
+  @media (prefers-reduced-motion:reduce){.toast,.chip,.icon-btn{transition:none}}
 </style>
 </head>
 <body>
@@ -124,7 +123,7 @@
 // ---------- sources ----------
 // Bracket + results: data/results.json, written by scripts/sync.mjs from FloArena's bout endpoints
 // (a GitHub Actions cron reruns it every few minutes). Live mats: FloArena's public Firebase feed,
-// polled straight from the browser. Both are read-only; taps are a local overlay on top.
+// polled straight from the browser. Both are read-only; nothing is entered by hand.
 const EVENT='52703b65-bade-46e2-9ce2-399dd32d93e4';
 const DATA_URL='data/results.json';
 const LIVE_URL=`https://floarena.firebaseio.com/${EVENT}/mats.json`;
@@ -158,7 +157,6 @@ const DEFAULT_BLOCKS = [
 ];
 
 const DEFAULT = {
-  taps:{},                         // "divId|round|m" -> 0|1, local results for bouts FloArena hasn't reported
   follow:['Felipe Costa','Victor Hugo'],
   day:null,                        // null = auto by date; the day chips on Next up set it
   // projection defaults (no UI: the live feed and Flo's published order override them as the day runs)
@@ -176,10 +174,10 @@ const store = { get:k=>{ try{ return localStorage.getItem(k); }catch(e){ return 
 function loadState(){
   try{ const v=store.get('adcc26'); if(v){ const o=JSON.parse(v); S=Object.assign({},DEFAULT,o); S.dur=Object.assign({},DEFAULT.dur,o.dur||{}); } }catch(e){}
   if((S.v||0)<9){ // results used to be baked into the page; they now come from FloArena
-    S.taps={}; delete S.winners; delete S.third;
+    delete S.winners; delete S.third;
     S.blocks=DEFAULT.blocks.slice(); S.v=9; save();
   }
-  delete S.anchor;
+  delete S.anchor; delete S.taps;
   S.blocks=S.blocks.filter(id=>DEFAULT_BLOCKS.some(b=>b.id===id));
   for(const b of DEFAULT_BLOCKS) if(!S.blocks.includes(b.id)) S.blocks.splice(DEFAULT_BLOCKS.indexOf(b),0,b.id);
 }
@@ -212,13 +210,12 @@ function rounds(div){ return div.rounds.map(r=>r.name); }
 function boutAt(div,rName,m){ if(rName==='3') return div.third; const r=div.rounds.find(r=>r.name===rName); return r?r.bouts[m]:null; }
 function keyOf(div,rName,m){ return `${div.id}|${rName}|${m}`; }
 function liveFor(b){ return b&&b.n ? LIVE[String(b.n)] : null; }
-// winner of a bout: FloArena's result, else the live mat feed, else a local tap. Returns {w, src} or null.
+// winner of a bout: FloArena's result, else the live mat feed. Returns {w, src} or null.
 function winnerInfo(div,rName,m){
   const b=boutAt(div,rName,m); if(!b) return null;
   if(b.w!==null&&b.w!==undefined) return {w:b.w, src:'flo'};
   if(b.decided) return {w:-1, src:'flo'};   // decided with no winner (double DQ); -1 marks both as out
   const l=liveFor(b); if(l&&l.over&&l.winner!==null) return {w:l.winner, src:'live'};
-  const t=S.taps[keyOf(div,rName,m)]; if(t===0||t===1) return {w:t, src:'tap'};
   return null;
 }
 function winnerOf(div,rName,m){ const i=winnerInfo(div,rName,m); return i?i.w:null; }
@@ -247,19 +244,6 @@ function allMatches(block){
   }
   return out;
 }
-function setWinner(mo,s){
-  if(mo.src==='flo'){ toast('FloArena has this result already'); return; }
-  if(mo.src==='live'){ toast('live feed has this result already'); return; }
-  const k=mo.key;
-  if(S.taps[k]===s) delete S.taps[k]; else S.taps[k]=s;
-  // clear downstream taps that depended on this bout
-  const rn=rounds(mo.div);
-  if(mo.rName!=='3'){ const ri=rn.indexOf(mo.rName);
-    for(let r=ri+1;r<rn.length;r++) delete S.taps[keyOf(mo.div,rn[r],mo.m>>(r-ri))];
-    if(ri>=rn.length-2) delete S.taps[keyOf(mo.div,'3',0)]; }
-  save(); render();
-}
-
 // ---------- schedule engine ----------
 function localDate(){ const d=new Date(); return `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}-${String(d.getDate()).padStart(2,'0')}`; }
 function today(){ return S.day || (localDate()<=DAY_DATES[1]?1:2); }
@@ -317,7 +301,7 @@ function esc(s){ return String(s??'').replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&l
 function pName(p,mo,s){
   if(p.tbd) return `<span class="name tbd">${esc(p.label)}</span>`;
   const c=['name', isFollow(p)?'follow':'', mo.w===s?'win':'', (mo.w!==null&&mo.w!==s)?'lose':''].join(' ');
-  return `<button class="${c}" data-win="${mo.key}|${s}"><span class="seed">${p.seed||''}</span><span class="nm">${esc(p.name)}</span></button>`;
+  return `<span class="${c}"><span class="seed">${p.seed||''}</span><span class="nm">${esc(p.name)}</span></span>`;
 }
 // "SUB" + "6-0 6:53" -> "sub · 6:53"; "SCORE" + "5-0 15:00 TB1" -> "5-0 pts · OT"; "REF" -> "ref decision"
 function fmtResult(winType,result){
@@ -335,7 +319,6 @@ function resultPill(mo){
   const b=mo.bout;
   if(mo.src==='flo'&&b) return `<span class="res">${esc(fmtResult(b.winType,b.result))}</span>`;
   if(mo.src==='live'&&mo.live) return `<span class="res">${esc(fmtResult(mo.live.winType,mo.live.finalScore))} · live</span>`;
-  if(mo.src==='tap') return `<span class="res">your tap</span>`;
   return '';
 }
 function renderMats(){
@@ -381,7 +364,7 @@ function renderNext(){
       <div class="vs">${pName(mo.a,mo,0)}${pName(mo.b,mo,1)}</div></div></div>`;
   });
   if(q.length) h+=`</div>`;
-  h+=`<div class="note">results and mat times follow FloArena automatically. tap a name only if the feed is behind — it advances the bracket here until FloArena confirms it.</div>`;
+  h+=`<div class="note">results and mat times follow FloArena automatically.</div>`;
   return h;
 }
 function currentDiv(){
@@ -393,7 +376,6 @@ function box(mo){
   let res='';
   if(mo.src==='flo'&&(b.winType||b.result)) res=fmtResult(b.winType,b.result);
   else if(mo.src==='live'&&mo.live) res=fmtResult(mo.live.winType,mo.live.finalScore)+' · live';
-  else if(mo.src==='tap') res='your tap';
   const live=mo.live&&!mo.live.over;
   const meta=`<span class="num">${b.n?'#'+esc(b.n):''}</span>${live?`<span class="cue live">on the mat · ${esc(mo.live.clock)}</span>`:''}<span class="res">${esc(res)}</span>`;
   const fol=isFollow(mo.a)||isFollow(mo.b);
@@ -411,7 +393,7 @@ function renderBrackets(){
   }
   h+=`</div></div>`;
   if(div.third) h+=`<div class="bracket" style="--n1:1;margin-top:4px"><div class="col"><h3>3rd place</h3><div class="slot single">${box(matchObj(div,'3',0))}</div></div></div>`;
-  h+=`<div class="note">tap a name to record a result the feed doesn’t have yet. scroll sideways for later rounds.</div>`;
+  h+=`<div class="note">scroll sideways for later rounds.</div>`;
   return h;
 }
 function renderSettings(){
@@ -430,7 +412,7 @@ function renderSettings(){
     <div class="note">minutes per match slot including the changeover.</div>
   </div>
   <div class="panel" style="margin-top:10px">
-    <div class="note" style="margin:0">bracket, results, and mat order come from FloArena (last synced ${synced}); live scores and the clock come from FloArena’s mat feed. times are projected from that, never typed in. tapping a name records a result only until FloArena has it. taps and this list live in this browser only.</div>
+    <div class="note" style="margin:0">bracket, results, and mat order come from FloArena (last synced ${synced}); live scores and the clock come from FloArena’s mat feed. times are projected from that, never typed in. the follow list and these settings live in this browser only.</div>
     <div class="actions"><button type="button" class="chip warn" id="reset">reset everything</button></div>
   </div>`;
 }
@@ -451,12 +433,11 @@ function toast(t){ const e=$('#toast'); e.textContent=t; e.classList.add('show')
 // ---------- events ----------
 document.querySelector('.bottom-nav').addEventListener('click',e=>{ const b=e.target.closest('[data-tab]'); if(b){ tab=b.dataset.tab; render(); window.scrollTo(0,0);} });
 $('#main').addEventListener('click',e=>{
-  const w=e.target.closest('[data-win]'); if(w){ const [divId,r,m,s]=w.dataset.win.split('|'); const div=divs().find(d=>d.id===divId); if(div) setWinner(matchObj(div,r,+m),+s); return; }
   const dy=e.target.closest('[data-day]'); if(dy){ S.day=+dy.dataset.day; save(); render(); return; }
   const bd=e.target.closest('[data-bdiv]'); if(bd){ S.bracketDiv=bd.dataset.bdiv; save(); render(); return; }
   if(e.target.id==='reset'){ // two-tap confirm: native confirm() is blocked in sandboxed iframes
     if(e.target.dataset.armed){ S=JSON.parse(JSON.stringify(DEFAULT)); save(); render(); toast('reset'); }
-    else{ e.target.dataset.armed='1'; e.target.textContent='tap again to clear taps and the follow list'; setTimeout(()=>{ if(e.target.isConnected){ delete e.target.dataset.armed; e.target.textContent='reset everything'; } },4000); }
+    else{ e.target.dataset.armed='1'; e.target.textContent='tap again to reset the follow list and settings'; setTimeout(()=>{ if(e.target.isConnected){ delete e.target.dataset.armed; e.target.textContent='reset everything'; } },4000); }
     return; }
 });
 $('#main').addEventListener('change',e=>{
