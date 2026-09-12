@@ -132,6 +132,8 @@ its "Rules the look depends on" are binding here:
 - Predicted times are estimates. Automation and glanceability beat to-the-second accuracy:
   no manual levers for the projection.
 - Nothing entered by hand: results come from the feeds or not at all.
+- Names aren't links: tapping copies the name (athlete name spellings vary too much across
+  sites to guess a bio URL). Finished bouts link to Flo's video via `boutVideoUrl`.
 - Don't re-litigate settled decisions; execute.
 - Flag uncertainty explicitly.
 - UI choices already made: Day 1/Day 2 is a switch on the Next up tab; the Brackets tab is a

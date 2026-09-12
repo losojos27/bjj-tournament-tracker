@@ -57,8 +57,10 @@
   .t small{display:block;color:var(--text-muted);font-weight:400;font-size:var(--fs-eyebrow)}
   .meta{color:var(--text-muted);font-size:var(--fs-eyebrow);margin-bottom:2px;display:flex;align-items:center;gap:6px;flex-wrap:wrap}
   .vs{display:flex;flex-direction:column;gap:2px}
-  .name{display:flex;align-items:center;gap:7px;color:var(--text-primary);font-size:var(--fs-body);padding:4px 0}
-  .name.tbd{color:var(--text-muted);font-style:italic}
+  .name{display:flex;align-items:center;gap:7px;color:var(--text-primary);font:inherit;font-size:var(--fs-body);padding:4px 0;background:none;border:0;text-align:left;width:100%;cursor:pointer;-webkit-tap-highlight-color:transparent;border-radius:var(--radius-sm)}
+  .name:active{background:var(--bg-card-hover)}
+  .name:focus-visible{outline:2px solid var(--accent-soft);outline-offset:1px}
+  .name.tbd{color:var(--text-muted);font-style:italic;cursor:default}
   .name.win{color:var(--win);font-weight:600}
   .name.lose{color:var(--lose);text-decoration:line-through}
   .name.follow{color:var(--follow);font-weight:650}   /* after win/lose: a followed fighter stays highlighted */
@@ -67,7 +69,7 @@
   .name .nm{overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
   .flag{display:inline-block;width:1.25em;text-align:center;flex-shrink:0;font-size:1.05em;line-height:1}
   .big .flag{margin-right:.35em;font-size:.9em}
-  .mat .who-l{display:flex;align-items:center;gap:6px;min-width:0}
+  .mat .who-l{display:flex;align-items:center;gap:6px;min-width:0;background:none;border:0;padding:0;font:inherit;color:inherit;text-align:left;cursor:pointer;-webkit-tap-highlight-color:transparent}
   .mat .who .nm{overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
   .seed{font-size:var(--fs-eyebrow);color:var(--text-muted);min-width:18px;text-align:right;font-variant-numeric:tabular-nums}
   .res{margin-left:auto;color:var(--text-secondary)}
@@ -99,6 +101,7 @@
   .bx .meta{font-size:.76rem;line-height:1.4;margin:0 0 1px 2px;min-height:15px;white-space:nowrap;display:flex;justify-content:space-between;gap:6px}
   .bx .meta .num{color:var(--text-muted)}
   .bx .meta .res{margin-left:auto;color:var(--text-primary);font-weight:600;overflow:hidden;text-overflow:ellipsis}
+  .bx .meta a.res{text-decoration:underline;text-decoration-color:var(--text-muted);text-underline-offset:3px}
   .bx .name{font-size:.94rem;line-height:1.35;padding:2px 0;gap:5px}
   .bx .seed{min-width:16px;font-size:.7rem}
   /* settings */
@@ -312,7 +315,7 @@ function esc(s){ return String(s??'').replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&l
 function pName(p,mo,s){
   if(p.tbd) return `<span class="name tbd">${esc(p.label)}</span>`;
   const c=['name', isFollow(p)?'follow':'', mo.w===s?'win':'', (mo.w!==null&&mo.w!==s)?'lose':''].join(' ');
-  return `<span class="${c}">${flagHtml(p.team)}<span class="seed">${p.seed||''}</span><span class="nm">${esc(p.name)}</span></span>`;
+  return `<button type="button" class="${c}" data-copy="${esc(p.name)}" title="copy name">${flagHtml(p.team)}<span class="seed">${p.seed||''}</span><span class="nm">${esc(p.name)}</span></button>`;
 }
 // "SUB" + "6-0 6:53" -> "sub · 6:53"; "SCORE" + "5-0 15:00 TB1" -> "5-0 pts · OT"; "REF" -> "ref decision"
 function fmtResult(winType,result){
@@ -338,7 +341,7 @@ function renderMats(){
   if(!ms.length) return '';
   let h=`<h2 class="section-title">on the mats <span style="font-weight:400">· FloArena live</span></h2><div class="mats">`;
   for(const l of ms){
-    const who=(p,i)=>`<div class="who ${l.over?(l.winner===i?'w':'l'):''} ${isFollow(p)?'follow':''}"><span class="who-l">${flagHtml(p.team)}<span class="seed">${p.seed||''}</span><span class="nm">${esc(p.name)}</span></span><span class="sc">${p.score}${p.pen?`<small class="muted"> p${p.pen}</small>`:''}</span></div>`;
+    const who=(p,i)=>`<div class="who ${l.over?(l.winner===i?'w':'l'):''} ${isFollow(p)?'follow':''}"><button type="button" class="who-l" data-copy="${esc(p.name)}" title="copy name">${flagHtml(p.team)}<span class="seed">${p.seed||''}</span><span class="nm">${esc(p.name)}</span></button><span class="sc">${p.score}${p.pen?`<small class="muted"> p${p.pen}</small>`:''}</span></div>`;
     h+=`<div class="panel mat"><div class="hd"><span><b>${esc(String(l.mat).toLowerCase())}</b> · ${esc(l.weight)}${l.weight&&!/kg|abs/i.test(l.weight)?'kg':''} ${esc(l.round)} · #${esc(l.n)}</span>${l.over?`<span>final</span>`:`<span class="clock">${esc(l.clock)}${l.period&&l.period!=='1'?' '+esc(l.period):''}</span>`}</div>${who(l.red,0)}${who(l.blue,1)}<div class="ft">${l.over?`${esc(fmtResult(l.winType,l.finalScore))} · ended ${ago(l.updated)}`:`<span class="cue live">live</span> updated ${ago(l.updated)}`}</div></div>`;
   }
   return h+`</div>`;
@@ -377,7 +380,7 @@ function renderNext(){
       <div class="vs">${pName(mo.a,mo,0)}${pName(mo.b,mo,1)}</div></div></div>`;
   });
   if(q.length) h+=`</div>`;
-  h+=`<div class="note">results and mat times follow FloArena automatically.</div>`;
+  h+=`<div class="note">results and mat times follow FloArena automatically. tap a name to copy it.</div>`;
   return h;
 }
 function currentDiv(){
@@ -390,7 +393,8 @@ function box(mo){
   if(mo.src==='flo'&&(b.winType||b.result)) res=fmtResult(b.winType,b.result);
   else if(mo.src==='live'&&mo.live) res=fmtResult(mo.live.winType,mo.live.finalScore)+' · live';
   const live=mo.live&&!mo.live.over;
-  const meta=`<span class="num">${b.n?'#'+esc(b.n):''}</span>${live?`<span class="cue live">on the mat · ${esc(mo.live.clock)}</span>`:''}<span class="res">${esc(res)}</span>`;
+  const resHtml = res && b.video ? `<a class="res vid" href="${esc(b.video)}" target="_blank" rel="noopener" title="watch on FloGrappling">${esc(res)} ↗</a>` : `<span class="res">${esc(res)}</span>`;
+  const meta=`<span class="num">${b.n?'#'+esc(b.n):''}</span>${live?`<span class="cue live">on the mat · ${esc(mo.live.clock)}</span>`:''}${resHtml}`;
   const fol=isFollow(mo.a)||isFollow(mo.b);
   return `<div class="bx ${fol?'fol':''}"><div class="meta">${meta}</div>${pName(mo.a,mo,0)}${pName(mo.b,mo,1)}</div>`;
 }
@@ -406,7 +410,7 @@ function renderBrackets(){
   }
   h+=`</div></div>`;
   if(div.third) h+=`<div class="bracket" style="--n1:1;margin-top:4px"><div class="col"><h3>3rd place</h3><div class="slot single">${box(matchObj(div,'3',0))}</div></div></div>`;
-  h+=`<div class="note">scroll sideways for later rounds.</div>`;
+  h+=`<div class="note">scroll sideways for later rounds. tap a name to copy it; tap a result to watch the bout on FloGrappling.</div>`;
   return h;
 }
 function themeMode(){ try{ const t=localStorage.getItem('bjjTracker.theme'); return t==='light'||t==='dark'?t:'auto'; }catch(e){ return 'auto'; } }
@@ -447,6 +451,10 @@ function render(){
   if(!DATA){ $('#main').innerHTML = dataErr ? `<div class="panel">couldn’t load the bracket (${esc(dataErr.message)}). retrying every minute.</div>` : `<div class="panel">loading bracket…</div>`; return; }
   $('#main').innerHTML = tab==='next'?renderNext():tab==='brackets'?renderBrackets():renderSettings();
 }
+async function copyText(t){
+  try{ if(navigator.clipboard&&window.isSecureContext){ await navigator.clipboard.writeText(t); toast(`copied ${t}`); return; } }catch(e){}
+  try{ const ta=document.createElement('textarea'); ta.value=t; ta.setAttribute('readonly',''); ta.style.position='fixed'; ta.style.opacity='0'; document.body.appendChild(ta); ta.select(); const ok=document.execCommand('copy'); ta.remove(); toast(ok?`copied ${t}`:'couldn’t copy'); }catch(e){ toast('couldn’t copy'); }
+}
 function toast(t){ const e=$('#toast'); e.textContent=t; e.classList.add('show'); setTimeout(()=>e.classList.remove('show'),1400); }
 
 // ---------- events ----------
@@ -454,6 +462,7 @@ document.querySelector('.bottom-nav').addEventListener('click',e=>{ const b=e.ta
 $('#main').addEventListener('click',e=>{
   const dy=e.target.closest('[data-day]'); if(dy){ S.day=+dy.dataset.day; save(); render(); return; }
   const bd=e.target.closest('[data-bdiv]'); if(bd){ S.bracketDiv=bd.dataset.bdiv; save(); render(); return; }
+  const cp=e.target.closest('[data-copy]'); if(cp){ copyText(cp.dataset.copy); return; }
   const th=e.target.closest('[data-theme-set]'); if(th){ setThemeMode(th.dataset.themeSet); render(); return; }
   if(e.target.id==='reset'){ // two-tap confirm: native confirm() is blocked in sandboxed iframes
     if(e.target.dataset.armed){ S=JSON.parse(JSON.stringify(DEFAULT)); save(); render(); toast('reset'); }

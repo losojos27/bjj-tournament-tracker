@@ -1,5 +1,5 @@
 {
- "updated": "2026-09-12T21:02:20.155Z",
+ "updated": "2026-09-12T22:03:41.723Z",
  "event": {
   "id": "52703b65-bade-46e2-9ce2-399dd32d93e4",
   "name": "2026 ADCC World Championships",
@@ -40,7 +40,8 @@
        "decided": true,
        "result": "6-0 6:53",
        "winType": "SUB",
-       "mat": "Mat 1"
+       "mat": "Mat 1",
+       "video": "https://www.flograppling.com/events/14687695-2026-adcc-world-championships/videos?playing=16172972&limit=60"
       },
       {
        "n": "2",
@@ -58,7 +59,8 @@
        "decided": true,
        "result": "0-0 14:17 TB1",
        "winType": "REF",
-       "mat": "Mat 2"
+       "mat": "Mat 2",
+       "video": "https://www.flograppling.com/events/14687695-2026-adcc-world-championships/videos?playing=16172973&limit=60"
       },
       {
        "n": "3",
@@ -76,7 +78,8 @@
        "decided": true,
        "result": "5-0 15:00 TB1",
        "winType": "SCORE",
-       "mat": "Mat 3"
+       "mat": "Mat 3",
+       "video": "https://www.flograppling.com/events/14687695-2026-adcc-world-championships/videos?playing=16172974&limit=60"
       },
       {
        "n": "4",
@@ -94,7 +97,8 @@
        "decided": true,
        "result": "0-0 8:27",
        "winType": "SUB",
-       "mat": "Mat 1"
+       "mat": "Mat 1",
+       "video": "https://www.flograppling.com/events/14687695-2026-adcc-world-championships/videos?playing=16172975&limit=60"
       },
       {
        "n": "5",
@@ -112,7 +116,8 @@
        "decided": true,
        "result": "0-0 3:05",
        "winType": "SUB",
-       "mat": "Mat 2"
+       "mat": "Mat 2",
+       "video": "https://www.flograppling.com/events/14687695-2026-adcc-world-championships/videos?playing=16172976&limit=60"
       },
       {
        "n": "6",
@@ -130,7 +135,8 @@
        "decided": true,
        "result": "2-0 15:00 TB1",
        "winType": "SCORE",
-       "mat": "Mat 3"
+       "mat": "Mat 3",
+       "video": "https://www.flograppling.com/events/14687695-2026-adcc-world-championships/videos?playing=16172980&limit=60"
       },
       {
        "n": "7",
@@ -148,7 +154,8 @@
        "decided": true,
        "result": "0-0 5:47",
        "winType": "SUB",
-       "mat": "Mat 1"
+       "mat": "Mat 1",
+       "video": "https://www.flograppling.com/events/14687695-2026-adcc-world-championships/videos?playing=16172977&limit=60"
       },
       {
        "n": "8",
@@ -166,7 +173,8 @@
        "decided": true,
        "result": "2-0 8:56",
        "winType": "SUB",
-       "mat": "Mat 2"
+       "mat": "Mat 2",
+       "video": "https://www.flograppling.com/events/14687695-2026-adcc-world-championships/videos?playing=16172979&limit=60"
       }
      ]
     },
@@ -189,7 +197,8 @@
        "decided": true,
        "result": "9-0 7:54",
        "winType": "SUB",
-       "mat": "Mat 2"
+       "mat": "Mat 2",
+       "video": "https://www.flograppling.com/events/14687695-2026-adcc-world-championships/videos?playing=16173977&limit=60"
       },
       {
        "n": "54",
@@ -207,7 +216,8 @@
        "decided": true,
        "result": "0-0 15:00 TB1",
        "winType": "REF",
-       "mat": "Mat 3"
+       "mat": "Mat 3",
+       "video": "https://www.flograppling.com/events/14687695-2026-adcc-world-championships/videos?playing=16174018&limit=60"
       },
       {
        "n": "55",
@@ -225,7 +235,8 @@
        "decided": true,
        "result": "3-0 10:00",
        "winType": "SCORE",
-       "mat": "Mat 1"
+       "mat": "Mat 1",
+       "video": "https://www.flograppling.com/events/14687695-2026-adcc-world-championships/videos?playing=16174036&limit=60"
       },
       {
        "n": "56",
@@ -243,7 +254,8 @@
        "decided": true,
        "result": "0-0 5:38",
        "winType": "SUB",
-       "mat": "Mat 2"
+       "mat": "Mat 2",
+       "video": "https://www.flograppling.com/events/14687695-2026-adcc-world-championships/videos?playing=16174032&limit=60"
       }
      ]
     },
@@ -266,7 +278,8 @@
        "decided": false,
        "result": null,
        "winType": null,
-       "mat": null
+       "mat": null,
+       "video": null
       },
       {
        "n": "74",
@@ -284,7 +297,8 @@
        "decided": false,
        "result": null,
        "winType": null,
-       "mat": null
+       "mat": null,
+       "video": null
       }
      ]
     },
@@ -299,7 +313,8 @@
        "decided": false,
        "result": null,
        "winType": null,
-       "mat": null
+       "mat": null,
+       "video": null
       }
      ]
     }
@@ -312,7 +327,8 @@
     "decided": false,
     "result": null,
     "winType": null,
-    "mat": null
+    "mat": null,
+    "video": null
    }
   },
   {
@@ -346,7 +362,8 @@
        "decided": true,
        "result": "0-0 5:26",
        "winType": "SUB",
-       "mat": "Mat 1"
+       "mat": "Mat 1",
+       "video": "https://www.flograppling.com/events/14687695-2026-adcc-world-championships/videos?playing=16172981&limit=60"
       },
       {
        "n": "10",
@@ -364,7 +381,8 @@
        "decided": true,
        "result": "3-0 9:31",
        "winType": "SUB",
-       "mat": "Mat 2"
+       "mat": "Mat 2",
+       "video": "https://www.flograppling.com/events/14687695-2026-adcc-world-championships/videos?playing=16172989&limit=60"
       },
       {
        "n": "11",
@@ -382,7 +400,8 @@
        "decided": true,
        "result": "0-0 5:11",
        "winType": "SUB",
-       "mat": "Mat 3"
+       "mat": "Mat 3",
+       "video": "https://www.flograppling.com/events/14687695-2026-adcc-world-championships/videos?playing=16172986&limit=60"
       },
       {
        "n": "12",
@@ -400,7 +419,8 @@
        "decided": true,
        "result": "0-0 6:13",
        "winType": "SUB",
-       "mat": "Mat 1"
+       "mat": "Mat 1",
+       "video": "https://www.flograppling.com/events/14687695-2026-adcc-world-championships/videos?playing=16172987&limit=60"
       },
       {
        "n": "13",
@@ -418,7 +438,8 @@
        "decided": true,
        "result": "0-0 1:47",
        "winType": "SUB",
-       "mat": "Mat 3"
+       "mat": "Mat 3",
+       "video": "https://www.flograppling.com/events/14687695-2026-adcc-world-championships/videos?playing=16172990&limit=60"
       },
       {
        "n": "14",
@@ -436,7 +457,8 @@
        "decided": true,
        "result": "5-0 10:00",
        "winType": "SCORE",
-       "mat": "Mat 1"
+       "mat": "Mat 1",
+       "video": "https://www.flograppling.com/events/14687695-2026-adcc-world-championships/videos?playing=16172993&limit=60"
       },
       {
        "n": "15",
@@ -454,7 +476,8 @@
        "decided": true,
        "result": "0-0 15:00 TB1",
        "winType": "REF",
-       "mat": "Mat 2"
+       "mat": "Mat 2",
+       "video": "https://www.flograppling.com/events/14687695-2026-adcc-world-championships/videos?playing=16172998&limit=60"
       },
       {
        "n": "16",
@@ -472,7 +495,8 @@
        "decided": true,
        "result": "12-0 9:45",
        "winType": "SUB",
-       "mat": "Mat 3"
+       "mat": "Mat 3",
+       "video": "https://www.flograppling.com/events/14687695-2026-adcc-world-championships/videos?playing=16172995&limit=60"
       }
      ]
     },
@@ -495,7 +519,8 @@
        "decided": true,
        "result": "3-0 5:38",
        "winType": "SUB",
-       "mat": "Mat 3"
+       "mat": "Mat 3",
+       "video": "https://www.flograppling.com/events/14687695-2026-adcc-world-championships/videos?playing=16174111&limit=60"
       },
       {
        "n": "58",
@@ -513,7 +538,8 @@
        "decided": true,
        "result": "0-0 8:18",
        "winType": "SUB",
-       "mat": "Mat 2"
+       "mat": "Mat 2",
+       "video": "https://www.flograppling.com/events/14687695-2026-adcc-world-championships/videos?playing=16174129&limit=60"
       },
       {
        "n": "59",
@@ -531,7 +557,8 @@
        "decided": true,
        "result": "0-0 15:00 TB1",
        "winType": "SCORE",
-       "mat": "Mat 1"
+       "mat": "Mat 1",
+       "video": "https://www.flograppling.com/events/14687695-2026-adcc-world-championships/videos?playing=16174166&limit=60"
       },
       {
        "n": "60",
@@ -549,7 +576,8 @@
        "decided": true,
        "result": "0-0 15:00 TB1",
        "winType": "REF",
-       "mat": "Mat 3"
+       "mat": "Mat 3",
+       "video": "https://www.flograppling.com/events/14687695-2026-adcc-world-championships/videos?playing=16174243&limit=60"
       }
      ]
     },
@@ -572,7 +600,8 @@
        "decided": false,
        "result": null,
        "winType": null,
-       "mat": null
+       "mat": null,
+       "video": null
       },
       {
        "n": "78",
@@ -590,7 +619,8 @@
        "decided": false,
        "result": null,
        "winType": null,
-       "mat": null
+       "mat": null,
+       "video": null
       }
      ]
     },
@@ -605,7 +635,8 @@
        "decided": false,
        "result": null,
        "winType": null,
-       "mat": null
+       "mat": null,
+       "video": null
       }
      ]
     }
@@ -618,7 +649,8 @@
     "decided": false,
     "result": null,
     "winType": null,
-    "mat": null
+    "mat": null,
+    "video": null
    }
   },
   {
@@ -652,7 +684,8 @@
        "decided": true,
        "result": "0-0 1:42",
        "winType": "SUB",
-       "mat": "Mat 1"
+       "mat": "Mat 1",
+       "video": "https://www.flograppling.com/events/14687695-2026-adcc-world-championships/videos?playing=16172994&limit=60"
       },
       {
        "n": "18",
@@ -670,7 +703,8 @@
        "decided": true,
        "result": "0-0 6:10",
        "winType": "SUB",
-       "mat": "Mat 1"
+       "mat": "Mat 1",
+       "video": "https://www.flograppling.com/events/14687695-2026-adcc-world-championships/videos?playing=16172999&limit=60"
       },
       {
        "n": "19",
@@ -688,7 +722,8 @@
        "decided": true,
        "result": "3-2 10:00",
        "winType": "SCORE",
-       "mat": "Mat 3"
+       "mat": "Mat 3",
+       "video": "https://www.flograppling.com/events/14687695-2026-adcc-world-championships/videos?playing=16173000&limit=60"
       },
       {
        "n": "20",
@@ -706,7 +741,8 @@
        "decided": true,
        "result": "9-0 10:00",
        "winType": "SCORE",
-       "mat": "Mat 2"
+       "mat": "Mat 2",
+       "video": "https://www.flograppling.com/events/14687695-2026-adcc-world-championships/videos?playing=16173001&limit=60"
       },
       {
        "n": "21",
@@ -724,7 +760,8 @@
        "decided": true,
        "result": "3-0 14:39 TB1",
        "winType": "SUB",
-       "mat": "Mat 1"
+       "mat": "Mat 1",
+       "video": "https://www.flograppling.com/events/14687695-2026-adcc-world-championships/videos?playing=16173008&limit=60"
       },
       {
        "n": "22",
@@ -742,7 +779,8 @@
        "decided": true,
        "result": "3-0 10:00",
        "winType": "SCORE",
-       "mat": "Mat 3"
+       "mat": "Mat 3",
+       "video": "https://www.flograppling.com/events/14687695-2026-adcc-world-championships/videos?playing=16173004&limit=60"
       },
       {
        "n": "23",
@@ -760,7 +798,8 @@
        "decided": true,
        "result": "3-0 14:42 TB1",
        "winType": "SUB",
-       "mat": "Mat 2"
+       "mat": "Mat 2",
+       "video": "https://www.flograppling.com/events/14687695-2026-adcc-world-championships/videos?playing=16173028&limit=60"
       },
       {
        "n": "24",
@@ -778,7 +817,8 @@
        "decided": true,
        "result": "3-0 10:00",
        "winType": "SCORE",
-       "mat": "Mat 3"
+       "mat": "Mat 3",
+       "video": "https://www.flograppling.com/events/14687695-2026-adcc-world-championships/videos?playing=16173029&limit=60"
       }
      ]
     },
@@ -801,7 +841,8 @@
        "decided": true,
        "result": "0-0 3:55",
        "winType": "SUB",
-       "mat": "Mat 2"
+       "mat": "Mat 2",
+       "video": "https://www.flograppling.com/events/14687695-2026-adcc-world-championships/videos?playing=16174173&limit=60"
       },
       {
        "n": "62",
@@ -819,7 +860,8 @@
        "decided": true,
        "result": "3-0 8:43",
        "winType": "SUB",
-       "mat": "Mat 1"
+       "mat": "Mat 1",
+       "video": "https://www.flograppling.com/events/14687695-2026-adcc-world-championships/videos?playing=16174252&limit=60"
       },
       {
        "n": "63",
@@ -837,7 +879,8 @@
        "decided": true,
        "result": "6-0 10:00",
        "winType": "SCORE",
-       "mat": "Mat 2"
+       "mat": "Mat 2",
+       "video": "https://www.flograppling.com/events/14687695-2026-adcc-world-championships/videos?playing=16174281&limit=60"
       },
       {
        "n": "64",
@@ -855,7 +898,8 @@
        "decided": true,
        "result": "0-0 4:43",
        "winType": "SUB",
-       "mat": "Mat 3"
+       "mat": "Mat 3",
+       "video": "https://www.flograppling.com/events/14687695-2026-adcc-world-championships/videos?playing=16174316&limit=60"
       }
      ]
     },
@@ -878,7 +922,8 @@
        "decided": false,
        "result": null,
        "winType": null,
-       "mat": null
+       "mat": null,
+       "video": null
       },
       {
        "n": "80",
@@ -896,7 +941,8 @@
        "decided": false,
        "result": null,
        "winType": null,
-       "mat": null
+       "mat": null,
+       "video": null
       }
      ]
     },
@@ -911,7 +957,8 @@
        "decided": false,
        "result": null,
        "winType": null,
-       "mat": null
+       "mat": null,
+       "video": null
       }
      ]
     }
@@ -924,7 +971,8 @@
     "decided": false,
     "result": null,
     "winType": null,
-    "mat": null
+    "mat": null,
+    "video": null
    }
   },
   {
@@ -958,7 +1006,8 @@
        "decided": true,
        "result": "0-0 10:00 TB1",
        "winType": "SCORE",
-       "mat": "Mat 1"
+       "mat": "Mat 1",
+       "video": "https://www.flograppling.com/events/14687695-2026-adcc-world-championships/videos?playing=16173034&limit=60"
       },
       {
        "n": "26",
@@ -976,7 +1025,8 @@
        "decided": true,
        "result": "3-0 10:00",
        "winType": "SCORE",
-       "mat": "Mat 2"
+       "mat": "Mat 2",
+       "video": "https://www.flograppling.com/events/14687695-2026-adcc-world-championships/videos?playing=16173035&limit=60"
       },
       {
        "n": "27",
@@ -994,7 +1044,8 @@
        "decided": true,
        "result": "3-0 8:51",
        "winType": "SUB",
-       "mat": "Mat 3"
+       "mat": "Mat 3",
+       "video": "https://www.flograppling.com/events/14687695-2026-adcc-world-championships/videos?playing=16173036&limit=60"
       },
       {
        "n": "28",
@@ -1012,7 +1063,8 @@
        "decided": true,
        "result": "0-0 14:30 TB1",
        "winType": "SUB",
-       "mat": "Mat 1"
+       "mat": "Mat 1",
+       "video": "https://www.flograppling.com/events/14687695-2026-adcc-world-championships/videos?playing=16173039&limit=60"
       },
       {
        "n": "29",
@@ -1030,7 +1082,8 @@
        "decided": true,
        "result": "2-0 15:00 TB1",
        "winType": "SCORE",
-       "mat": "Mat 2"
+       "mat": "Mat 2",
+       "video": "https://www.flograppling.com/events/14687695-2026-adcc-world-championships/videos?playing=16173042&limit=60"
       },
       {
        "n": "30",
@@ -1048,7 +1101,8 @@
        "decided": true,
        "result": "3-0 10:00",
        "winType": "SCORE",
-       "mat": "Mat 3"
+       "mat": "Mat 3",
+       "video": "https://www.flograppling.com/events/14687695-2026-adcc-world-championships/videos?playing=16173041&limit=60"
       },
       {
        "n": "31",
@@ -1066,7 +1120,8 @@
        "decided": true,
        "result": "2-2 9:41",
        "winType": "SUB",
-       "mat": "Mat 1"
+       "mat": "Mat 1",
+       "video": "https://www.flograppling.com/events/14687695-2026-adcc-world-championships/videos?playing=16173044&limit=60"
       },
       {
        "n": "32",
@@ -1084,7 +1139,8 @@
        "decided": true,
        "result": "3-0 10:00",
        "winType": "SCORE",
-       "mat": "Mat 3"
+       "mat": "Mat 3",
+       "video": "https://www.flograppling.com/events/14687695-2026-adcc-world-championships/videos?playing=16173047&limit=60"
       }
      ]
     },
@@ -1107,7 +1163,8 @@
        "decided": true,
        "result": "0-0 15:00 TB1",
        "winType": "REF",
-       "mat": "Mat 1"
+       "mat": "Mat 1",
+       "video": "https://www.flograppling.com/events/14687695-2026-adcc-world-championships/videos?playing=16174449&limit=60"
       },
       {
        "n": "66",
@@ -1125,7 +1182,8 @@
        "decided": true,
        "result": "0-0 10:00 TB1",
        "winType": "SCORE",
-       "mat": "Mat 2"
+       "mat": "Mat 2",
+       "video": "https://www.flograppling.com/events/14687695-2026-adcc-world-championships/videos?playing=16174397&limit=60"
       },
       {
        "n": "67",
@@ -1143,7 +1201,8 @@
        "decided": true,
        "result": "8-0 10:00",
        "winType": "SCORE",
-       "mat": "Mat 3"
+       "mat": "Mat 3",
+       "video": "https://www.flograppling.com/events/14687695-2026-adcc-world-championships/videos?playing=16174440&limit=60"
       },
       {
        "n": "68",
@@ -1161,7 +1220,8 @@
        "decided": true,
        "result": "0-0 15:00 TB1",
        "winType": "REF",
-       "mat": "Mat 2"
+       "mat": "Mat 2",
+       "video": "https://www.flograppling.com/events/14687695-2026-adcc-world-championships/videos?playing=16174546&limit=60"
       }
      ]
     },
@@ -1184,7 +1244,8 @@
        "decided": false,
        "result": null,
        "winType": null,
-       "mat": null
+       "mat": null,
+       "video": null
       },
       {
        "n": "84",
@@ -1202,7 +1263,8 @@
        "decided": false,
        "result": null,
        "winType": null,
-       "mat": null
+       "mat": null,
+       "video": null
       }
      ]
     },
@@ -1217,7 +1279,8 @@
        "decided": false,
        "result": null,
        "winType": null,
-       "mat": null
+       "mat": null,
+       "video": null
       }
      ]
     }
@@ -1230,7 +1293,8 @@
     "decided": false,
     "result": null,
     "winType": null,
-    "mat": null
+    "mat": null,
+    "video": null
    }
   },
   {
@@ -1264,7 +1328,8 @@
        "decided": true,
        "result": "6-0 7:00",
        "winType": "SUB",
-       "mat": "Mat 2"
+       "mat": "Mat 2",
+       "video": "https://www.flograppling.com/events/14687695-2026-adcc-world-championships/videos?playing=16173048&limit=60"
       },
       {
        "n": "34",
@@ -1282,7 +1347,8 @@
        "decided": true,
        "result": "3-0 10:00",
        "winType": "SCORE",
-       "mat": "Mat 1"
+       "mat": "Mat 1",
+       "video": "https://www.flograppling.com/events/14687695-2026-adcc-world-championships/videos?playing=16173056&limit=60"
       },
       {
        "n": "35",
@@ -1300,7 +1366,8 @@
        "decided": true,
        "result": "0-0 6:00",
        "winType": "SUB",
-       "mat": "Mat 3"
+       "mat": "Mat 3",
+       "video": "https://www.flograppling.com/events/14687695-2026-adcc-world-championships/videos?playing=16173057&limit=60"
       },
       {
        "n": "36",
@@ -1318,7 +1385,8 @@
        "decided": true,
        "result": "10-0 10:00",
        "winType": "SCORE",
-       "mat": "Mat 2"
+       "mat": "Mat 2",
+       "video": "https://www.flograppling.com/events/14687695-2026-adcc-world-championships/videos?playing=16173061&limit=60"
       },
       {
        "n": "37",
@@ -1336,7 +1404,8 @@
        "decided": true,
        "result": "0-0 15:00 TB1",
        "winType": "REF",
-       "mat": "Mat 1"
+       "mat": "Mat 1",
+       "video": "https://www.flograppling.com/events/14687695-2026-adcc-world-championships/videos?playing=16173136&limit=60"
       },
       {
        "n": "38",
@@ -1354,7 +1423,8 @@
        "decided": true,
        "result": "0-0 15:00 TB1",
        "winType": "REF",
-       "mat": "Mat 3"
+       "mat": "Mat 3",
+       "video": "https://www.flograppling.com/events/14687695-2026-adcc-world-championships/videos?playing=16173149&limit=60"
       },
       {
        "n": "39",
@@ -1372,7 +1442,8 @@
        "decided": true,
        "result": null,
        "winType": "DQ",
-       "mat": "Mat 2"
+       "mat": "Mat 2",
+       "video": "https://www.flograppling.com/events/14687695-2026-adcc-world-championships/videos?playing=16173218&limit=60"
       },
       {
        "n": "40",
@@ -1390,7 +1461,8 @@
        "decided": true,
        "result": "7-0 10:00",
        "winType": "SCORE",
-       "mat": "Mat 1"
+       "mat": "Mat 1",
+       "video": "https://www.flograppling.com/events/14687695-2026-adcc-world-championships/videos?playing=16173249&limit=60"
       }
      ]
     },
@@ -1413,7 +1485,8 @@
        "decided": true,
        "result": "6-0 10:00",
        "winType": "SCORE",
-       "mat": "Mat 3"
+       "mat": "Mat 3",
+       "video": "https://www.flograppling.com/events/14687695-2026-adcc-world-championships/videos?playing=16174534&limit=60"
       },
       {
        "n": "70",
@@ -1431,7 +1504,8 @@
        "decided": true,
        "result": "0-0 15:00 TB1",
        "winType": "REF",
-       "mat": "Mat 1"
+       "mat": "Mat 1",
+       "video": "https://www.flograppling.com/events/14687695-2026-adcc-world-championships/videos?playing=16174606&limit=60"
       },
       {
        "n": "71",
@@ -1449,7 +1523,8 @@
        "decided": true,
        "result": "0-0 7:10",
        "winType": "SUB",
-       "mat": "Mat 3"
+       "mat": "Mat 3",
+       "video": "https://www.flograppling.com/events/14687695-2026-adcc-world-championships/videos?playing=16174610&limit=60"
       },
       {
        "n": "72",
@@ -1467,7 +1542,8 @@
        "decided": true,
        "result": "3-0 10:00",
        "winType": "SCORE",
-       "mat": "Mat 2"
+       "mat": "Mat 2",
+       "video": "https://www.flograppling.com/events/14687695-2026-adcc-world-championships/videos?playing=16174642&limit=60"
       }
      ]
     },
@@ -1490,7 +1566,8 @@
        "decided": false,
        "result": null,
        "winType": null,
-       "mat": null
+       "mat": null,
+       "video": null
       },
       {
        "n": "88",
@@ -1508,7 +1585,8 @@
        "decided": false,
        "result": null,
        "winType": null,
-       "mat": null
+       "mat": null,
+       "video": null
       }
      ]
     },
@@ -1523,7 +1601,8 @@
        "decided": false,
        "result": null,
        "winType": null,
-       "mat": null
+       "mat": null,
+       "video": null
       }
      ]
     }
@@ -1536,7 +1615,8 @@
     "decided": false,
     "result": null,
     "winType": null,
-    "mat": null
+    "mat": null,
+    "video": null
    }
   },
   {
@@ -1570,7 +1650,8 @@
        "decided": true,
        "result": "10-0 9:11",
        "winType": "SUB",
-       "mat": "Mat 1"
+       "mat": "Mat 1",
+       "video": "https://www.flograppling.com/events/14687695-2026-adcc-world-championships/videos?playing=16173474&limit=60"
       },
       {
        "n": "42",
@@ -1588,7 +1669,8 @@
        "decided": true,
        "result": "7-0 15:00 TB1",
        "winType": "SCORE",
-       "mat": "Mat 2"
+       "mat": "Mat 2",
+       "video": "https://www.flograppling.com/events/14687695-2026-adcc-world-championships/videos?playing=16173540&limit=60"
       },
       {
        "n": "43",
@@ -1606,7 +1688,8 @@
        "decided": true,
        "result": "0-0 15:00 TB1",
        "winType": "REF",
-       "mat": "Mat 3"
+       "mat": "Mat 3",
+       "video": "https://www.flograppling.com/events/14687695-2026-adcc-world-championships/videos?playing=16173553&limit=60"
       },
       {
        "n": "44",
@@ -1624,7 +1707,8 @@
        "decided": true,
        "result": "0-0 5:17",
        "winType": "SUB",
-       "mat": "Mat 1"
+       "mat": "Mat 1",
+       "video": "https://www.flograppling.com/events/14687695-2026-adcc-world-championships/videos?playing=16173537&limit=60"
       }
      ]
     },
@@ -1647,7 +1731,8 @@
        "decided": false,
        "result": null,
        "winType": null,
-       "mat": null
+       "mat": null,
+       "video": null
       },
       {
        "n": "76",
@@ -1665,7 +1750,8 @@
        "decided": false,
        "result": null,
        "winType": null,
-       "mat": null
+       "mat": null,
+       "video": null
       }
      ]
     },
@@ -1680,7 +1766,8 @@
        "decided": false,
        "result": null,
        "winType": null,
-       "mat": null
+       "mat": null,
+       "video": null
       }
      ]
     }
@@ -1693,7 +1780,8 @@
     "decided": false,
     "result": null,
     "winType": null,
-    "mat": null
+    "mat": null,
+    "video": null
    }
   },
   {
@@ -1727,7 +1815,8 @@
        "decided": true,
        "result": "2-0 15:00 TB1",
        "winType": "SCORE",
-       "mat": "Mat 1"
+       "mat": "Mat 1",
+       "video": "https://www.flograppling.com/events/14687695-2026-adcc-world-championships/videos?playing=16173716&limit=60"
       },
       {
        "n": "46",
@@ -1745,7 +1834,8 @@
        "decided": true,
        "result": "0-0 15:00 TB1",
        "winType": "REF",
-       "mat": "Mat 2"
+       "mat": "Mat 2",
+       "video": "https://www.flograppling.com/events/14687695-2026-adcc-world-championships/videos?playing=16173733&limit=60"
       },
       {
        "n": "47",
@@ -1763,7 +1853,8 @@
        "decided": true,
        "result": "0-0 6:05",
        "winType": "SUB",
-       "mat": "Mat 3"
+       "mat": "Mat 3",
+       "video": "https://www.flograppling.com/events/14687695-2026-adcc-world-championships/videos?playing=16173645&limit=60"
       },
       {
        "n": "48",
@@ -1781,7 +1872,8 @@
        "decided": true,
        "result": "4-0 10:00",
        "winType": "SCORE",
-       "mat": "Mat 3"
+       "mat": "Mat 3",
+       "video": "https://www.flograppling.com/events/14687695-2026-adcc-world-championships/videos?playing=16173770&limit=60"
       }
      ]
     },
@@ -1804,7 +1896,8 @@
        "decided": false,
        "result": null,
        "winType": null,
-       "mat": null
+       "mat": null,
+       "video": null
       },
       {
        "n": "82",
@@ -1822,7 +1915,8 @@
        "decided": false,
        "result": null,
        "winType": null,
-       "mat": null
+       "mat": null,
+       "video": null
       }
      ]
     },
@@ -1837,7 +1931,8 @@
        "decided": false,
        "result": null,
        "winType": null,
-       "mat": null
+       "mat": null,
+       "video": null
       }
      ]
     }
@@ -1850,7 +1945,8 @@
     "decided": false,
     "result": null,
     "winType": null,
-    "mat": null
+    "mat": null,
+    "video": null
    }
   },
   {
@@ -1884,7 +1980,8 @@
        "decided": true,
        "result": "3-0 6:53",
        "winType": "SUB",
-       "mat": "Mat 1"
+       "mat": "Mat 1",
+       "video": "https://www.flograppling.com/events/14687695-2026-adcc-world-championships/videos?playing=16173795&limit=60"
       },
       {
        "n": "50",
@@ -1902,7 +1999,8 @@
        "decided": true,
        "result": "3-0 10:00",
        "winType": "SCORE",
-       "mat": "Mat 2"
+       "mat": "Mat 2",
+       "video": "https://www.flograppling.com/events/14687695-2026-adcc-world-championships/videos?playing=16173836&limit=60"
       },
       {
        "n": "51",
@@ -1920,7 +2018,8 @@
        "decided": true,
        "result": "3-0 9:28",
        "winType": "SUB",
-       "mat": "Mat 3"
+       "mat": "Mat 3",
+       "video": "https://www.flograppling.com/events/14687695-2026-adcc-world-championships/videos?playing=16173863&limit=60"
       },
       {
        "n": "52",
@@ -1938,7 +2037,8 @@
        "decided": true,
        "result": "0-0 15:00 TB1",
        "winType": "REF",
-       "mat": "Mat 1"
+       "mat": "Mat 1",
+       "video": "https://www.flograppling.com/events/14687695-2026-adcc-world-championships/videos?playing=16173947&limit=60"
       }
      ]
     },
@@ -1961,7 +2061,8 @@
        "decided": false,
        "result": null,
        "winType": null,
-       "mat": null
+       "mat": null,
+       "video": null
       },
       {
        "n": "86",
@@ -1979,7 +2080,8 @@
        "decided": false,
        "result": null,
        "winType": null,
-       "mat": null
+       "mat": null,
+       "video": null
       }
      ]
     },
@@ -1994,7 +2096,8 @@
        "decided": false,
        "result": null,
        "winType": null,
-       "mat": null
+       "mat": null,
+       "video": null
       }
      ]
     }
@@ -2007,7 +2110,8 @@
     "decided": false,
     "result": null,
     "winType": null,
-    "mat": null
+    "mat": null,
+    "video": null
    }
   },
   {
@@ -2041,7 +2145,8 @@
        "decided": false,
        "result": null,
        "winType": null,
-       "mat": null
+       "mat": null,
+       "video": null
       }
      ]
     }
