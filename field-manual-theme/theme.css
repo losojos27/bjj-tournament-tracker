@@ -1,0 +1,393 @@
+/* ============================================================================
+   Field-manual theme — portable tokens + base + a few primitives.
+   Extracted from jiu-jitsu-brain (css/style.css, 2026-08 redesign).
+
+   Light is the default ("bone paper, white cards, warm ink"); dark is the same
+   language re-lit (warm charcoal). The accent is ACHROMATIC: ink in light, paper
+   in dark — so never hardcode #fff on an accent fill; use --accent-contrast.
+
+   Subtractive by design: content surfaces carry no border (--hairline is
+   transparent) and no shadow (--shadow-* are none). Separation comes from tone
+   and spacing. Only things that genuinely float (bottom nav, sheets) set a
+   shadow. Gradients on controls resolve flat (--accent-grad = --accent).
+
+   Colour tokens live in THREE blocks: :root (light), a prefers-color-scheme
+   media block, and a [data-theme="dark"] override block. The two dark blocks
+   are duplicates and MUST be edited together — CSS can't share a block between
+   a media query and an attribute selector.
+   ========================================================================== */
+
+/* ===== RESET & FONTS ===== */
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+/* Self-hosted latin subsets (OFL, see LICENSES.md). Adjust the path if you
+   put fonts/ somewhere other than a sibling of this file. */
+@font-face {
+  font-family: 'JetBrains Mono';
+  src: url('fonts/JetBrainsMono-Regular.woff2') format('woff2');
+  font-weight: 400;
+  font-style: normal;
+  font-display: swap;
+}
+@font-face {
+  font-family: 'JetBrains Mono';
+  src: url('fonts/JetBrainsMono-Bold.woff2') format('woff2');
+  font-weight: 600 800;
+  font-style: normal;
+  font-display: swap;
+}
+
+/* ===== TOKENS — light (default) ===== */
+:root {
+  color-scheme: light;
+  --app-bg: linear-gradient(172deg, #f1f0ed 0%, #ebeae8 45%, #e2e0db 100%);
+  --bg-primary: #ebeae8;
+  --bg-secondary: #e3e1dc;
+  --bg-card: #ffffff;
+  --bg-card-hover: #f7f6f4;
+  --sheet-bg: #f4f3f0;
+  --chip-bg: #dedcd6;
+  --hairline: transparent;                 /* content surfaces: no border, on purpose */
+  --hairline-strong: rgba(0, 0, 0, .14);   /* the few edges that genuinely need one */
+  --accent: #1a1a19;
+  --accent-hover: #333333;
+  --accent-contrast: #ffffff;              /* text ON an accent fill — never hardcode */
+  --accent-grad: var(--accent);            /* resolves flat; kept so a variant can opt in */
+  --accent-soft: color-mix(in srgb, var(--accent) 15%, transparent);
+  --icon-color: #6f6d66;
+  --text-primary: #2c2c2b;
+  --text-secondary: #5f5d57;
+  --text-muted: #8a877e;
+  /* Semantic cue colours (green = the detail that makes it work, orange = a
+     mistake/warning, purple-red = a counter/target). Rename to taste. */
+  --cue-tip: #4b7050;
+  --cue-warning: #a85608;
+  --cue-target: #98544a;
+  --texture: rgba(0, 0, 0, .015);
+  /* Glyphs that live in url() backgrounds can't use currentColor, so each theme
+     bakes its own colour into the URI. (%23 is a literal # — pass the colour
+     raw to an encoder; pre-encoding it double-escapes and silently paints nothing.) */
+  --search-icon: url("data:image/svg+xml,%3Csvg%20xmlns='http://www.w3.org/2000/svg'%20viewBox='0%200%2024%2024'%20fill='none'%20stroke='%236f6d66'%20stroke-width='2'%20stroke-linecap='round'%20stroke-linejoin='round'%3E%3Ccircle%20cx='11'%20cy='11'%20r='8'/%3E%3Cpath%20d='m21%2021-4.3-4.3'/%3E%3C/svg%3E");
+  --shadow-float: 0 -10px 30px rgba(0, 0, 0, .10);
+  --shadow-sheet: 0 -18px 44px rgba(0, 0, 0, .16);
+
+  /* ----- theme-independent scale (do not duplicate in the dark blocks) ----- */
+  --radius-sm: 3px;        /* near-square: corners are cut, not rounded */
+  --radius-md: 5px;
+  --radius-lg: 7px;
+  --radius-pill: 6px;      /* even "pills" are tight rectangles — keycap, not capsule */
+  --shadow-sm: none;
+  --shadow-md: none;
+  --shadow-lg: none;
+  --fs-eyebrow: 0.74rem;
+  --fs-meta: 0.79rem;
+  --fs-body: 0.92rem;
+  --fs-prose: 0.86rem;     /* mono reads large; prose runs a size down, tighter */
+  --lh-prose: 1.45;
+  --ws-prose: -0.12em;
+  --fs-card-title: 0.98rem;
+  --fs-section: 1.05rem;
+  --fs-title: 1.55rem;
+  --fs-display: 1.75rem;
+  --spacing: 16px;
+  --max-width: 600px;
+  --bottom-nav-h: 62px;
+  /* ONE face everywhere: bold for headings, regular for everything else.
+     Two tokens so a future swap is one line — not so they diverge. */
+  --font-heading: 'JetBrains Mono', ui-monospace, SFMono-Regular, Menlo, monospace;
+  --font-mono: 'JetBrains Mono', ui-monospace, SFMono-Regular, Menlo, monospace;
+
+  /* Optional category colours. Hue mapping is fixed across themes; each theme
+     tunes lightness for its ground (inky on paper, brighter on charcoal).
+     Rename the keys to your domain, or delete the set. */
+  --type-a: #5c8a5f;   /* green */
+  --type-b: #d03f3a;   /* red */
+  --type-c: #1e5560;   /* deep teal */
+  --type-d: #2a7d86;   /* teal */
+  --type-e: #b06055;   /* brick */
+  --type-f: #c55d14;   /* orange */
+  --type-g: #7c7164;   /* stone */
+}
+
+/* ===== TOKENS — dark, system preference =====
+   KEEP IN SYNC with the [data-theme="dark"] block below. */
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    color-scheme: dark;
+    --app-bg: linear-gradient(172deg, #343331 0%, #2c2c2b 45%, #222120 100%);
+    --bg-primary: #2c2c2b;
+    --bg-secondary: #33322f;
+    --bg-card: #383734;
+    --bg-card-hover: #403f3c;
+    --sheet-bg: #33322f;
+    --chip-bg: #383734;
+    --hairline-strong: rgba(255, 255, 255, .11);
+    --accent: #f4f2ef;
+    --accent-hover: #ffffff;
+    --accent-contrast: #1a1a19;
+    --icon-color: #918d84;
+    --text-primary: #f4f2ef;
+    --text-secondary: #a8a49c;
+    --text-muted: #7d7a72;
+    --cue-tip: #8eb790;
+    --cue-warning: #fe782a;
+    --cue-target: #dd8f85;
+    --texture: rgba(255, 255, 255, .015);
+    --search-icon: url("data:image/svg+xml,%3Csvg%20xmlns='http://www.w3.org/2000/svg'%20viewBox='0%200%2024%2024'%20fill='none'%20stroke='%23918d84'%20stroke-width='2'%20stroke-linecap='round'%20stroke-linejoin='round'%3E%3Ccircle%20cx='11'%20cy='11'%20r='8'/%3E%3Cpath%20d='m21%2021-4.3-4.3'/%3E%3C/svg%3E");
+    --shadow-float: 0 -10px 30px rgba(0, 0, 0, .3);
+    --shadow-sheet: 0 -18px 44px rgba(0, 0, 0, .45);
+    --type-a: #8eb790;
+    --type-b: #d03f3a;
+    --type-c: #256571;
+    --type-d: #2a7d86;
+    --type-e: #dd8f85;
+    --type-f: #fe782a;
+    --type-g: #a4988a;
+  }
+}
+
+/* ===== TOKENS — dark, manual override =====
+   KEEP IN SYNC with the media block above. */
+:root[data-theme="dark"] {
+  color-scheme: dark;
+  --app-bg: linear-gradient(172deg, #343331 0%, #2c2c2b 45%, #222120 100%);
+  --bg-primary: #2c2c2b;
+  --bg-secondary: #33322f;
+  --bg-card: #383734;
+  --bg-card-hover: #403f3c;
+  --sheet-bg: #33322f;
+  --chip-bg: #383734;
+  --hairline-strong: rgba(255, 255, 255, .11);
+  --accent: #f4f2ef;
+  --accent-hover: #ffffff;
+  --accent-contrast: #1a1a19;
+  --icon-color: #918d84;
+  --text-primary: #f4f2ef;
+  --text-secondary: #a8a49c;
+  --text-muted: #7d7a72;
+  --cue-tip: #8eb790;
+  --cue-warning: #fe782a;
+  --cue-target: #dd8f85;
+  --texture: rgba(255, 255, 255, .015);
+  --search-icon: url("data:image/svg+xml,%3Csvg%20xmlns='http://www.w3.org/2000/svg'%20viewBox='0%200%2024%2024'%20fill='none'%20stroke='%23918d84'%20stroke-width='2'%20stroke-linecap='round'%20stroke-linejoin='round'%3E%3Ccircle%20cx='11'%20cy='11'%20r='8'/%3E%3Cpath%20d='m21%2021-4.3-4.3'/%3E%3C/svg%3E");
+  --shadow-float: 0 -10px 30px rgba(0, 0, 0, .3);
+  --shadow-sheet: 0 -18px 44px rgba(0, 0, 0, .45);
+  --type-a: #8eb790;
+  --type-b: #d03f3a;
+  --type-c: #256571;
+  --type-d: #2a7d86;
+  --type-e: #dd8f85;
+  --type-f: #fe782a;
+  --type-g: #a4988a;
+}
+
+/* Per-category accent: set data-type="<key>" on an element and descendants
+   inherit --type-accent. */
+[data-type]     { --type-accent: var(--accent); }
+[data-type="a"] { --type-accent: var(--type-a); }
+[data-type="b"] { --type-accent: var(--type-b); }
+[data-type="c"] { --type-accent: var(--type-c); }
+[data-type="d"] { --type-accent: var(--type-d); }
+[data-type="e"] { --type-accent: var(--type-e); }
+[data-type="f"] { --type-accent: var(--type-f); }
+[data-type="g"] { --type-accent: var(--type-g); }
+
+/* ===== BASE ===== */
+html { font-size: 16px; -webkit-text-size-adjust: 100%; }
+button, input, textarea, select { font-family: inherit; }
+
+body {
+  font-family: var(--font-mono);
+  background: var(--app-bg) fixed;
+  color: var(--text-primary);
+  line-height: 1.6;
+  min-height: 100vh;
+  overflow-x: hidden;
+}
+/* Add this to body when the page carries the fixed bottom nav. */
+body.has-bottom-nav {
+  padding-bottom: calc(var(--bottom-nav-h) + env(safe-area-inset-bottom) + 24px);
+}
+
+/* With an achromatic accent, accent-coloured links read as headings — links sit
+   in the muted prose tone; prose links carry an underline so they stay findable. */
+a { color: var(--text-secondary); text-decoration: none; }
+a:hover, a:active { color: var(--accent-hover); }
+.prose a {
+  text-decoration: underline;
+  text-decoration-color: var(--text-muted);
+  text-underline-offset: 3px;
+}
+.prose a:hover { color: var(--text-primary); }
+
+/* Everything lowercase except proper nouns is a CONTENT convention, not CSS —
+   there is deliberately no text-transform anywhere. No letter-spaced eyebrows. */
+h1, h2, h3, .title { font-family: var(--font-heading); }
+h1, .page-title {
+  font-size: var(--fs-title);
+  font-weight: 650;
+  letter-spacing: -0.03em;
+  line-height: 1.12;
+  margin-bottom: 6px;
+}
+h2, .section-title { font-size: 1.1rem; font-weight: 600; color: var(--accent); }
+h3 { font-size: 1.15rem; font-weight: 600; margin-bottom: 10px; }
+.subtitle {
+  font-size: var(--fs-eyebrow);
+  font-weight: 700;
+  color: var(--text-muted);
+  margin-bottom: 18px;
+}
+.prose p, .prose li {
+  font-size: var(--fs-prose);
+  line-height: var(--lh-prose);
+  word-spacing: var(--ws-prose);
+}
+.prose p + p { margin-top: .7em; }
+.prose strong { font-weight: inherit; }   /* no inline bold in prose; cues carry emphasis */
+.muted { color: var(--text-muted); }
+
+.container {
+  padding: var(--spacing);
+  max-width: var(--max-width);
+  margin: 0 auto;
+}
+
+/* ===== PRIMITIVES ===== */
+
+/* Card: a shade above the ground, no border, no shadow. */
+.card {
+  display: flex;
+  align-items: center;
+  gap: 13px;
+  padding: 14px 16px;
+  background: var(--bg-card);
+  border-radius: var(--radius-md);
+  box-shadow: var(--shadow-sm);
+  transition: background .15s, transform .1s;
+  -webkit-tap-highlight-color: transparent;
+}
+.card:hover { background: var(--bg-card-hover); }
+.card:active { transform: scale(.98); }
+.card .name { font-family: var(--font-heading); font-size: var(--fs-card-title); font-weight: 600; }
+.card .meta { font-size: var(--fs-meta); color: var(--text-muted); }
+.card-list { display: flex; flex-direction: column; gap: 8px; }
+/* Type pin: a small square keyed to --type-accent. */
+.card .pin {
+  width: 10px; height: 10px; flex-shrink: 0;
+  border-radius: var(--radius-sm);
+  background: var(--type-accent, var(--accent));
+}
+
+/* Search field: filled and inset, not outlined. Magnifier is a background SVG. */
+.search-row { display: flex; align-items: stretch; gap: 10px; }
+.search-row .search-input { flex: 1; min-width: 0; }
+.search-input {
+  width: 100%;
+  padding: 13px 16px 13px 44px;
+  background: var(--bg-card) var(--search-icon) no-repeat 15px center / 17px 17px;
+  font-size: .95rem;
+  border: none;
+  border-radius: var(--radius-pill);
+  color: var(--text-primary);
+  outline: none;
+  transition: background-color .2s, box-shadow .2s;
+}
+.search-input:focus { background-color: var(--bg-card-hover); box-shadow: 0 0 0 2px var(--accent-soft); }
+.search-input::placeholder { color: var(--text-muted); }
+.search-input::-webkit-search-cancel-button { -webkit-appearance: none; }
+
+/* Chip: a real control (pills are reserved for controls, never for labels). */
+.chip {
+  background: var(--chip-bg);
+  color: var(--text-secondary);
+  border: none;
+  padding: 7px 14px;
+  border-radius: var(--radius-pill);
+  font-size: .8rem;
+  font-weight: 600;
+  cursor: pointer;
+  -webkit-tap-highlight-color: transparent;
+  transition: background .15s, color .15s, transform .1s;
+}
+.chip:hover { color: var(--text-primary); }
+.chip:active { transform: scale(.95); }
+.chip.active { background: var(--accent); color: var(--accent-contrast); }
+.chip-row { display: flex; flex-wrap: wrap; gap: 8px; }
+
+/* Two-word text toggle (the gi/no-gi pattern): both options visible, the
+   selected one brighter only — bold read as a size jump in mono. */
+.text-toggle {
+  display: inline-flex; align-items: center;
+  background: var(--bg-card); border: none; border-radius: var(--radius-pill);
+  padding: 13px 16px; font: inherit; font-size: .83rem; color: var(--text-muted);
+  cursor: pointer; -webkit-tap-highlight-color: transparent; flex-shrink: 0;
+}
+.text-toggle .sep { opacity: .6; padding: 0 4px; }
+.text-toggle .opt.active { color: var(--text-primary); }
+
+/* Quiet icon button (the theme toggle's base). */
+.icon-btn {
+  display: inline-flex; align-items: center; justify-content: center;
+  position: relative; width: 46px; padding: 0;
+  background: var(--bg-card); color: var(--text-secondary);
+  border: none; border-radius: var(--radius-pill);
+  cursor: pointer; -webkit-tap-highlight-color: transparent; flex-shrink: 0;
+  transition: color .15s, background .15s, transform .1s;
+}
+.icon-btn:active { transform: scale(.96); }
+.icon-btn::before {
+  content: ""; width: 18px; height: 18px; flex-shrink: 0;
+  background: currentColor;
+  -webkit-mask: var(--icon) center/contain no-repeat;
+  mask: var(--icon) center/contain no-repeat;
+}
+
+/* Theme toggle. Glyph shows the MODE (auto / forced light / forced dark);
+   theme.js swaps data-theme-mode. Lucide sun-moon / sun / moon. */
+.theme-btn { --icon: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M12 8a2.83 2.83 0 0 0 4 4 4 4 0 1 1-4-4'/%3E%3Cpath d='M12 2v2'/%3E%3Cpath d='M12 20v2'/%3E%3Cpath d='m4.9 4.9 1.4 1.4'/%3E%3Cpath d='m17.7 17.7 1.4 1.4'/%3E%3Cpath d='M2 12h2'/%3E%3Cpath d='M20 12h2'/%3E%3Cpath d='m6.3 17.7-1.4 1.4'/%3E%3Cpath d='m19.1 4.9-1.4 1.4'/%3E%3C/svg%3E"); }
+.theme-btn[data-theme-mode="light"] { --icon: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Ccircle cx='12' cy='12' r='4'/%3E%3Cpath d='M12 2v2'/%3E%3Cpath d='M12 20v2'/%3E%3Cpath d='m4.93 4.93 1.41 1.41'/%3E%3Cpath d='m17.66 17.66 1.41 1.41'/%3E%3Cpath d='M2 12h2'/%3E%3Cpath d='M20 12h2'/%3E%3Cpath d='m6.34 17.66-1.41 1.41'/%3E%3Cpath d='m19.07 4.93-1.41 1.41'/%3E%3C/svg%3E"); }
+.theme-btn[data-theme-mode="dark"]  { --icon: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M12 3a6 6 0 0 0 9 9 9 9 0 1 1-9-9Z'/%3E%3C/svg%3E"); }
+
+/* Cue tags: the ONLY emphasis device in prose. */
+.cue {
+  display: inline-block; padding: 1px 7px; margin-right: 6px;
+  border-radius: var(--radius-sm);
+  font-size: .68rem; font-weight: 700; line-height: 1.6;
+  color: var(--accent-contrast);
+}
+.cue.tip     { background: var(--cue-tip); }
+.cue.warning { background: var(--cue-warning); }
+.cue.target  { background: var(--cue-target); }
+
+/* Bottom nav: fixed, blurred, floats (the one legitimate shadow). */
+.bottom-nav {
+  position: fixed; left: 0; right: 0; bottom: 0; z-index: 200;
+  display: flex;
+  background: color-mix(in srgb, var(--bg-secondary) 94%, transparent);
+  backdrop-filter: blur(16px); -webkit-backdrop-filter: blur(16px);
+  border-top: 1px solid color-mix(in srgb, var(--text-primary) 8%, transparent);
+  padding-bottom: env(safe-area-inset-bottom);
+  box-shadow: var(--shadow-float);
+}
+.nav-item {
+  position: relative; flex: 1; min-width: 0; height: var(--bottom-nav-h);
+  display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 4px;
+  background: none; border: none; color: var(--text-muted);
+  cursor: pointer; -webkit-tap-highlight-color: transparent; transition: color .15s;
+}
+/* Lucide is a stroke set — filling renders solid blobs. */
+.nav-item svg { width: 20px; height: 20px; fill: none; stroke: currentColor; stroke-width: 1.9; stroke-linecap: round; stroke-linejoin: round; }
+.nav-label { font-size: .68rem; font-weight: 500; }
+.nav-item.active { color: var(--accent); }
+.nav-item.active::before {
+  content: ""; position: absolute; top: 0; left: 50%; transform: translateX(-50%);
+  width: 26px; height: 3px; border-radius: 0 0 3px 3px; background: var(--accent-grad);
+}
+.nav-count {
+  position: absolute; top: 6px; left: 50%; margin-left: 4px;
+  min-width: 16px; padding: 0 4px; font-size: .6rem; font-weight: 650; line-height: 16px; text-align: center;
+  border-radius: var(--radius-pill); background: var(--bg-card); color: var(--text-secondary);
+}
+.nav-item.active .nav-count { background: var(--accent); color: var(--accent-contrast); }
+.nav-count:empty { display: none; }

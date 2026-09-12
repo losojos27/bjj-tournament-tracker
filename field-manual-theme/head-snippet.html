@@ -1,0 +1,16 @@
+<!-- Paste into every page's <head>, in this order. Replace "app.theme" with
+     your app's key in BOTH the bootstrap and the theme.js data-key. -->
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="theme-color" content="#f1f0ed" media="(prefers-color-scheme: light)">
+<meta name="theme-color" content="#343331" media="(prefers-color-scheme: dark)">
+<script>try{var t=localStorage.getItem('app.theme');if(t==='light'||t==='dark')document.documentElement.dataset.theme=t}catch(e){}</script>
+<link rel="stylesheet" href="theme.css">
+
+<!-- The toggle button, anywhere in the body (usually beside a search field): -->
+<!-- <button class="icon-btn theme-btn" data-theme-toggle type="button" aria-label="theme: auto"></button> -->
+
+<!-- theme.js at the END of <body>, before your app scripts: -->
+<!-- <script src="theme.js" data-key="app.theme"></script> -->
+
+<!-- manifest.json (PWA) carries the LIGHT ground — it can't follow the theme:
+     "background_color": "#ebeae8", "theme_color": "#f1f0ed" -->

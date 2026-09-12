@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <meta name="theme-color" content="#f1f0ed" media="(prefers-color-scheme: light)">
+  <meta name="theme-color" content="#343331" media="(prefers-color-scheme: dark)">
+  <script>try{var t=localStorage.getItem('app.theme');if(t==='light'||t==='dark')document.documentElement.dataset.theme=t}catch(e){}</script>
+  <title>field-manual theme — demo</title>
+  <link rel="stylesheet" href="theme.css">
+</head>
+<body class="has-bottom-nav">
+  <div class="container">
+    <div class="search-row">
+      <input class="search-input" type="search" placeholder="search..." autocomplete="off">
+      <button type="button" class="text-toggle" id="ctx" aria-label="context">
+        <span class="opt active" data-o="a">gi</span><span class="sep">/</span><span class="opt" data-o="b">no-gi</span>
+      </button>
+      <button class="icon-btn theme-btn" data-theme-toggle type="button" aria-label="theme: auto"></button>
+    </div>
+  </div>
+
+  <main class="container">
+    <h1 class="page-title">field manual</h1>
+    <p class="subtitle">light · dark · auto — tap the icon top-right to cycle</p>
+
+    <h2 class="section-title">cards</h2>
+    <div class="card-list" style="margin:10px 0 24px">
+      <a class="card" href="#" data-type="a"><span class="pin"></span><div><div class="name">a card with a type pin</div><div class="meta">meta line · muted</div></div></a>
+      <a class="card" href="#" data-type="b"><span class="pin"></span><div><div class="name">another card</div><div class="meta">no border, no shadow · tone and spacing only</div></div></a>
+      <a class="card" href="#" data-type="f"><span class="pin"></span><div><div class="name">orange category</div><div class="meta">hue fixed across themes, lightness re-lit</div></div></a>
+    </div>
+
+    <h2 class="section-title">chips</h2>
+    <div class="chip-row" style="margin:10px 0 24px">
+      <button class="chip active">selected</button>
+      <button class="chip">option</button>
+      <button class="chip">another</button>
+    </div>
+
+    <h2 class="section-title">prose &amp; cues</h2>
+    <div class="prose" style="margin:10px 0 24px">
+      <p><span class="cue tip">DETAIL</span>Prose runs a size down from body with tighter leading; mono reads large. A <a href="#">prose link</a> is underlined, not accent-coloured, because with an achromatic accent coloured links would read as headings.</p>
+      <p><span class="cue warning">MISTAKE</span>Inline <strong>bold</strong> is neutralised on purpose. <span class="cue target">COUNTER</span>Cue tags carry the emphasis.</p>
+    </div>
+
+    <h3>an h3 heading</h3>
+    <p class="muted">Everything lowercase except proper nouns is a content convention — there is no text-transform anywhere.</p>
+  </main>
+
+  <nav class="bottom-nav" aria-label="Sections">
+    <button class="nav-item active"><svg viewBox="0 0 24 24" aria-hidden="true"><line x1="8" x2="21" y1="6" y2="6"/><line x1="8" x2="21" y1="12" y2="12"/><line x1="8" x2="21" y1="18" y2="18"/><line x1="3" x2="3.01" y1="6" y2="6"/><line x1="3" x2="3.01" y1="12" y2="12"/><line x1="3" x2="3.01" y1="18" y2="18"/></svg><span class="nav-label">list</span><span class="nav-count">12</span></button>
+    <button class="nav-item"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="3"/><path d="M12 2v3M12 19v3M2 12h3M19 12h3M4.9 4.9l2.1 2.1M17 17l2.1 2.1M19.1 4.9L17 7M7 17l-2.1 2.1"/></svg><span class="nav-label">concepts</span></button>
+    <a class="nav-item" href="#"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z"/><path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z"/></svg><span class="nav-label">glossary</span></a>
+  </nav>
+
+  <script src="theme.js" data-key="app.theme"></script>
+  <script>
+    // Demo only: the two-word text toggle.
+    document.getElementById('ctx').addEventListener('click', (e) => {
+      e.currentTarget.querySelectorAll('.opt').forEach((o) => o.classList.toggle('active'));
+    });
+  </script>
+</body>
+</html>

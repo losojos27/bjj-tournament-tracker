@@ -1,5 +1,5 @@
 {
- "updated": "2026-09-12T20:24:38.242Z",
+ "updated": "2026-09-12T21:02:20.155Z",
  "event": {
   "id": "52703b65-bade-46e2-9ce2-399dd32d93e4",
   "name": "2026 ADCC World Championships",
@@ -2062,5 +2062,6 @@
    "name": "Mat 3",
    "upcoming": []
   }
- ]
+ ],
+ "upcomingShape": null
 }

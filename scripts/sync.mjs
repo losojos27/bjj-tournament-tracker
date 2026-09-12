@@ -88,7 +88,7 @@ for (const d of bracket.divisions) {
   }
 }
 // Upcoming order per mat, if FloArena publishes it (shape is best-effort; the page treats it as a hint).
-let mats = [];
+let mats = [], upcomingShape = null;
 try {
   const up = await get(`event/${EVENT}/upcoming-bouts`);
   mats = (up || []).filter(m => m && m.name).map(m => ({ name: m.name, upcoming: (m.bouts || []).map(x => {
@@ -97,10 +97,13 @@ try {
       round: ROUND[b.roundName?.displayName] || b.roundName?.displayName || b.round || null,
       a: person(b.topWrestler)?.name || null, b: person(b.bottomWrestler)?.name || null };
   }) }));
-  if (mats.some(m => m.upcoming.length)) console.log('upcoming sample:', JSON.stringify((up.find(m => m.bouts?.length) || {}).bouts[0]).slice(0, 600));
+  const first = (up || []).find(m => m && m.bouts?.length)?.bouts?.[0];
+  if (first) { upcomingShape = Object.keys(first.bout || first); console.log('upcoming sample:', JSON.stringify(first).slice(0, 600)); }
+  const listed = mats.reduce((n, m) => n + m.upcoming.length, 0), usable = mats.reduce((n, m) => n + m.upcoming.filter(u => u.n != null).length, 0);
+  if (listed && !usable) { console.error(`upcoming-bouts lists ${listed} bouts but none yielded a bout number; fix the mapping in scripts/sync.mjs (see upcomingShape in results.json)`); process.exitCode = process.env.SYNC_STRICT ? 1 : 0; }
 } catch (e) { console.warn('upcoming-bouts unavailable:', e.message); }
 
-const out = { updated: new Date().toISOString(), event: { id: EVENT, name: info.name, status: info.status, tz: info.timeZone, start: info.startDate, end: info.endDate }, divs, mats };
+const out = { updated: new Date().toISOString(), event: { id: EVENT, name: info.name, status: info.status, tz: info.timeZone, start: info.startDate, end: info.endDate }, divs, mats, upcomingShape };
 const json = JSON.stringify(out, null, 1);
 const prev = fs.existsSync(OUT) ? fs.readFileSync(OUT, 'utf8') : '';
 const changed = prev.replace(/"updated": "[^"]+"/, '') !== json.replace(/"updated": "[^"]+"/, '');

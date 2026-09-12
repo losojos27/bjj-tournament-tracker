@@ -63,8 +63,9 @@ Schedule (`queue()`): today's matches in `DEFAULT_BLOCKS` order (day 1 / day 2, 
 Settings), assigned to the earliest-free mat with per-round slot lengths. If `results.json`
 carries FloArena's per-mat `mats[].upcoming` lists, those win: bouts are matched by number `n`
 and placed on exactly the mats Flo lists, in Flo's order; anything not listed falls back to
-block order on those same mats. Without such lists the mat count is `S.mats` and the header
-says "(assumed)". Start point, in priority: a live in-progress bout (mat free at now +
+block order on those same mats. Without such lists the mats are `S.mats` (plus any mat the
+live feed shows a bout on) and the header says "(assumed)". A live in-progress bout, or the
+manual anchor, marks entries listed before it on that mat as already run. Start point, in priority: a live in-progress bout (mat free at now +
 remaining clock + 2 min) → the manual "set as now" anchor, clamped to now → the day's
 configured start on the event's calendar date (`DAY_DATES`). Never projects into the past.
 
@@ -116,4 +117,6 @@ FloArena is the source of truth here. Seeds are unique within a division; match 
   artifact's sandboxed iframe.
 - The `upcoming-bouts` mapping in `sync.mjs` was written before FloArena had published any
   order, so its field names are a best guess (`x.bout || x`, `boutNumber`, `topWrestler`…).
-  Verify against real output the first time it populates.
+  When Flo lists bouts but none yield a number, the sync exits 1 (the Actions run goes red,
+  results are still committed) and writes the raw field names to `upcomingShape` in
+  `results.json` so the mapping can be fixed from committed data.
