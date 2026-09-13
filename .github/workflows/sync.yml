@@ -24,11 +24,13 @@ jobs:
           git config user.name "flo-sync"
           git config user.email "actions@users.noreply.github.com"
           for i in $(seq 1 66); do
+            # start every pass from origin/main so a push from elsewhere can never wedge the loop
+            git fetch -q origin main && git reset -q --hard origin/main
             node scripts/sync.mjs || echo "::warning::sync exited non-zero on pass $i (see log above)"
             if ! git diff --quiet -- data/results.json; then
               git add data/results.json
               git commit -q -m "sync: results $(date -u +%Y-%m-%dT%H:%MZ)"
-              git pull -q --rebase && git push -q && echo "pushed pass $i"
+              git push -q origin HEAD:main && echo "pushed pass $i" || echo "::warning::push failed on pass $i; will retry from origin next pass"
             fi
             sleep 300
           done
