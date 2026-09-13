@@ -1,5 +1,5 @@
 {
- "updated": "2026-09-13T10:42:16.160Z",
+ "updated": "2026-09-13T10:47:19.122Z",
  "event": {
   "id": "52703b65-bade-46e2-9ce2-399dd32d93e4",
   "name": "2026 ADCC World Championships",
@@ -321,7 +321,7 @@
        "decided": false,
        "result": null,
        "winType": null,
-       "mat": null,
+       "mat": "Mat 2",
        "video": null
       }
      ]
@@ -1358,7 +1358,7 @@
     "result": "0-0 15:00 TB1",
     "winType": "SCORE",
     "mat": "Mat 3",
-    "video": null
+    "video": "https://www.flograppling.com/events/14687695-2026-adcc-world-championships/videos?playing=16179150&limit=60"
    }
   },
   {
@@ -1854,7 +1854,7 @@
        "decided": false,
        "result": null,
        "winType": null,
-       "mat": null,
+       "mat": "Mat 2",
        "video": null
       }
      ]
@@ -2035,7 +2035,7 @@
        "decided": false,
        "result": null,
        "winType": null,
-       "mat": null,
+       "mat": "Mat 2",
        "video": null
       }
      ]
@@ -2289,12 +2289,58 @@
   },
   {
    "name": "Mat 2",
-   "upcoming": []
+   "upcoming": [
+    {
+     "n": "97",
+     "weightClass": "+65",
+     "round": "F",
+     "a": "Helena Crevar",
+     "b": "Anabel Lopez"
+    },
+    {
+     "n": "98",
+     "weightClass": "+99",
+     "round": "F",
+     "a": "Josh Saunders",
+     "b": "Victor Hugo"
+    },
+    {
+     "n": "99",
+     "weightClass": "-65",
+     "round": "F",
+     "a": "Ana Carolina Vieira",
+     "b": "Sarah Galvao"
+    }
+   ]
   },
   {
    "name": "Mat 3",
    "upcoming": []
   }
  ],
- "upcomingShape": null
+ "upcomingShape": [
+  "guid",
+  "bottomWrestler",
+  "boutNumber",
+  "loserToBoutGuid",
+  "loserToTop",
+  "result",
+  "roundName",
+  "roundSpot",
+  "trueRound",
+  "winnerPoints",
+  "topPlacementPoints",
+  "maxPlace",
+  "sequenceNumber",
+  "topWrestler",
+  "winType",
+  "winnerToBoutGuid",
+  "winnerToTop",
+  "weightClass",
+  "isTopBye",
+  "isBottomBye",
+  "boutVideoUrl",
+  "winnerWrestlerGuid",
+  "redWrestlerGuid"
+ ]
 }
