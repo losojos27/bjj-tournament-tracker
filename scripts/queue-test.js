@@ -38,14 +38,14 @@ function fixture(){
 const live=(n,matIdx,over=false,winner=null)=>({n:String(n),mat:'Mat '+(matIdx+1),matIdx,red:{},blue:{},clock:'4:00',period:'1',over,winner,updated:Date.now()});
 const nums=q=>q.list.map(x=>x.bout&&x.bout.n);
 let checks=0; const ok=(cond,msg)=>{ checks++; if(!cond) throw new Error('FAILED: '+msg); };
-S.day=2; S.mats=3;
+S.mats=3;
 
 // A) no Flo lists, no live bout: block order across the assumed 3 mats, starting no earlier than the day's start
 setData(fixture()); setLive({});
 let q=queue();
 ok(!q.floOrder && q.mode==='schedule' && q.matCount===3, 'A: fallback path reports schedule mode on 3 assumed mats');
-ok(nums(q).slice(0,3).join()==='77,78,85', 'A: block order places the men\'s semis then the women\'s semi first: '+nums(q));
-ok(q.list.every(x=>x.at.getTime()>=new Date(2026,8,13,11,0).getTime()), 'A: nothing is projected before the day\'s start');
+ok(nums(q).slice(0,3).join()==='58,77,78', 'A: the unfought day-1 quarterfinal comes first, then the men\'s semis: '+nums(q));
+ok(q.list.every(x=>x.at.getTime()>=new Date(2026,8,12,11,0).getTime()), 'A: nothing is projected before the first open day\'s start');
 ok(!nums(q).includes('57') && !nums(q).includes('49'), 'A: decided bouts are not queued');
 
 // B) Flo lists mats 1-2 only; a live bout is in progress on mat 3, which Flo lists nothing for
@@ -64,7 +64,7 @@ d=fixture(); d.mats=[{name:'Mat 1',upcoming:[{n:'58'},{n:'77'}]}];
 setData(d); setLive({});
 q=queue();
 ok(q.floOrder && q.matCount===1, 'C: only the one listed mat is in use');
-ok(nums(q).slice(0,2).join()==='58,77', 'C: a Flo-listed quarterfinal (day-1 block) is placed in Flo\'s order: '+nums(q));
+ok(nums(q).slice(0,2).join()==='58,77', 'C: Flo\'s listed order is followed: '+nums(q));
 
 // D) a live in-progress bout listed second on its mat: the entry listed before it counts as already run
 d=fixture(); d.mats=[{name:'Mat 1',upcoming:[{n:'77'},{n:'78'},{n:'85'}]}];

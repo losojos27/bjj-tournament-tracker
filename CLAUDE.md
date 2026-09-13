@@ -62,7 +62,7 @@ Three layers, all read-only:
    `winner`). Neither poll re-renders while the Settings tab is open (`quiet()`). On an event
    day the header shows "results N min old" in the warning colour once `updated` is more than
    15 minutes behind, so a healthy fetch of stale data is visible (a failed fetch shows "stale").
-3. **Local preferences (`S`, in localStorage).** Follow list, day, mats, slot durations,
+3. **Local preferences (`S`, in localStorage).** Follow list, mats, slot durations,
    chosen bracket division. `S.v` is a schema version; bump it and extend the migration in
    `loadState()` when the shape changes. Start times (`DEFAULT`) and block order
    (`DEFAULT_BLOCKS`) are code defaults with no UI.
@@ -85,10 +85,11 @@ count as run), otherwise from the day's start on the event's calendar date (`DAY
 to now. There is no manual anchor.
 
 **UI.** Sticky top header (title, status line, word tabs); no bottom nav so mobile Safari's
-bar doesn't stack against ours. Next up: day chips, a "nothing on the mats right now" line when
-nothing is live, live mat cards, a "following" section (one card per followed fighter with a
-match today, or a neutral "no scheduled matches" card), then the queue; bouts whose names are
-both unknown collapse into one line. Brackets: division chips, a heading naming the division,
+bar doesn't stack against ours. Next up: a "nothing on the mats right now" line when nothing is
+live, live mat cards for bouts in progress only (a finished bout leaves the mats; its result
+lives in the bracket), a "following" section (one card per followed fighter with a
+match today, or a neutral "no scheduled matches" card), then the queue of every unfought bout across both days in running order, minus
+the ones on the mats; bouts whose names are both unknown collapse into one line. Brackets: division chips, a heading naming the division,
 a swipe hint that hides when the bracket fits, one column per round with CSS connectors,
 opened with the first unfought round flush right; finished bouts link to Flo's video; slots
 filled by someone who didn't win the feeding bout are labelled ("X in after the #39
@@ -192,8 +193,8 @@ tabs and won't resize below ~360px; the agent forces a 390px layout width instea
 - Don't re-litigate settled decisions; execute. Flag uncertainty explicitly.
 - An eliminated followed fighter gets a neutral "no scheduled matches" card on Next up, never
   a card that names the loss (Lee shows the page to the fighters themselves).
-- Settled UI (don't re-litigate, don't let an audit re-open): day switch on Next up with the
-  labels "day 1"/"day 2"; a real column bracket with a division picker, not an accordion; tabs
+- Settled UI (don't re-litigate, don't let an audit re-open): no day selector, Next up is
+  everything still to be fought in running order; a real column bracket with a division picker, not an accordion; tabs
   at the top; theme control in Settings; names copy, they don't link; results open Flo's video
   in a new tab; results are not prefixed with "won by"; the six projection boxes stay in
   Settings; unknown-name bouts collapse into one line; no seeds on screen; the follow colour is

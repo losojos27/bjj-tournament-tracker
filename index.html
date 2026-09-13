@@ -186,7 +186,6 @@ const DEFAULT_BLOCKS = [
 
 const DEFAULT = {
   follow:['Felipe Costa','Victor Hugo'],
-  day:null,                        // null = auto by date; the day chips on Next up set it
   // projection defaults (no UI: the live feed and Flo's published order override them as the day runs)
   mats:3, start1:'11:00', start2:'11:00',
   dur:{R32:12, R16:12, QF:20, SF:20, '3':20, F:30},
@@ -204,7 +203,7 @@ function loadState(){
     delete S.winners; delete S.third;
     S.v=9; save();
   }
-  delete S.anchor; delete S.taps; delete S.blocks;
+  delete S.anchor; delete S.taps; delete S.blocks; delete S.day;
 }
 let saveT;
 function save(){ clearTimeout(saveT); saveT=setTimeout(()=>store.set('adcc26', JSON.stringify(S)),150); }
@@ -281,18 +280,19 @@ function allMatches(block){
 }
 // ---------- schedule engine ----------
 function localDate(){ const d=new Date(); return `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}-${String(d.getDate()).padStart(2,'0')}`; }
-function today(){ return S.day || (localDate()<=DAY_DATES[1]?1:2); }
 const DAY_DATES={1:'2026-09-12',2:'2026-09-13'};
 function dayStart(d){ const t=(d===1?S.start1:S.start2).split(':'); const [y,mo,da]=DAY_DATES[d].split('-').map(Number); return new Date(y,mo-1,da,+t[0]||11,+t[1]||0,0,0); }
 function blocks(){ return DEFAULT_BLOCKS; }
 function clockSecs(c){ const m=String(c||'').match(/(\d+):(\d+)/); return m? (+m[1])*60+(+m[2]) : 0; }
 function liveInProgress(){ const cut=Date.now()-3*3600e3; return Object.values(LIVE).filter(l=>!l.over&&l.updated>cut).sort((a,b)=>a.matIdx-b.matIdx); }
 function queue(){
-  const d=today(); const full=[];
-  for(const b of blocks()){ if(b.day!==d) continue; for(const mo of allMatches(b)) full.push(mo); }
+  const full=[];
+  for(const b of blocks()) for(const mo of allMatches(b)) full.push(mo);   // both days, in running order; decided bouts drop out below
   const inProg=liveInProgress();
+  // the projection starts at the day-start of the first bout still to be fought, never in the past
+  const firstOpen=full.find(mo=>mo.w===null); const d=firstOpen?(blocks().find(b=>b.kind===firstOpen.div.kind&&(!b.sex||b.sex===firstOpen.div.sex)&&b.round===firstOpen.rName)||{}).day||2:2;
   let startAt=dayStart(d), from=0, mode='schedule';
-  // the live feed anchors the projection: the earliest in-progress bout in today's list is "now"; otherwise the day's start, never in the past
+  // the live feed anchors the projection: the earliest in-progress bout in the list is "now"; otherwise the day's start, never in the past
   const liveIdx=full.map((mo,i)=>inProg.some(l=>mo.bout&&l.n===String(mo.bout.n))?i:-1).filter(i=>i>=0);
   if(liveIdx.length){ from=Math.min(...liveIdx); startAt=new Date(); mode='live'; }
   else if(Date.now()>startAt.getTime()) startAt=new Date();
@@ -364,21 +364,20 @@ function resultPill(mo){
   return '';
 }
 function renderMats(){
-  const cut=Date.now()-3*3600e3;
-  const ms=Object.values(LIVE).filter(l=>l.updated>cut).sort((a,b)=>a.matIdx-b.matIdx);
+  const ms=liveInProgress();   // finished bouts leave the mats; their result lives in the bracket
   if(!ms.length) return '';
   let h=`<h2 class="section-title">on the mats <span style="font-weight:400">· FloArena live</span></h2><div class="mats">`;
   for(const l of ms){
-    const who=(p,i)=>`<div class="who ${l.over?(l.winner===i?'w':'l'):''} ${isFollow(p)?'follow':''}"><button type="button" class="who-l" data-copy="${esc(p.name)}" title="copy name">${flagHtml(p.team)}<span class="nm">${esc(p.name)}</span></button><span class="sc">${p.score}${p.pen?`<small class="muted"> p${p.pen}</small>`:''}</span></div>`;
-    h+=`<div class="panel mat"><div class="hd"><span><b>${esc(String(l.mat).toLowerCase())}</b> · ${esc(l.weight)}${l.weight&&!/kg|abs/i.test(l.weight)?'kg':''} ${esc(l.round)} · #${esc(l.n)}</span>${l.over?`<span>final</span>`:`<span class="clock">${esc(l.clock)}${l.period&&l.period!=='1'?' '+esc(l.period):''}</span>`}</div>${who(l.red,0)}${who(l.blue,1)}<div class="ft">${l.over?`${esc(fmtResult(l.winType,l.finalScore))} · ended ${ago(l.updated)}`:`<span class="cue live">live</span> updated ${ago(l.updated)}`}</div></div>`;
+    const who=(p,i)=>`<div class="who ${isFollow(p)?'follow':''}"><button type="button" class="who-l" data-copy="${esc(p.name)}" title="copy name">${flagHtml(p.team)}<span class="nm">${esc(p.name)}</span></button><span class="sc">${p.score}${p.pen?`<small class="muted"> p${p.pen}</small>`:''}</span></div>`;
+    h+=`<div class="panel mat"><div class="hd"><span><b>${esc(String(l.mat).toLowerCase())}</b> · ${esc(l.weight)}${l.weight&&!/kg|abs/i.test(l.weight)?'kg':''} ${esc(l.round)} · #${esc(l.n)}</span><span class="clock">${esc(l.clock)}${l.period&&l.period!=='1'?' '+esc(l.period):''}</span></div>${who(l.red,0)}${who(l.blue,1)}<div class="ft"><span class="cue live">live</span> updated ${ago(l.updated)}</div></div>`;
   }
   return h+`</div>`;
 }
 function renderNext(){
-  const {list:q,mode,floOrder,matCount:matsInUse}=queue(); const d=today();
-  // the day is done when nothing is queued and every bout in today's blocks is decided
-  const dayDone=!q.length && blocks().filter(b=>b.day===d).some(b=>allMatches(b).length) && blocks().filter(b=>b.day===d).every(b=>allMatches(b).every(mo=>mo.w!==null));
-  let h=`<div class="topline"><div class="chip-row">${[1,2].map(x=>`<button type="button" class="chip ${d===x?'active':''}" data-day="${x}" aria-pressed="${d===x}">day ${x}</button>`).join('')}</div><span class="note" style="margin:0">${dayDone?'':`${matsInUse} mat${matsInUse===1?'':'s'}${floOrder?'':' (a guess)'} · times are estimates${mode==='live'?' · following the live feed':''}${floOrder?' · order from FloArena':''}`}</span></div>`;
+  const {list:q,mode,floOrder,matCount:matsInUse}=queue();
+  // the event is done when nothing is left to fight anywhere
+  const dayDone=!q.length && blocks().some(b=>allMatches(b).length) && blocks().every(b=>allMatches(b).every(mo=>mo.w!==null));
+  let h=dayDone?'':`<div class="topline"><span class="note" style="margin:0">${matsInUse} mat${matsInUse===1?'':'s'}${floOrder?'':' (a guess)'} · times are estimates${mode==='live'?' · following the live feed':''}${floOrder?' · order from FloArena':''}</span></div>`;
   h+=renderMats();
   const fl=S.follow.filter(Boolean);
   const cards=[]; const seen=new Set();
@@ -407,13 +406,14 @@ function renderNext(){
   cards.sort((x,y)=>x.at-y.at);
   if(cards.length) h+=`<h2 class="section-title">following</h2><div class="stack">${cards.map(c=>c.html).join('')}</div>`;
   h+=`<h2 class="section-title">up next</h2>`;
-  if(dayDone) h+=`<div class="panel">day ${d} is done. results are in brackets.</div>`;
-  else if(!q.length) h+=`<div class="panel">nothing in the queue for day ${d} yet.</div>`;
+  if(dayDone) h+=`<div class="panel">that’s the event. results are in brackets.</div>`;
+  else if(!q.length) h+=`<div class="panel">nothing in the queue yet.</div>`;
   else h+=`<div class="stack">`;
   if(!dayDone && q.length && liveState==='ok' && !liveInProgress().length) h+=`<div class="panel quiet">nothing on the mats right now. the times below are projected.</div>`;
   // bouts where neither name is known yet collapse into one line at the point where they start
   const unknown=q.filter(mo=>mo.a.tbd&&mo.b.tbd); const firstUnknown=unknown[0];
   q.slice(0,48).forEach(mo=>{
+    if(mo.onMat) return;   // it's in the "on the mats" cards above; no second row
     if(mo.a.tbd&&mo.b.tbd){
       if(mo===firstUnknown){ const rs=[...new Set(unknown.map(x=>rl(x.rName)))].join(', ');
         h+=`<div class="panel quiet">${unknown.length} more from ${fmt(mo.at)}: ${esc(rs)}. names once the earlier rounds are done.</div>`; }
@@ -461,7 +461,7 @@ function box(mo){
 }
 function renderBrackets(){
   const ds=divs(); const div=currentDiv(); if(!div) return `<div class="panel">no bracket data yet.</div>`;
-  PROJ=new Map(); { const saved=S.day; for(const dd of [1,2]){ S.day=dd; for(const mo of queue().list) if(!PROJ.has(mo.key)) PROJ.set(mo.key,mo); } S.day=saved; }   // both days: the day chip on next up must not blank the bracket
+  PROJ=new Map(queue().list.map(mo=>[mo.key,mo]));
   let h=`<div class="chips">${ds.map(d=>{ const rn=rounds(d); const c=winnerOf(d,rn[rn.length-1],0); return `<button type="button" data-bdiv="${esc(d.id)}" class="chip ${d.id===div.id?'active':''}">${esc(d.name)}${c!==null&&c>=0?' 🥇':''}</button>`; }).join('')}</div>`;
   const n1=div.rounds[0].bouts.length;
   let firstOpen=div.rounds.findIndex(r=>r.bouts.some((b,m)=>winnerOf(div,r.name,m)===null)); if(firstOpen<0) firstOpen=div.rounds.length-1;
@@ -553,7 +553,6 @@ function toast(t){ const e=$('#toast'); e.textContent=t; e.classList.add('show')
 // ---------- events ----------
 document.querySelector('.tabs').addEventListener('click',e=>{ const b=e.target.closest('[data-tab]'); if(b){ tab=b.dataset.tab; render(); window.scrollTo(0,0);} });
 $('#main').addEventListener('click',e=>{
-  const dy=e.target.closest('[data-day]'); if(dy){ S.day=+dy.dataset.day; save(); render(); return; }
   const bd=e.target.closest('[data-bdiv]'); if(bd){ S.bracketDiv=bd.dataset.bdiv; bracketFresh=true; save(); render(); return; }
   const cp=e.target.closest('[data-copy]'); if(cp){ copyText(cp.dataset.copy); return; }
   const th=e.target.closest('[data-theme-set]'); if(th){ setThemeMode(th.dataset.themeSet); render(); return; }
