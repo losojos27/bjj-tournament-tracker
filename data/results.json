@@ -1,5 +1,5 @@
 {
- "updated": "2026-09-13T17:35:14.933Z",
+ "updated": "2026-09-13T17:40:17.868Z",
  "event": {
   "id": "52703b65-bade-46e2-9ce2-399dd32d93e4",
   "name": "2026 ADCC World Championships",
@@ -2426,10 +2426,10 @@
         "seed": 9,
         "team": "United Kingdom"
        },
-       "w": null,
-       "decided": false,
-       "result": null,
-       "winType": null,
+       "w": 0,
+       "decided": true,
+       "result": "3-0 10:00",
+       "winType": "SCORE",
        "mat": "Mat 1",
        "video": null
       },
@@ -2445,12 +2445,12 @@
         "seed": 13,
         "team": "Russia"
        },
-       "w": null,
-       "decided": false,
-       "result": null,
-       "winType": null,
+       "w": 1,
+       "decided": true,
+       "result": "3-0 7:05",
+       "winType": "SUB",
        "mat": "Mat 2",
-       "video": null
+       "video": "https://www.flograppling.com/events/14687695-2026-adcc-world-championships/videos?playing=16181369&limit=60"
       },
       {
        "n": "211",
@@ -2483,12 +2483,12 @@
         "seed": 2,
         "team": "Brazil"
        },
-       "w": null,
-       "decided": false,
-       "result": null,
-       "winType": null,
+       "w": 0,
+       "decided": true,
+       "result": "0-0 2:14",
+       "winType": "SUB",
        "mat": "Mat 3",
-       "video": null
+       "video": "https://www.flograppling.com/events/14687695-2026-adcc-world-championships/videos?playing=16181388&limit=60"
       }
      ]
     },
@@ -2497,8 +2497,16 @@
      "bouts": [
       {
        "n": "213",
-       "a": null,
-       "b": null,
+       "a": {
+        "name": "Felipe Pena",
+        "seed": 1,
+        "team": "Brazil"
+       },
+       "b": {
+        "name": "Ruslan Abdulaev",
+        "seed": 13,
+        "team": "Russia"
+       },
        "w": null,
        "decided": false,
        "result": null,
@@ -2513,7 +2521,11 @@
         "seed": 3,
         "team": "Sweden"
        },
-       "b": null,
+       "b": {
+        "name": "Roosevelt Sousa",
+        "seed": 7,
+        "team": "Brazil"
+       },
        "w": null,
        "decided": false,
        "result": null,
@@ -2595,64 +2607,16 @@
  "mats": [
   {
    "name": "Mat 1",
-   "upcoming": [
-    {
-     "n": "209",
-     "weightClass": "Absolute",
-     "round": "QF",
-     "a": "Felipe Pena",
-     "b": "Eoghan O'flanaghan"
-    }
-   ]
+   "upcoming": []
   },
   {
    "name": "Mat 2",
-   "upcoming": [
-    {
-     "n": "210",
-     "weightClass": "Absolute",
-     "round": "QF",
-     "a": "Elijah Dorsey",
-     "b": "Ruslan Abdulaev"
-    }
-   ]
+   "upcoming": []
   },
   {
    "name": "Mat 3",
-   "upcoming": [
-    {
-     "n": "212",
-     "weightClass": "Absolute",
-     "round": "QF",
-     "a": "Roosevelt Sousa",
-     "b": "Felipe Costa"
-    }
-   ]
+   "upcoming": []
   }
  ],
- "upcomingShape": [
-  "guid",
-  "bottomWrestler",
-  "boutNumber",
-  "loserToBoutGuid",
-  "loserToTop",
-  "result",
-  "roundName",
-  "roundSpot",
-  "trueRound",
-  "winnerPoints",
-  "topPlacementPoints",
-  "maxPlace",
-  "sequenceNumber",
-  "topWrestler",
-  "winType",
-  "winnerToBoutGuid",
-  "winnerToTop",
-  "weightClass",
-  "isTopBye",
-  "isBottomBye",
-  "boutVideoUrl",
-  "winnerWrestlerGuid",
-  "redWrestlerGuid"
- ]
+ "upcomingShape": null
 }
