@@ -1,5 +1,5 @@
 {
- "updated": "2026-09-13T17:45:20.636Z",
+ "updated": "2026-09-13T18:10:30.038Z",
  "event": {
   "id": "52703b65-bade-46e2-9ce2-399dd32d93e4",
   "name": "2026 ADCC World Championships",
@@ -2526,10 +2526,10 @@
         "seed": 7,
         "team": "Brazil"
        },
-       "w": null,
-       "decided": false,
-       "result": null,
-       "winType": null,
+       "w": 1,
+       "decided": true,
+       "result": "0-0 4:57",
+       "winType": "SUB",
        "mat": "Mat 3",
        "video": null
       }
@@ -2541,7 +2541,11 @@
       {
        "n": "216",
        "a": null,
-       "b": null,
+       "b": {
+        "name": "Roosevelt Sousa",
+        "seed": 7,
+        "team": "Brazil"
+       },
        "w": null,
        "decided": false,
        "result": null,
@@ -2555,7 +2559,11 @@
    "third": {
     "n": "215",
     "a": null,
-    "b": null,
+    "b": {
+     "name": "Marlon Tajik",
+     "seed": 3,
+     "team": "Sweden"
+    },
     "w": null,
     "decided": false,
     "result": null,
@@ -2623,15 +2631,7 @@
   },
   {
    "name": "Mat 3",
-   "upcoming": [
-    {
-     "n": "214",
-     "weightClass": "Absolute",
-     "round": "SF",
-     "a": "Marlon Tajik",
-     "b": "Roosevelt Sousa"
-    }
-   ]
+   "upcoming": []
   }
  ],
  "upcomingShape": [
