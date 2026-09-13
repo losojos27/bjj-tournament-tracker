@@ -81,7 +81,7 @@ placed on the earliest-free mat with per-round slot minutes (there is no day sel
 lists they win: bouts are matched by number `n` (against every bracket bout, not just today's
 blocks) and placed on exactly the mats Flo lists, in Flo's order; unlisted bouts fall back to
 block order on those mats plus any mat with a live bout. Without lists, the mats are `S.mats`
-(plus any live mat) and the header says "(assumed)". The projection starts from a live
+(plus any live mat) and the header says "(a guess)". The projection starts from a live
 in-progress bout (that mat is free at now + remaining clock + 2 min; earlier entries on that mat
 count as run), otherwise from the day's start on the event's calendar date (`DAY_DATES`), clamped
 to now and pushed to `S.breakUntil` while that is in the future. ADCC pauses ~30 minutes between
@@ -181,7 +181,7 @@ the look depends on" are binding:
   `AppTheme.cycle()`. The head bootstrap line must stay before the stylesheet link.
 - Bracket connectors are the one load-bearing edge (`--hairline-strong`). Box height must stay
   under `--pitch` (92px); `.bx` overrides the kit's 1.6 line-height for that reason. Columns are
-  228px so a flag plus a long name fits.
+  250px so a flag plus a long name fits.
 
 ## Audits
 

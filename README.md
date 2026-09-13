@@ -8,13 +8,14 @@ each mat right now.
 
 ## How it stays live
 - `scripts/sync.mjs` pulls every division's bouts from FloArena's JSON endpoints and writes
-  `data/results.json`. A GitHub Actions cron (`.github/workflows/sync.yml`) runs it every
-  5 minutes and commits when something changed; GitHub Pages redeploys on push.
+  `data/results.json`. A GitHub Actions workflow (`.github/workflows/sync.yml`) runs
+  `scripts/sync-loop.sh`, which syncs every 5 minutes for about five hours per run and commits
+  when something changed; GitHub Pages redeploys on push.
 - The page also polls FloArena's public Firebase feed (`/<event>/mats.json`) every 15 s for
   the bout currently on each mat: clock, score, and the winner the moment it ends. That
   result is applied to the bracket immediately, ahead of the next sync.
-- Nothing is entered by hand. The follow list and a couple of projection settings live in
-  the viewer's own browser.
+- Nothing is entered by hand. The follow list and a few projection settings (mats, slot
+  minutes, a "break until" time for intermissions) live in the viewer's own browser.
 
 ## Run it yourself
 ```
