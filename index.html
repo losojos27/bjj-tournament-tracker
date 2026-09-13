@@ -57,7 +57,6 @@
   .actions{display:flex;gap:8px;margin-top:10px;flex-wrap:wrap}
   /* followed athletes */
   .follow-card{display:flex;align-items:center;gap:12px}
-  .follow-card .pin{width:12px;height:12px;flex-shrink:0;border-radius:var(--radius-sm);background:var(--follow)}
   .big{font-family:var(--font-heading);font-size:1.35rem;font-weight:650;letter-spacing:-.02em;line-height:1.15}
   .sub{font-size:var(--fs-meta);color:var(--text-muted);margin-top:2px}
   /* queue rows */
@@ -75,6 +74,7 @@
   .name.lose{color:var(--lose);text-decoration:line-through}
   .name.follow{font-weight:650}   /* the follow colour is the row/box tint, so a followed winner still reads green and a loser struck */
   .row.fol,.bx.fol,.panel.follow-card{background:color-mix(in srgb, var(--follow) 22%, var(--bg-card))}
+  .row.fol .meta,.row.fol .t small,.panel.follow-card .sub,.bx.fol .meta .num{color:var(--text-primary)}   /* muted grey fails contrast on the tint */
   .row.fol.now{background:color-mix(in srgb, var(--cue-warning) 14%, color-mix(in srgb, var(--follow) 16%, var(--bg-card)))}
   .name .nm{overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
   .flag{display:inline-block;width:1.25em;text-align:center;flex-shrink:0;font-size:1.05em;line-height:1}
@@ -377,7 +377,7 @@ function renderNext(){
     if(mine.length){
       for(const mo of mine){ const me=hit(mo.a)?mo.a:mo.b, opp=me===mo.a?mo.b:mo.a; if(seen.has(me.name)) continue; seen.add(me.name);
         const when=mo.onMat?`on mat ${mo.mat} now`:`${fmt(mo.at)} · ${rel(mo.at)} · mat ${mo.mat}`;
-        cards.push({at:mo.at,html:`<div class="panel follow-card"><span class="pin"></span><div><div class="big"><button type="button" class="copy-name" data-copy="${esc(me.name)}" title="copy name">${flagHtml(me.team)}${esc(me.name)}</button></div><div class="sub">${when} · ${esc(mo.div.name)} ${rl(mo.rName)} · vs ${opp.tbd?esc(opp.label):esc(opp.name)}</div></div></div>`}); }
+        cards.push({at:mo.at,html:`<div class="panel follow-card"><div><div class="big"><button type="button" class="copy-name" data-copy="${esc(me.name)}" title="copy name">${flagHtml(me.team)}${esc(me.name)}</button></div><div class="sub">${when} · ${esc(mo.div.name)} ${rl(mo.rName)} · vs ${opp.tbd?esc(opp.label):esc(opp.name)}</div></div></div>`}); }
     } else {
       // still alive somewhere (e.g. tomorrow, or a division with no bouts yet)? champion? otherwise eliminated: no card
       let status='no match in today’s queue', out=false, champ=false;   // eliminated fighters get a neutral 'no scheduled matches' card, never their loss
@@ -390,7 +390,7 @@ function renderNext(){
       // the card names the fighter as the bracket does (flag, canonical spelling, copyable); a country entry gets its flag
       let who=null; for(const div of divs()){ for(const r of div.rounds) for(const b of r.bouts) for(const p of [b.a,b.b]) if(!who&&p&&p.name&&p.name.toLowerCase().includes(q_)) who=p; }
       const title=who?`<button type="button" class="copy-name" data-copy="${esc(who.name)}" title="copy name">${flagHtml(who.team)}${esc(who.name)}</button>`:`${flag(f)?flagHtml(f):''}${esc(f)}`;
-      cards.push({at:new Date(8.64e15),html:`<div class="panel follow-card"><span class="pin"></span><div><div class="big">${title}</div><div class="sub">${status}</div></div></div>`});
+      cards.push({at:new Date(8.64e15),html:`<div class="panel follow-card"><div><div class="big">${title}</div><div class="sub">${status}</div></div></div>`});
     }
   }
   cards.sort((x,y)=>x.at-y.at);
@@ -413,7 +413,7 @@ function renderNext(){
       <div class="vs">${pName(mo.a,mo,0,{seed:false})}${pName(mo.b,mo,1,{seed:false})}</div></div></div>`;
   });
   if(q.length) h+=`</div>`;
-  h+=`<div class="note">results and mat times follow FloArena automatically. tap a name to copy it.</div>`;
+  h+=`<div class="note">${floOrder?'results and the running order come from FloArena. ':'results come from FloArena. today’s mats and times are our guess until FloArena posts the order. '}tap a name to copy it.</div>`;
   return h;
 }
 function currentDiv(){
@@ -427,7 +427,8 @@ function backfilled(mo,s_){   // returns '' or a label like 'replacement after #
   const prev=boutAt(mo.div,rn[ri-1],mo.m*2+s_); if(!prev||!prev.decided) return '';
   const win=prev.w===0?prev.a:prev.w===1?prev.b:null;
   if(win&&win.name===p.name) return '';
-  return !win&&prev.n?`replacement after #${prev.n}`:'replacement';
+  if(!win) return `${p.name} in after the ${prev.n?'#'+prev.n+' ':''}${String(prev.winType||'').toUpperCase()==='DQ'?'disqualification':'no-winner bout'}`;
+  return `${p.name} in for ${win.name}`;
 }
 let PROJ=new Map();   // key -> queued match, for the bracket's unfought boxes
 let bracketFresh=false; // set when the division changes: open on the first unfought round, chip in view
@@ -450,6 +451,8 @@ function renderBrackets(){
   let h=`<div class="chips">${ds.map(d=>{ const rn=rounds(d); const c=winnerOf(d,rn[rn.length-1],0); return `<button type="button" data-bdiv="${esc(d.id)}" class="chip ${d.id===div.id?'active':''}">${esc(d.name)}${c!==null&&c>=0?' 🥇':''}</button>`; }).join('')}</div>`;
   const n1=div.rounds[0].bouts.length;
   let firstOpen=div.rounds.findIndex(r=>r.bouts.some((b,m)=>winnerOf(div,r.name,m)===null)); if(firstOpen<0) firstOpen=div.rounds.length-1;
+  const anyOpen=div.rounds.some(r=>r.bouts.some((b,m)=>winnerOf(div,r.name,m)===null));
+  h+=`<h2 class="section-title">${esc(div.name)}${anyOpen?'<span style="font-weight:400"> · times are estimates</span>':''}</h2>`;
   h+=`<div class="note swipe-hint" hidden>${firstOpen>0?'swipe right for earlier rounds and results, left for later rounds.':'swipe left for later rounds.'}</div>`;
   h+=`<div class="bwrap" data-first-open="${firstOpen}"><div class="bracket" style="--n1:${n1}">`;
   for(const r of div.rounds){
@@ -459,7 +462,7 @@ function renderBrackets(){
   }
   h+=`</div></div>`;
   if(div.third) h+=`<div class="bracket" style="--n1:1;margin-top:4px"><div class="col"><h3>3rd place</h3><div class="slot single">${box(matchObj(div,'3',0))}</div></div></div>`;
-  h+=`<div class="note">tap a name to copy it; tap a result to watch the bout on FloGrappling.</div>`;
+  h+=`<div class="note">the green name won. tap a name to copy it; tap a result to watch the bout on FloGrappling.</div>`;
   return h;
 }
 function themeMode(){ try{ const t=localStorage.getItem('bjjTracker.theme'); return t==='light'||t==='dark'?t:'auto'; }catch(e){ return 'auto'; } }
@@ -500,10 +503,11 @@ function renderSettings(){
 }
 function renderStatus(){
   const s=$('#status'); if(!s) return;
-  const dataTxt = DATA ? `synced ${dataErr?'<span class="bad">stale</span> ':''}${fmt(new Date(DATA.updated))}` : (dataErr?'<span class="bad">results failed</span>':'loading…');
+  const dataTxt = DATA ? `synced ${fmt(new Date(DATA.updated))}` : (dataErr?'<span class="bad">results failed</span>':'loading…');
+  const stale = DATA&&dataErr ? ' · <span class="bad">stale</span>' : '';
   const n=liveInProgress().length;
   const liveTxt = liveState==='ok' ? (n?`<b>${n===1?'1 bout':n+' bouts'} on the mats</b>`:'nothing on the mats') : liveState==='bad' ? `<span class="bad">live feed lost</span>` : `live feed off`;
-  s.innerHTML=`${liveTxt}<span class="sync"> · ${dataTxt}</span>`;
+  s.innerHTML=`${liveTxt}${stale}<span class="sync"> · ${dataTxt}</span>`;
 }
 function render(){
   document.querySelectorAll('.tabs .tab').forEach(b=>b.classList.toggle('active',b.dataset.tab===tab));
@@ -526,7 +530,7 @@ async function copyText(t){
   try{ if(navigator.clipboard&&window.isSecureContext){ await navigator.clipboard.writeText(t); toast(`copied ${t}`); return; } }catch(e){}
   try{ const ta=document.createElement('textarea'); ta.value=t; ta.setAttribute('readonly',''); ta.style.position='fixed'; ta.style.opacity='0'; document.body.appendChild(ta); ta.select(); const ok=document.execCommand('copy'); ta.remove(); toast(ok?`copied ${t}`:'couldn’t copy'); }catch(e){ toast('couldn’t copy'); }
 }
-function toast(t){ const e=$('#toast'); e.textContent=t; e.classList.add('show'); setTimeout(()=>e.classList.remove('show'),1400); }
+function toast(t){ const e=$('#toast'); e.textContent=t; e.classList.add('show'); clearTimeout(toast.t); toast.t=setTimeout(()=>e.classList.remove('show'),3000); }
 
 // ---------- events ----------
 document.querySelector('.tabs').addEventListener('click',e=>{ const b=e.target.closest('[data-tab]'); if(b){ tab=b.dataset.tab; render(); window.scrollTo(0,0);} });
