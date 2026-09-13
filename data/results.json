@@ -1,5 +1,5 @@
 {
- "updated": "2026-09-13T15:39:24.027Z",
+ "updated": "2026-09-13T15:49:28.224Z",
  "event": {
   "id": "52703b65-bade-46e2-9ce2-399dd32d93e4",
   "name": "2026 ADCC World Championships",
@@ -2240,6 +2240,280 @@
     "winType": "SUB",
     "mat": "Mat 1",
     "video": "https://www.flograppling.com/events/14687695-2026-adcc-world-championships/videos?playing=16179145&limit=60"
+   }
+  },
+  {
+   "id": "mabs",
+   "name": "men's absolute",
+   "sex": "m",
+   "kind": "abs",
+   "size": 16,
+   "flo": {
+    "division": "Absolute Male",
+    "weightClass": "Absolute",
+    "wcGuid": "2c19c96e-d279-48cf-8b5d-7f9ec56ed4d0"
+   },
+   "rounds": [
+    {
+     "name": "R16",
+     "bouts": [
+      {
+       "n": "201",
+       "a": {
+        "name": "Felipe Pena",
+        "seed": 1,
+        "team": "Brazil"
+       },
+       "b": {
+        "name": "Francis Pana",
+        "seed": 16,
+        "team": "Canada"
+       },
+       "w": null,
+       "decided": false,
+       "result": null,
+       "winType": null,
+       "mat": null,
+       "video": null
+      },
+      {
+       "n": "202",
+       "a": {
+        "name": "Eoghan O'flanaghan",
+        "seed": 9,
+        "team": "United Kingdom"
+       },
+       "b": {
+        "name": "Eli Braz",
+        "seed": 8,
+        "team": "Brazil"
+       },
+       "w": null,
+       "decided": false,
+       "result": null,
+       "winType": null,
+       "mat": null,
+       "video": null
+      },
+      {
+       "n": "203",
+       "a": {
+        "name": "Daniel Manasoiu",
+        "seed": 5,
+        "team": "USA"
+       },
+       "b": {
+        "name": "Elijah Dorsey",
+        "seed": 12,
+        "team": "USA"
+       },
+       "w": null,
+       "decided": false,
+       "result": null,
+       "winType": null,
+       "mat": null,
+       "video": null
+      },
+      {
+       "n": "204",
+       "a": {
+        "name": "Ruslan Abdulaev",
+        "seed": 13,
+        "team": "Russia"
+       },
+       "b": {
+        "name": "Chris Wojcik",
+        "seed": 4,
+        "team": "USA"
+       },
+       "w": null,
+       "decided": false,
+       "result": null,
+       "winType": null,
+       "mat": null,
+       "video": null
+      },
+      {
+       "n": "205",
+       "a": {
+        "name": "Marlon Tajik",
+        "seed": 3,
+        "team": "Sweden"
+       },
+       "b": {
+        "name": "Pouya Rahmani",
+        "seed": 14,
+        "team": "Iran"
+       },
+       "w": null,
+       "decided": false,
+       "result": null,
+       "winType": null,
+       "mat": null,
+       "video": null
+      },
+      {
+       "n": "206",
+       "a": {
+        "name": "Javier Zaruski",
+        "seed": 11,
+        "team": "Uruguay"
+       },
+       "b": {
+        "name": "Nick Hartman",
+        "seed": 6,
+        "team": "USA"
+       },
+       "w": null,
+       "decided": false,
+       "result": null,
+       "winType": null,
+       "mat": null,
+       "video": null
+      },
+      {
+       "n": "207",
+       "a": {
+        "name": "Roosevelt Sousa",
+        "seed": 7,
+        "team": "Brazil"
+       },
+       "b": {
+        "name": "Tommy Langaker",
+        "seed": 10,
+        "team": "Norway"
+       },
+       "w": null,
+       "decided": false,
+       "result": null,
+       "winType": null,
+       "mat": null,
+       "video": null
+      },
+      {
+       "n": "208",
+       "a": {
+        "name": "Steffen Banta",
+        "seed": 15,
+        "team": "USA"
+       },
+       "b": {
+        "name": "Felipe Costa",
+        "seed": 2,
+        "team": "Brazil"
+       },
+       "w": null,
+       "decided": false,
+       "result": null,
+       "winType": null,
+       "mat": null,
+       "video": null
+      }
+     ]
+    },
+    {
+     "name": "QF",
+     "bouts": [
+      {
+       "n": "209",
+       "a": null,
+       "b": null,
+       "w": null,
+       "decided": false,
+       "result": null,
+       "winType": null,
+       "mat": null,
+       "video": null
+      },
+      {
+       "n": "210",
+       "a": null,
+       "b": null,
+       "w": null,
+       "decided": false,
+       "result": null,
+       "winType": null,
+       "mat": null,
+       "video": null
+      },
+      {
+       "n": "211",
+       "a": null,
+       "b": null,
+       "w": null,
+       "decided": false,
+       "result": null,
+       "winType": null,
+       "mat": null,
+       "video": null
+      },
+      {
+       "n": "212",
+       "a": null,
+       "b": null,
+       "w": null,
+       "decided": false,
+       "result": null,
+       "winType": null,
+       "mat": null,
+       "video": null
+      }
+     ]
+    },
+    {
+     "name": "SF",
+     "bouts": [
+      {
+       "n": "213",
+       "a": null,
+       "b": null,
+       "w": null,
+       "decided": false,
+       "result": null,
+       "winType": null,
+       "mat": null,
+       "video": null
+      },
+      {
+       "n": "214",
+       "a": null,
+       "b": null,
+       "w": null,
+       "decided": false,
+       "result": null,
+       "winType": null,
+       "mat": null,
+       "video": null
+      }
+     ]
+    },
+    {
+     "name": "F",
+     "bouts": [
+      {
+       "n": "216",
+       "a": null,
+       "b": null,
+       "w": null,
+       "decided": false,
+       "result": null,
+       "winType": null,
+       "mat": null,
+       "video": null
+      }
+     ]
+    }
+   ],
+   "third": {
+    "n": "215",
+    "a": null,
+    "b": null,
+    "w": null,
+    "decided": false,
+    "result": null,
+    "winType": null,
+    "mat": null,
+    "video": null
    }
   },
   {
