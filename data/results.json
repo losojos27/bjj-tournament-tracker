@@ -1,5 +1,5 @@
 {
- "updated": "2026-09-13T01:39:18.925Z",
+ "updated": "2026-09-13T06:17:18.129Z",
  "event": {
   "id": "52703b65-bade-46e2-9ce2-399dd32d93e4",
   "name": "2026 ADCC World Championships",
@@ -306,7 +306,7 @@
      "name": "F",
      "bouts": [
       {
-       "n": null,
+       "n": "98",
        "a": null,
        "b": null,
        "w": null,
@@ -320,7 +320,7 @@
     }
    ],
    "third": {
-    "n": null,
+    "n": "90",
     "a": null,
     "b": null,
     "w": null,
@@ -628,7 +628,7 @@
      "name": "F",
      "bouts": [
       {
-       "n": null,
+       "n": "99",
        "a": null,
        "b": null,
        "w": null,
@@ -642,7 +642,7 @@
     }
    ],
    "third": {
-    "n": null,
+    "n": "92",
     "a": null,
     "b": null,
     "w": null,
@@ -950,7 +950,7 @@
      "name": "F",
      "bouts": [
       {
-       "n": null,
+       "n": "100",
        "a": null,
        "b": null,
        "w": null,
@@ -964,7 +964,7 @@
     }
    ],
    "third": {
-    "n": null,
+    "n": "94",
     "a": null,
     "b": null,
     "w": null,
@@ -1272,7 +1272,7 @@
      "name": "F",
      "bouts": [
       {
-       "n": null,
+       "n": "101",
        "a": null,
        "b": null,
        "w": null,
@@ -1286,7 +1286,7 @@
     }
    ],
    "third": {
-    "n": null,
+    "n": "95",
     "a": null,
     "b": null,
     "w": null,
@@ -1594,7 +1594,7 @@
      "name": "F",
      "bouts": [
       {
-       "n": null,
+       "n": "102",
        "a": null,
        "b": null,
        "w": null,
@@ -1608,7 +1608,7 @@
     }
    ],
    "third": {
-    "n": null,
+    "n": "96",
     "a": null,
     "b": null,
     "w": null,
@@ -1759,7 +1759,7 @@
      "name": "F",
      "bouts": [
       {
-       "n": null,
+       "n": "103",
        "a": null,
        "b": null,
        "w": null,
@@ -1773,7 +1773,7 @@
     }
    ],
    "third": {
-    "n": null,
+    "n": "89",
     "a": null,
     "b": null,
     "w": null,
@@ -1924,7 +1924,7 @@
      "name": "F",
      "bouts": [
       {
-       "n": null,
+       "n": "104",
        "a": null,
        "b": null,
        "w": null,
@@ -1938,7 +1938,7 @@
     }
    ],
    "third": {
-    "n": null,
+    "n": "91",
     "a": null,
     "b": null,
     "w": null,
@@ -2089,7 +2089,7 @@
      "name": "F",
      "bouts": [
       {
-       "n": null,
+       "n": "105",
        "a": null,
        "b": null,
        "w": null,
@@ -2103,7 +2103,7 @@
     }
    ],
    "third": {
-    "n": null,
+    "n": "93",
     "a": null,
     "b": null,
     "w": null,
@@ -2157,16 +2157,64 @@
  "mats": [
   {
    "name": "Mat 1",
-   "upcoming": []
+   "upcoming": [
+    {
+     "n": "9005",
+     "weightClass": "106",
+     "round": "RR Rnd 2",
+     "a": "Test Wrestler 5",
+     "b": "Test Szczecinski"
+    }
+   ]
   },
   {
    "name": "Mat 2",
-   "upcoming": []
+   "upcoming": [
+    {
+     "n": "9006",
+     "weightClass": "106",
+     "round": "RR Rnd 2",
+     "a": "Test Szczecinski",
+     "b": "Test Wrestler 6"
+    }
+   ]
   },
   {
    "name": "Mat 3",
-   "upcoming": []
+   "upcoming": [
+    {
+     "n": "9007",
+     "weightClass": "106",
+     "round": "RR Rnd 3",
+     "a": "Test Szczecinski",
+     "b": "Test Szczecinski"
+    }
+   ]
   }
  ],
- "upcomingShape": null
+ "upcomingShape": [
+  "guid",
+  "bottomWrestler",
+  "boutNumber",
+  "loserToBoutGuid",
+  "loserToTop",
+  "result",
+  "roundName",
+  "roundSpot",
+  "trueRound",
+  "winnerPoints",
+  "topPlacementPoints",
+  "maxPlace",
+  "sequenceNumber",
+  "topWrestler",
+  "winType",
+  "winnerToBoutGuid",
+  "winnerToTop",
+  "weightClass",
+  "isTopBye",
+  "isBottomBye",
+  "boutVideoUrl",
+  "winnerWrestlerGuid",
+  "redWrestlerGuid"
+ ]
 }
