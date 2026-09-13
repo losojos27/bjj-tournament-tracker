@@ -46,8 +46,11 @@ Three layers, all read-only:
    Flo's per-mat `upcoming` lists when published. `w` is `0` (top/`a` won), `1`, or `null`.
    Round order is positional (bout `m` in round `r` feeds bout `m>>1` in `r+1`), derived by
    walking FloArena's `winnerToBoutGuid` links back from the final; bout-number order is the
-   fallback. The GitHub Actions cron (`.github/workflows/sync.yml`, every 5 min, really 5–15)
-   runs it with `SYNC_STRICT=1` and commits only on content change (Pages allows ~10 builds/hour).
+   fallback. The GitHub Actions workflow (`.github/workflows/sync.yml`) is nominally a 5-minute cron, but
+   GitHub fired it only three times overnight on Sept 12–13, so each run now loops internally:
+   sync, commit-on-change, push, sleep 300, for ~5.5 hours (66 passes) under a concurrency
+   group, so one fire covers a competition day. `gh workflow run sync.yml` starts a loop by hand.
+   `SYNC_STRICT=1` makes an unparseable Flo order a warning in the log.
 2. **Browser polling in `index.html`.** `results.json` every 60 s, and FloArena's public
    Firebase `mats.json` every 15 s for the bout on each mat (clock, score, `isMatchOver`,
    `winner`). Neither poll re-renders while the Settings tab is open (`quiet()`).
