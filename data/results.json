@@ -1,5 +1,5 @@
 {
- "updated": "2026-09-13T16:39:47.646Z",
+ "updated": "2026-09-13T16:44:50.483Z",
  "event": {
   "id": "52703b65-bade-46e2-9ce2-399dd32d93e4",
   "name": "2026 ADCC World Championships",
@@ -2345,12 +2345,12 @@
         "seed": 14,
         "team": "Iran"
        },
-       "w": null,
-       "decided": false,
-       "result": null,
-       "winType": null,
+       "w": 0,
+       "decided": true,
+       "result": "0-0 2:57",
+       "winType": "SUB",
        "mat": "Mat 1",
-       "video": null
+       "video": "https://www.flograppling.com/events/14687695-2026-adcc-world-championships/videos?playing=16181001&limit=60"
       },
       {
        "n": "206",
@@ -2387,7 +2387,7 @@
        "decided": false,
        "result": null,
        "winType": null,
-       "mat": null,
+       "mat": "Mat 1",
        "video": null
       },
       {
@@ -2450,7 +2450,11 @@
       },
       {
        "n": "211",
-       "a": null,
+       "a": {
+        "name": "Marlon Tajik",
+        "seed": 3,
+        "team": "Sweden"
+       },
        "b": null,
        "w": null,
        "decided": false,
@@ -2573,11 +2577,11 @@
    "name": "Mat 1",
    "upcoming": [
     {
-     "n": "205",
+     "n": "207",
      "weightClass": "Absolute",
      "round": "R16",
-     "a": "Marlon Tajik",
-     "b": "Pouya Rahmani"
+     "a": "Roosevelt Sousa",
+     "b": "Tommy Langaker"
     }
    ]
   },
