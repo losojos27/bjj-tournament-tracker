@@ -1,5 +1,5 @@
 {
- "updated": "2026-09-13T07:42:59.818Z",
+ "updated": "2026-09-13T09:45:47.917Z",
  "event": {
   "id": "52703b65-bade-46e2-9ce2-399dd32d93e4",
   "name": "2026 ADCC World Championships",
@@ -274,12 +274,12 @@
         "seed": 5,
         "team": "Australia"
        },
-       "w": null,
-       "decided": false,
-       "result": null,
-       "winType": null,
+       "w": 1,
+       "decided": true,
+       "result": "0-0 15:00 TB1",
+       "winType": "REF",
        "mat": "Mat 1",
-       "video": null
+       "video": "https://www.flograppling.com/events/14687695-2026-adcc-world-championships/videos?playing=16179126&limit=60"
       },
       {
        "n": "74",
@@ -293,12 +293,12 @@
         "seed": 7,
         "team": "Brazil"
        },
-       "w": null,
-       "decided": false,
-       "result": null,
-       "winType": null,
+       "w": 1,
+       "decided": true,
+       "result": "0-0 2:29",
+       "winType": "SUB",
        "mat": "Mat 2",
-       "video": null
+       "video": "https://www.flograppling.com/events/14687695-2026-adcc-world-championships/videos?playing=16179121&limit=60"
       }
      ]
     },
@@ -307,8 +307,16 @@
      "bouts": [
       {
        "n": "98",
-       "a": null,
-       "b": null,
+       "a": {
+        "name": "Josh Saunders",
+        "seed": 5,
+        "team": "Australia"
+       },
+       "b": {
+        "name": "Victor Hugo",
+        "seed": 7,
+        "team": "Brazil"
+       },
        "w": null,
        "decided": false,
        "result": null,
@@ -321,8 +329,16 @@
    ],
    "third": {
     "n": "90",
-    "a": null,
-    "b": null,
+    "a": {
+     "name": "Felipe Pena",
+     "seed": 1,
+     "team": "Brazil"
+    },
+    "b": {
+     "name": "Mark Macqueen",
+     "seed": 6,
+     "team": "Scotland"
+    },
     "w": null,
     "decided": false,
     "result": null,
@@ -596,12 +612,12 @@
         "seed": 12,
         "team": "Australia"
        },
-       "w": null,
-       "decided": false,
-       "result": null,
-       "winType": null,
-       "mat": null,
-       "video": null
+       "w": 0,
+       "decided": true,
+       "result": "0-0 8:52",
+       "winType": "SUB",
+       "mat": "Mat 2",
+       "video": "https://www.flograppling.com/events/14687695-2026-adcc-world-championships/videos?playing=16179128&limit=60"
       },
       {
        "n": "78",
@@ -615,12 +631,12 @@
         "seed": 2,
         "team": "Brazil"
        },
-       "w": null,
-       "decided": false,
-       "result": null,
-       "winType": null,
-       "mat": null,
-       "video": null
+       "w": 0,
+       "decided": true,
+       "result": "0-0 10:00 TB1",
+       "winType": "SCORE",
+       "mat": "Mat 3",
+       "video": "https://www.flograppling.com/events/14687695-2026-adcc-world-championships/videos?playing=16179124&limit=60"
       }
      ]
     },
@@ -629,8 +645,16 @@
      "bouts": [
       {
        "n": "100",
-       "a": null,
-       "b": null,
+       "a": {
+        "name": "Kaynan Duarte",
+        "seed": 1,
+        "team": "Brazil"
+       },
+       "b": {
+        "name": "Luke Griffith",
+        "seed": 3,
+        "team": "South Africa"
+       },
        "w": null,
        "decided": false,
        "result": null,
@@ -643,8 +667,16 @@
    ],
    "third": {
     "n": "92",
-    "a": null,
-    "b": null,
+    "a": {
+     "name": "Daniel Schuardt",
+     "seed": 12,
+     "team": "Australia"
+    },
+    "b": {
+     "name": "Achilles Rocha",
+     "seed": 2,
+     "team": "Brazil"
+    },
     "w": null,
     "decided": false,
     "result": null,
@@ -918,12 +950,12 @@
         "seed": 4,
         "team": "Brazil"
        },
-       "w": null,
-       "decided": false,
-       "result": null,
-       "winType": null,
-       "mat": null,
-       "video": null
+       "w": 0,
+       "decided": true,
+       "result": "0-0 5:34",
+       "winType": "SUB",
+       "mat": "Mat 1",
+       "video": "https://www.flograppling.com/events/14687695-2026-adcc-world-championships/videos?playing=16179132&limit=60"
       },
       {
        "n": "80",
@@ -931,6 +963,30 @@
         "name": "Jozef Chen",
         "seed": 11,
         "team": "South Africa"
+       },
+       "b": {
+        "name": "Marlon Tajik",
+        "seed": 7,
+        "team": "Sweden"
+       },
+       "w": 1,
+       "decided": true,
+       "result": "2-0 10:00",
+       "winType": "SCORE",
+       "mat": "Mat 2",
+       "video": "https://www.flograppling.com/events/14687695-2026-adcc-world-championships/videos?playing=16179131&limit=60"
+      }
+     ]
+    },
+    {
+     "name": "F",
+     "bouts": [
+      {
+       "n": "102",
+       "a": {
+        "name": "Pawel Jaworski",
+        "seed": 9,
+        "team": "Poland"
        },
        "b": {
         "name": "Marlon Tajik",
@@ -945,28 +1001,20 @@
        "video": null
       }
      ]
-    },
-    {
-     "name": "F",
-     "bouts": [
-      {
-       "n": "102",
-       "a": null,
-       "b": null,
-       "w": null,
-       "decided": false,
-       "result": null,
-       "winType": null,
-       "mat": null,
-       "video": null
-      }
-     ]
     }
    ],
    "third": {
     "n": "94",
-    "a": null,
-    "b": null,
+    "a": {
+     "name": "Gabriel Brod",
+     "seed": 4,
+     "team": "Brazil"
+    },
+    "b": {
+     "name": "Jozef Chen",
+     "seed": 11,
+     "team": "South Africa"
+    },
     "w": null,
     "decided": false,
     "result": null,
@@ -1240,12 +1288,12 @@
         "seed": 13,
         "team": "Poland"
        },
-       "w": null,
-       "decided": false,
-       "result": null,
-       "winType": null,
-       "mat": null,
-       "video": null
+       "w": 0,
+       "decided": true,
+       "result": "2-0 15:00 TB1",
+       "winType": "SCORE",
+       "mat": "Mat 1",
+       "video": "https://www.flograppling.com/events/14687695-2026-adcc-world-championships/videos?playing=16179129&limit=60"
       },
       {
        "n": "84",
@@ -1259,12 +1307,12 @@
         "seed": 2,
         "team": "USA"
        },
-       "w": null,
-       "decided": false,
-       "result": null,
-       "winType": null,
-       "mat": null,
-       "video": null
+       "w": 0,
+       "decided": true,
+       "result": "9-0 15:00 TB1",
+       "winType": "SCORE",
+       "mat": "Mat 3",
+       "video": "https://www.flograppling.com/events/14687695-2026-adcc-world-championships/videos?playing=16179130&limit=60"
       }
      ]
     },
@@ -1273,8 +1321,16 @@
      "bouts": [
       {
        "n": "103",
-       "a": null,
-       "b": null,
+       "a": {
+        "name": "Magomed Dzharbaev",
+        "seed": 8,
+        "team": "Russia"
+       },
+       "b": {
+        "name": "Pj Barch",
+        "seed": 3,
+        "team": "USA"
+       },
        "w": null,
        "decided": false,
        "result": null,
@@ -1287,8 +1343,16 @@
    ],
    "third": {
     "n": "95",
-    "a": null,
-    "b": null,
+    "a": {
+     "name": "Mateusz Szczecinski",
+     "seed": 13,
+     "team": "Poland"
+    },
+    "b": {
+     "name": "Jacob Bornemann",
+     "seed": 2,
+     "team": "USA"
+    },
     "w": null,
     "decided": false,
     "result": null,
@@ -1562,12 +1626,12 @@
         "seed": 13,
         "team": "Brazil"
        },
-       "w": null,
-       "decided": false,
-       "result": null,
-       "winType": null,
-       "mat": null,
-       "video": null
+       "w": 1,
+       "decided": true,
+       "result": "0-0 15:00 TB1",
+       "winType": "REF",
+       "mat": "Mat 1",
+       "video": "https://www.flograppling.com/events/14687695-2026-adcc-world-championships/videos?playing=16179138&limit=60"
       },
       {
        "n": "88",
@@ -1581,12 +1645,12 @@
         "seed": 15,
         "team": "USA"
        },
-       "w": null,
-       "decided": false,
-       "result": null,
-       "winType": null,
-       "mat": null,
-       "video": null
+       "w": 0,
+       "decided": true,
+       "result": "0-0 6:58",
+       "winType": "SUB",
+       "mat": "Mat 3",
+       "video": "https://www.flograppling.com/events/14687695-2026-adcc-world-championships/videos?playing=16179137&limit=60"
       }
      ]
     },
@@ -1595,8 +1659,16 @@
      "bouts": [
       {
        "n": "104",
-       "a": null,
-       "b": null,
+       "a": {
+        "name": "Kennedy Maciel",
+        "seed": 13,
+        "team": "Brazil"
+       },
+       "b": {
+        "name": "Gavin Corbe",
+        "seed": 6,
+        "team": "USA"
+       },
        "w": null,
        "decided": false,
        "result": null,
@@ -1609,8 +1681,16 @@
    ],
    "third": {
     "n": "96",
-    "a": null,
-    "b": null,
+    "a": {
+     "name": "Diego Pato",
+     "seed": 1,
+     "team": "Brazil"
+    },
+    "b": {
+     "name": "Dominic Mejia",
+     "seed": 15,
+     "team": "USA"
+    },
     "w": null,
     "decided": false,
     "result": null,
@@ -1727,12 +1807,12 @@
         "seed": 4,
         "team": "USA"
        },
-       "w": null,
-       "decided": false,
-       "result": null,
-       "winType": null,
+       "w": 0,
+       "decided": true,
+       "result": "0-0 5:19",
+       "winType": "SUB",
        "mat": "Mat 3",
-       "video": null
+       "video": "https://www.flograppling.com/events/14687695-2026-adcc-world-championships/videos?playing=16179122&limit=60"
       },
       {
        "n": "76",
@@ -1746,12 +1826,12 @@
         "seed": 7,
         "team": "USA"
        },
-       "w": null,
-       "decided": false,
-       "result": null,
-       "winType": null,
-       "mat": null,
-       "video": null
+       "w": 0,
+       "decided": true,
+       "result": "3-0 10:00",
+       "winType": "SCORE",
+       "mat": "Mat 1",
+       "video": "https://www.flograppling.com/events/14687695-2026-adcc-world-championships/videos?playing=16179123&limit=60"
       }
      ]
     },
@@ -1760,8 +1840,16 @@
      "bouts": [
       {
        "n": "97",
-       "a": null,
-       "b": null,
+       "a": {
+        "name": "Helena Crevar",
+        "seed": 1,
+        "team": "USA"
+       },
+       "b": {
+        "name": "Anabel Lopez",
+        "seed": 3,
+        "team": "Spain"
+       },
        "w": null,
        "decided": false,
        "result": null,
@@ -1774,8 +1862,16 @@
    ],
    "third": {
     "n": "89",
-    "a": null,
-    "b": null,
+    "a": {
+     "name": "Elizabeth Mitrovic",
+     "seed": 4,
+     "team": "USA"
+    },
+    "b": {
+     "name": "Paige Ivette Clymer",
+     "seed": 7,
+     "team": "USA"
+    },
     "w": null,
     "decided": false,
     "result": null,
@@ -1892,12 +1988,12 @@
         "seed": 4,
         "team": "USA"
        },
-       "w": null,
-       "decided": false,
-       "result": null,
-       "winType": null,
-       "mat": null,
-       "video": null
+       "w": 0,
+       "decided": true,
+       "result": "5-2 10:00",
+       "winType": "SCORE",
+       "mat": "Mat 3",
+       "video": "https://www.flograppling.com/events/14687695-2026-adcc-world-championships/videos?playing=16179127&limit=60"
       },
       {
        "n": "82",
@@ -1911,12 +2007,12 @@
         "seed": 2,
         "team": "USA"
        },
-       "w": null,
-       "decided": false,
-       "result": null,
-       "winType": null,
-       "mat": null,
-       "video": null
+       "w": 0,
+       "decided": true,
+       "result": "3-0 10:00",
+       "winType": "SCORE",
+       "mat": "Mat 2",
+       "video": "https://www.flograppling.com/events/14687695-2026-adcc-world-championships/videos?playing=16179125&limit=60"
       }
      ]
     },
@@ -1925,8 +2021,16 @@
      "bouts": [
       {
        "n": "99",
-       "a": null,
-       "b": null,
+       "a": {
+        "name": "Ana Carolina Vieira",
+        "seed": 1,
+        "team": "Brazil"
+       },
+       "b": {
+        "name": "Sarah Galvao",
+        "seed": 3,
+        "team": "Brazil"
+       },
        "w": null,
        "decided": false,
        "result": null,
@@ -1939,8 +2043,16 @@
    ],
    "third": {
     "n": "91",
-    "a": null,
-    "b": null,
+    "a": {
+     "name": "Mo Black",
+     "seed": 4,
+     "team": "USA"
+    },
+    "b": {
+     "name": "Joslyn Molina",
+     "seed": 2,
+     "team": "USA"
+    },
     "w": null,
     "decided": false,
     "result": null,
@@ -2057,18 +2169,42 @@
         "seed": 5,
         "team": "Spain"
        },
-       "w": null,
-       "decided": false,
-       "result": null,
-       "winType": null,
-       "mat": null,
-       "video": null
+       "w": 0,
+       "decided": true,
+       "result": "0-0 5:55",
+       "winType": "SUB",
+       "mat": "Mat 3",
+       "video": "https://www.flograppling.com/events/14687695-2026-adcc-world-championships/videos?playing=16179135&limit=60"
       },
       {
        "n": "86",
        "a": {
         "name": "Mayssa Bastos",
         "seed": 3,
+        "team": "Brazil"
+       },
+       "b": {
+        "name": "Ana Rodrigues",
+        "seed": 7,
+        "team": "Brazil"
+       },
+       "w": 1,
+       "decided": true,
+       "result": "2-0 10:00 TB1",
+       "winType": "SCORE",
+       "mat": "Mat 2",
+       "video": "https://www.flograppling.com/events/14687695-2026-adcc-world-championships/videos?playing=16179136&limit=60"
+      }
+     ]
+    },
+    {
+     "name": "F",
+     "bouts": [
+      {
+       "n": "101",
+       "a": {
+        "name": "Jasmine Rocha",
+        "seed": 1,
         "team": "Brazil"
        },
        "b": {
@@ -2084,28 +2220,20 @@
        "video": null
       }
      ]
-    },
-    {
-     "name": "F",
-     "bouts": [
-      {
-       "n": "101",
-       "a": null,
-       "b": null,
-       "w": null,
-       "decided": false,
-       "result": null,
-       "winType": null,
-       "mat": null,
-       "video": null
-      }
-     ]
     }
    ],
    "third": {
     "n": "93",
-    "a": null,
-    "b": null,
+    "a": {
+     "name": "Ana Mayordomo",
+     "seed": 5,
+     "team": "Spain"
+    },
+    "b": {
+     "name": "Mayssa Bastos",
+     "seed": 3,
+     "team": "Brazil"
+    },
     "w": null,
     "decided": false,
     "result": null,
@@ -2130,7 +2258,7 @@
      "name": "F",
      "bouts": [
       {
-       "n": null,
+       "n": "301",
        "a": {
         "name": "Yuri Simoes",
         "seed": null,
@@ -2157,64 +2285,16 @@
  "mats": [
   {
    "name": "Mat 1",
-   "upcoming": [
-    {
-     "n": "73",
-     "weightClass": "+99",
-     "round": "SF",
-     "a": "Felipe Pena",
-     "b": "Josh Saunders"
-    }
-   ]
+   "upcoming": []
   },
   {
    "name": "Mat 2",
-   "upcoming": [
-    {
-     "n": "74",
-     "weightClass": "+99",
-     "round": "SF",
-     "a": "Mark Macqueen",
-     "b": "Victor Hugo"
-    }
-   ]
+   "upcoming": []
   },
   {
    "name": "Mat 3",
-   "upcoming": [
-    {
-     "n": "75",
-     "weightClass": "+65",
-     "round": "SF",
-     "a": "Helena Crevar",
-     "b": "Elizabeth Mitrovic"
-    }
-   ]
+   "upcoming": []
   }
  ],
- "upcomingShape": [
-  "guid",
-  "bottomWrestler",
-  "boutNumber",
-  "loserToBoutGuid",
-  "loserToTop",
-  "result",
-  "roundName",
-  "roundSpot",
-  "trueRound",
-  "winnerPoints",
-  "topPlacementPoints",
-  "maxPlace",
-  "sequenceNumber",
-  "topWrestler",
-  "winType",
-  "winnerToBoutGuid",
-  "winnerToTop",
-  "weightClass",
-  "isTopBye",
-  "isBottomBye",
-  "boutVideoUrl",
-  "winnerWrestlerGuid",
-  "redWrestlerGuid"
- ]
+ "upcomingShape": null
 }
