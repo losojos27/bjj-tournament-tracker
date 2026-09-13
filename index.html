@@ -53,6 +53,7 @@
   .chip:focus-visible{outline:2px solid var(--accent-soft);outline-offset:1px}
   .topline{display:flex;align-items:center;justify-content:space-between;gap:10px;flex-wrap:wrap;margin:4px 0 12px}
   .note{font-size:var(--fs-meta);color:var(--text-muted);margin-top:8px}
+  .swipe-hint{margin:0 0 10px}
   .actions{display:flex;gap:8px;margin-top:10px;flex-wrap:wrap}
   /* followed athletes */
   .follow-card{display:flex;align-items:center;gap:12px}
@@ -72,8 +73,8 @@
   .name.tbd{color:var(--text-muted);font-style:italic;cursor:default}
   .name.win{color:var(--win);font-weight:600}
   .name.lose{color:var(--lose);text-decoration:line-through}
-  .name.follow{color:var(--follow);font-weight:650}   /* after win/lose: a followed fighter stays highlighted */
-  .row.fol,.bx.fol,.panel.follow-card{background:color-mix(in srgb, var(--follow) 16%, var(--bg-card))}
+  .name.follow{font-weight:650}   /* the follow colour is the row/box tint, so a followed winner still reads green and a loser struck */
+  .row.fol,.bx.fol,.panel.follow-card{background:color-mix(in srgb, var(--follow) 22%, var(--bg-card))}
   .row.fol.now{background:color-mix(in srgb, var(--cue-warning) 14%, color-mix(in srgb, var(--follow) 16%, var(--bg-card)))}
   .name .nm{overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
   .flag{display:inline-block;width:1.25em;text-align:center;flex-shrink:0;font-size:1.05em;line-height:1}
@@ -93,7 +94,7 @@
   .mat .clock{font-weight:650;color:var(--live);font-variant-numeric:tabular-nums}
   .mat .who{display:flex;justify-content:space-between;align-items:center;gap:8px;padding:2px 0;font-size:var(--fs-body)}
   .mat .who .sc{font-weight:650;font-variant-numeric:tabular-nums;min-width:22px;text-align:right}
-  .mat .who.w{color:var(--win)} .mat .who.l{color:var(--lose)} .mat .who.follow{color:var(--follow)}
+  .mat .who.w{color:var(--win)} .mat .who.l{color:var(--lose)} .mat .who.follow{font-weight:650}
   .mat .ft{font-size:var(--fs-eyebrow);color:var(--text-muted);margin-top:4px}
   /* bracket: columns per round; connectors are the one place an edge is load-bearing */
   .chips{display:flex;gap:6px;overflow-x:auto;padding:2px 0 10px;scrollbar-width:none}
@@ -330,7 +331,7 @@ function esc(s){ return String(s??'').replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&l
 function pName(p,mo,s,opts={}){
   if(p.tbd) return `<span class="name tbd">${esc(p.label)}</span>`;
   const c=['name', isFollow(p)?'follow':'', mo.w===s?'win':'', (mo.w!==null&&mo.w!==s)?'lose':''].join(' ');
-  const seed=opts.seed===false?'':`<span class="seed">${p.seed||''}</span>`;
+  const seed='';   // seeds stay in the data but read as scores on screen
   return `<button type="button" class="${c}" data-copy="${esc(p.name)}" title="copy name">${flagHtml(p.team)}${seed}<span class="nm">${esc(p.name)}</span></button>`;
 }
 // "SUB" + "6-0 6:53" -> "submission 6:53"; "SCORE" + "5-0 15:00 TB1" -> "5-0 points · overtime"; "REF" -> "ref decision"
@@ -357,7 +358,7 @@ function renderMats(){
   if(!ms.length) return '';
   let h=`<h2 class="section-title">on the mats <span style="font-weight:400">· FloArena live</span></h2><div class="mats">`;
   for(const l of ms){
-    const who=(p,i)=>`<div class="who ${l.over?(l.winner===i?'w':'l'):''} ${isFollow(p)?'follow':''}"><button type="button" class="who-l" data-copy="${esc(p.name)}" title="copy name">${flagHtml(p.team)}<span class="seed">${p.seed||''}</span><span class="nm">${esc(p.name)}</span></button><span class="sc">${p.score}${p.pen?`<small class="muted"> p${p.pen}</small>`:''}</span></div>`;
+    const who=(p,i)=>`<div class="who ${l.over?(l.winner===i?'w':'l'):''} ${isFollow(p)?'follow':''}"><button type="button" class="who-l" data-copy="${esc(p.name)}" title="copy name">${flagHtml(p.team)}<span class="nm">${esc(p.name)}</span></button><span class="sc">${p.score}${p.pen?`<small class="muted"> p${p.pen}</small>`:''}</span></div>`;
     h+=`<div class="panel mat"><div class="hd"><span><b>${esc(String(l.mat).toLowerCase())}</b> · ${esc(l.weight)}${l.weight&&!/kg|abs/i.test(l.weight)?'kg':''} ${esc(l.round)} · #${esc(l.n)}</span>${l.over?`<span>final</span>`:`<span class="clock">${esc(l.clock)}${l.period&&l.period!=='1'?' '+esc(l.period):''}</span>`}</div>${who(l.red,0)}${who(l.blue,1)}<div class="ft">${l.over?`${esc(fmtResult(l.winType,l.finalScore))} · ended ${ago(l.updated)}`:`<span class="cue live">live</span> updated ${ago(l.updated)}`}</div></div>`;
   }
   return h+`</div>`;
@@ -366,7 +367,7 @@ function renderNext(){
   const {list:q,mode,floOrder,matCount:matsInUse}=queue(); const d=today();
   // the day is done when nothing is queued and every bout in today's blocks is decided
   const dayDone=!q.length && blocks().filter(b=>b.day===d).some(b=>allMatches(b).length) && blocks().filter(b=>b.day===d).every(b=>allMatches(b).every(mo=>mo.w!==null));
-  let h=`<div class="topline"><div class="chip-row">${[1,2].map(x=>`<button type="button" class="chip ${d===x?'active':''}" data-day="${x}" aria-pressed="${d===x}">day ${x}</button>`).join('')}</div><span class="note" style="margin:0">${dayDone?'':`${matsInUse} mat${matsInUse===1?'':'s'}${floOrder?'':' (assumed)'} · times are estimates${mode==='live'?' · following the live feed':''}${floOrder?' · order from FloArena':''}`}</span></div>`;
+  let h=`<div class="topline"><div class="chip-row">${[1,2].map(x=>`<button type="button" class="chip ${d===x?'active':''}" data-day="${x}" aria-pressed="${d===x}">day ${x}</button>`).join('')}</div><span class="note" style="margin:0">${dayDone?'':`${matsInUse} mat${matsInUse===1?'':'s'}${floOrder?'':' (a guess)'} · times are estimates${mode==='live'?' · following the live feed':''}${floOrder?' · order from FloArena':''}`}</span></div>`;
   h+=renderMats();
   const fl=S.follow.filter(Boolean);
   const cards=[]; const seen=new Set();
@@ -376,7 +377,7 @@ function renderNext(){
     if(mine.length){
       for(const mo of mine){ const me=hit(mo.a)?mo.a:mo.b, opp=me===mo.a?mo.b:mo.a; if(seen.has(me.name)) continue; seen.add(me.name);
         const when=mo.onMat?`on mat ${mo.mat} now`:`${fmt(mo.at)} · ${rel(mo.at)} · mat ${mo.mat}`;
-        cards.push({at:mo.at,html:`<div class="panel follow-card"><span class="pin"></span><div><div class="big"><button type="button" class="copy-name" data-copy="${esc(me.name)}" title="copy name">${flagHtml(me.team)}${esc(me.name)}</button>${mo.onMat?' · '+'':' · '+fmt(mo.at)}</div><div class="sub">${when} · ${esc(mo.div.name)} ${rl(mo.rName)} · vs ${opp.tbd?esc(opp.label):esc(opp.name)}</div></div></div>`}); }
+        cards.push({at:mo.at,html:`<div class="panel follow-card"><span class="pin"></span><div><div class="big"><button type="button" class="copy-name" data-copy="${esc(me.name)}" title="copy name">${flagHtml(me.team)}${esc(me.name)}</button></div><div class="sub">${when} · ${esc(mo.div.name)} ${rl(mo.rName)} · vs ${opp.tbd?esc(opp.label):esc(opp.name)}</div></div></div>`}); }
     } else {
       // still alive somewhere (e.g. tomorrow, or a division with no bouts yet)? champion? otherwise eliminated: no card
       let status='no match in today’s queue', out=false, champ=false;   // eliminated fighters get a neutral 'no scheduled matches' card, never their loss
@@ -420,12 +421,13 @@ function currentDiv(){
   return ds.find(x=>x.id===S.bracketDiv) || ds.find(d=>d.rounds.some(r=>r.bouts.some(b=>isFollow(b.a)||isFollow(b.b)))) || ds[0];
 }
 // a slot is "backfilled" when its fighter is not the winner of the bout that feeds it (e.g. reinstated after a double DQ)
-function backfilled(mo,s_){
-  if(mo.rName==='3') return false; const rn=rounds(mo.div); const ri=rn.indexOf(mo.rName); if(ri<=0) return false;
-  const p=s_?mo.b:mo.a; if(!p||p.tbd) return false;
-  const prev=boutAt(mo.div,rn[ri-1],mo.m*2+s_); if(!prev||!prev.decided) return false;
+function backfilled(mo,s_){   // returns '' or a label like 'replacement after #39'
+  if(mo.rName==='3') return ''; const rn=rounds(mo.div); const ri=rn.indexOf(mo.rName); if(ri<=0) return '';
+  const p=s_?mo.b:mo.a; if(!p||p.tbd) return '';
+  const prev=boutAt(mo.div,rn[ri-1],mo.m*2+s_); if(!prev||!prev.decided) return '';
   const win=prev.w===0?prev.a:prev.w===1?prev.b:null;
-  return !win || win.name!==p.name;
+  if(win&&win.name===p.name) return '';
+  return !win&&prev.n?`replacement after #${prev.n}`:'replacement';
 }
 let PROJ=new Map();   // key -> queued match, for the bracket's unfought boxes
 let bracketFresh=false; // set when the division changes: open on the first unfought round, chip in view
@@ -437,8 +439,8 @@ function box(mo){
   else if(mo.src==='live'&&mo.live) res=fmtResult(mo.live.winType,mo.live.finalScore)+' · live';
   const live=mo.live&&!mo.live.over;
   const resHtml = res && b.video ? `<a class="res vid" href="${esc(b.video)}" target="_blank" rel="noopener" title="watch on FloGrappling">${esc(res)} ↗</a>` : `<span class="res">${esc(res)}</span>`;
-  const bf=[0,1].some(s_=>backfilled(mo,s_));
-  const meta=`<span class="num">${b.n?'#'+esc(b.n):''}${bf?' · backfilled':''}</span>${live?`<span class="cue live">on the mat · ${esc(mo.live.clock)}</span>`:''}${resHtml}`;
+  const bf=backfilled(mo,0)||backfilled(mo,1);
+  const meta=`<span class="num">${b.n?'#'+esc(b.n):''}${bf?' · '+esc(bf):''}</span>${live?`<span class="cue live">on the mat · ${esc(mo.live.clock)}</span>`:''}${resHtml}`;
   const fol=isFollow(mo.a)||isFollow(mo.b);
   return `<div class="bx ${fol?'fol':''}"><div class="meta">${meta}</div>${pName(mo.a,mo,0)}${pName(mo.b,mo,1)}</div>`;
 }
@@ -448,6 +450,7 @@ function renderBrackets(){
   let h=`<div class="chips">${ds.map(d=>{ const rn=rounds(d); const c=winnerOf(d,rn[rn.length-1],0); return `<button type="button" data-bdiv="${esc(d.id)}" class="chip ${d.id===div.id?'active':''}">${esc(d.name)}${c!==null&&c>=0?' 🥇':''}</button>`; }).join('')}</div>`;
   const n1=div.rounds[0].bouts.length;
   let firstOpen=div.rounds.findIndex(r=>r.bouts.some((b,m)=>winnerOf(div,r.name,m)===null)); if(firstOpen<0) firstOpen=div.rounds.length-1;
+  h+=`<div class="note swipe-hint" hidden>${firstOpen>0?'swipe right for earlier rounds and results, left for later rounds.':'swipe left for later rounds.'}</div>`;
   h+=`<div class="bwrap" data-first-open="${firstOpen}"><div class="bracket" style="--n1:${n1}">`;
   for(const r of div.rounds){
     h+=`<div class="col"><h3>${ROUND_HEAD[r.name]||r.name}</h3><div class="slots">`;
@@ -456,7 +459,7 @@ function renderBrackets(){
   }
   h+=`</div></div>`;
   if(div.third) h+=`<div class="bracket" style="--n1:1;margin-top:4px"><div class="col"><h3>3rd place</h3><div class="slot single">${box(matchObj(div,'3',0))}</div></div></div>`;
-  h+=`<div class="note">${firstOpen>0?'swipe right for earlier rounds and results, left for later rounds. ':'swipe left for later rounds. '}tap a name to copy it; tap a result to watch the bout on FloGrappling.</div>`;
+  h+=`<div class="note">tap a name to copy it; tap a result to watch the bout on FloGrappling.</div>`;
   return h;
 }
 function themeMode(){ try{ const t=localStorage.getItem('bjjTracker.theme'); return t==='light'||t==='dark'?t:'auto'; }catch(e){ return 'auto'; } }
@@ -515,7 +518,8 @@ function render(){
     const bw2=$('#main').querySelector('.bwrap'), ch2=$('#main').querySelector('.chips');
     if(keepC>=0) ch2.scrollLeft=keepC; else ch2.querySelector('.chip.active')?.scrollIntoView({inline:'center',block:'nearest'});
     if(keepX>=0) bw2.scrollLeft=keepX;
-    else { const i=+bw2.dataset.firstOpen||0; const col=bw2.querySelectorAll('.col')[i]; if(col&&i>0) bw2.scrollLeft=Math.max(0,col.offsetLeft-parseInt(getComputedStyle(bw2).paddingLeft)||0); }  // fresh open: start at the first round with something left to fight
+    else { const i=+bw2.dataset.firstOpen||0; const col=bw2.querySelectorAll('.col')[i]; if(col&&i>0) bw2.scrollLeft=Math.max(0,col.offsetLeft+col.offsetWidth+parseInt(getComputedStyle(bw2).paddingLeft||0)-bw2.clientWidth); }  // fresh open: the first unfought round sits flush right, results to its left
+    const hint=$('#main').querySelector('.swipe-hint'); if(hint) hint.hidden = bw2.scrollWidth<=bw2.clientWidth+2;
   }
 }
 async function copyText(t){

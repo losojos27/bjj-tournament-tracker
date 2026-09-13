@@ -1,5 +1,5 @@
 {
- "updated": "2026-09-12T23:05:40.167Z",
+ "updated": "2026-09-13T01:39:18.925Z",
  "event": {
   "id": "52703b65-bade-46e2-9ce2-399dd32d93e4",
   "name": "2026 ADCC World Championships",
@@ -11,7 +11,7 @@
  "divs": [
   {
    "id": "m99p",
-   "name": "+99kg",
+   "name": "men's +99kg",
    "sex": "m",
    "kind": "pro",
    "size": 16,
@@ -333,7 +333,7 @@
   },
   {
    "id": "m99",
-   "name": "-99kg",
+   "name": "men's -99kg",
    "sex": "m",
    "kind": "pro",
    "size": 16,
@@ -655,7 +655,7 @@
   },
   {
    "id": "m88",
-   "name": "-88kg",
+   "name": "men's -88kg",
    "sex": "m",
    "kind": "pro",
    "size": 16,
@@ -977,7 +977,7 @@
   },
   {
    "id": "m77",
-   "name": "-77kg",
+   "name": "men's -77kg",
    "sex": "m",
    "kind": "pro",
    "size": 16,
@@ -1299,7 +1299,7 @@
   },
   {
    "id": "m66",
-   "name": "-66kg",
+   "name": "men's -66kg",
    "sex": "m",
    "kind": "pro",
    "size": 16,

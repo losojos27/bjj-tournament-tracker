@@ -29,7 +29,7 @@ function divId(divName, wc) {
   return m ? sex + m[2] + (m[1] === '+' ? 'p' : '') : sex + wc.replace(/\W+/g, '-').toLowerCase();
 }
 function divLabel(divName, wc) {
-  const w = /female/i.test(divName) ? "women's " : '';
+  const w = /female/i.test(divName) ? "women's " : /male/i.test(divName) ? "men's " : '';
   if (/absolute/i.test(wc)) return w + 'absolute';
   if (/super/i.test(divName)) return 'super fight';
   const m = wc.match(/^([+-])\s*(\d+)/);
