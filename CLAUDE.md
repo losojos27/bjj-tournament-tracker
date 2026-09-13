@@ -17,7 +17,8 @@ the link. The repo name is deliberately generic because it will cover more than 
 
 ```
 node scripts/sync.mjs            # FloArena -> data/results.json (Node 18+, no deps)
-node scripts/queue-test.js       # the one test: schedule engine on its own small fixture (Flo lists, live bouts, DQs)
+node scripts/queue-test.js       # schedule engine on its own small fixture (Flo lists, live bouts, DQs)
+scripts/sync-loop-test.sh        # the sync loop against a local bare repo with a competing push mid-loop
 python3 -m http.server 8000      # serve locally; open http://localhost:8000 (file:// breaks fetch and fonts)
 node --check <(sed -n '/<script id="app">/,/<\/script>/p' index.html | sed '1d;$d')   # syntax-check the app script
 scripts/build-artifact.sh        # index.html -> dist/artifact.html for the artifact host
@@ -48,13 +49,19 @@ Three layers, all read-only:
    Round order is positional (bout `m` in round `r` feeds bout `m>>1` in `r+1`), derived by
    walking FloArena's `winnerToBoutGuid` links back from the final; bout-number order is the
    fallback. The GitHub Actions workflow (`.github/workflows/sync.yml`) is nominally a 5-minute cron, but
-   GitHub fired it only three times overnight on Sept 12–13, so each run now loops internally:
-   sync, commit-on-change, push, sleep 300, for ~5.5 hours (66 passes) under a concurrency
-   group, so one fire covers a competition day. `gh workflow run sync.yml` starts a loop by hand.
-   `SYNC_STRICT=1` makes an unparseable Flo order a warning in the log.
+   GitHub fired it only three times overnight on Sept 12–13, so each run executes
+   `scripts/sync-loop.sh`: reset to origin/main, sync, commit-on-change, push, sleep 300, for
+   ~5.5 hours (66 passes) under a concurrency group, so one fire covers a competition day.
+   `gh workflow run sync.yml` starts a loop by hand. The reset-to-origin step exists because on
+   Sept 13 a hand commit of `data/results.json` made the loop's rebase conflict and every pass
+   after that failed silently for two hours while the run showed "in progress".
+   **Never commit `data/results.json` from a workstation while a loop is running**; only the
+   loop writes it. `SYNC_STRICT=1` makes an unparseable Flo order a warning in the log.
 2. **Browser polling in `index.html`.** `results.json` every 60 s, and FloArena's public
    Firebase `mats.json` every 15 s for the bout on each mat (clock, score, `isMatchOver`,
-   `winner`). Neither poll re-renders while the Settings tab is open (`quiet()`).
+   `winner`). Neither poll re-renders while the Settings tab is open (`quiet()`). On an event
+   day the header shows "results N min old" in the warning colour once `updated` is more than
+   15 minutes behind, so a healthy fetch of stale data is visible (a failed fetch shows "stale").
 3. **Local preferences (`S`, in localStorage).** Follow list, day, mats, slot durations,
    chosen bracket division. `S.v` is a schema version; bump it and extend the migration in
    `loadState()` when the shape changes. Start times (`DEFAULT`) and block order
@@ -92,8 +99,11 @@ bracket's and the chip row's scroll positions.
 
 **Test data.** FloArena runs a "Test" division (weight "106", "Test Wrestler N", bout numbers
 9001+) through the live scoreboard and the upcoming lists before a day starts; on Sept 13 it
-filled all three mats at 07:00. `isTestBout()` drops it from the live feed and the sync drops
-it from `mats[].upcoming` (plus any weight class not in the real divisions).
+filled all three mats at 07:00. `isTestBout()` in each file drops it (weight 106, a first name
+starting "Test", bout number ≥ 9000; the page also checks the feed's `division`). The two
+predicates must be changed together. There is deliberately no "is this weight class in the
+bracket" allowlist: a real division with an empty pool (the Absolute before it fills) would be
+dropped by it.
 
 ## FloArena data sources (found by watching the arena page's network traffic)
 
