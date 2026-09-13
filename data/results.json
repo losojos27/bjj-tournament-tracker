@@ -1,5 +1,5 @@
 {
- "updated": "2026-09-13T15:49:28.224Z",
+ "updated": "2026-09-13T16:14:37.318Z",
  "event": {
   "id": "52703b65-bade-46e2-9ce2-399dd32d93e4",
   "name": "2026 ADCC World Championships",
@@ -2273,7 +2273,7 @@
        "decided": false,
        "result": null,
        "winType": null,
-       "mat": null,
+       "mat": "Mat 1",
        "video": null
       },
       {
@@ -2292,7 +2292,7 @@
        "decided": false,
        "result": null,
        "winType": null,
-       "mat": null,
+       "mat": "Mat 2",
        "video": null
       },
       {
@@ -2311,7 +2311,7 @@
        "decided": false,
        "result": null,
        "winType": null,
-       "mat": null,
+       "mat": "Mat 3",
        "video": null
       },
       {
@@ -2559,16 +2559,64 @@
  "mats": [
   {
    "name": "Mat 1",
-   "upcoming": []
+   "upcoming": [
+    {
+     "n": "201",
+     "weightClass": "Absolute",
+     "round": "R16",
+     "a": "Felipe Pena",
+     "b": "Francis Pana"
+    }
+   ]
   },
   {
    "name": "Mat 2",
-   "upcoming": []
+   "upcoming": [
+    {
+     "n": "202",
+     "weightClass": "Absolute",
+     "round": "R16",
+     "a": "Eoghan O'flanaghan",
+     "b": "Eli Braz"
+    }
+   ]
   },
   {
    "name": "Mat 3",
-   "upcoming": []
+   "upcoming": [
+    {
+     "n": "203",
+     "weightClass": "Absolute",
+     "round": "R16",
+     "a": "Daniel Manasoiu",
+     "b": "Elijah Dorsey"
+    }
+   ]
   }
  ],
- "upcomingShape": null
+ "upcomingShape": [
+  "guid",
+  "bottomWrestler",
+  "boutNumber",
+  "loserToBoutGuid",
+  "loserToTop",
+  "result",
+  "roundName",
+  "roundSpot",
+  "trueRound",
+  "winnerPoints",
+  "topPlacementPoints",
+  "maxPlace",
+  "sequenceNumber",
+  "topWrestler",
+  "winType",
+  "winnerToBoutGuid",
+  "winnerToTop",
+  "weightClass",
+  "isTopBye",
+  "isBottomBye",
+  "boutVideoUrl",
+  "winnerWrestlerGuid",
+  "redWrestlerGuid"
+ ]
 }
