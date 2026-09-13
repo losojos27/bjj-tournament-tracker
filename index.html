@@ -321,7 +321,8 @@ function queue(){
   const out=[], placed=new Set();
   // ADCC pauses ~30 min after the last semifinal before the 3rd-place bouts (Lee, Sept 13). Applied once, at the
   // first 3rd-place bout placed after a semifinal in this projection; every mat waits for the latest one to finish.
-  let sawEarlier=false, gapDone=false;
+  // anything Flo says beats the assumption: a live 3rd-place/final bout, or a recorded 3rd-place result, means no gap
+  let sawEarlier=false, gapDone = inProg.some(l=>/3rd|final/i.test(l.round||'')) || divs().some(d=>d.third&&d.third.w!==null&&d.third.w!==undefined);
   const INTERMISSION=30*60000;
   const gapBefore=mo=>{ if(mo.rName==='3'&&sawEarlier&&!gapDone){ const t=Math.max(...mats)+INTERMISSION; for(let k=0;k<mats.length;k++) mats[k]=t; gapDone=true; } if(mo.rName!=='3'&&mo.rName!=='F') sawEarlier=true; };
   const place=(mo,mi)=>{ gapBefore(mo); if(mo.rName==='3'&&gapDone) { mi=active[0]; for(const k of active) if(mats[k]<mats[mi]) mi=k; } mo.at=new Date(mats[mi]); mo.mat=mi+1; mats[mi]+=(S.dur[mo.rName]||12)*60000; out.push(mo); placed.add(mo.key); };
