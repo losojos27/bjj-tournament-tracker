@@ -1,5 +1,5 @@
 {
- "updated": "2026-09-13T06:22:21.480Z",
+ "updated": "2026-09-13T07:32:49.656Z",
  "event": {
   "id": "52703b65-bade-46e2-9ce2-399dd32d93e4",
   "name": "2026 ADCC World Championships",
@@ -278,7 +278,7 @@
        "decided": false,
        "result": null,
        "winType": null,
-       "mat": null,
+       "mat": "Mat 1",
        "video": null
       },
       {
@@ -297,7 +297,7 @@
        "decided": false,
        "result": null,
        "winType": null,
-       "mat": null,
+       "mat": "Mat 2",
        "video": null
       }
      ]
@@ -1731,7 +1731,7 @@
        "decided": false,
        "result": null,
        "winType": null,
-       "mat": null,
+       "mat": "Mat 3",
        "video": null
       },
       {
@@ -2159,11 +2159,11 @@
    "name": "Mat 1",
    "upcoming": [
     {
-     "n": "9005",
-     "weightClass": "106",
-     "round": "RR Rnd 2",
-     "a": "Test Wrestler 5",
-     "b": "Test Szczecinski"
+     "n": "73",
+     "weightClass": "+99",
+     "round": "SF",
+     "a": "Felipe Pena",
+     "b": "Josh Saunders"
     }
    ]
   },
@@ -2171,11 +2171,11 @@
    "name": "Mat 2",
    "upcoming": [
     {
-     "n": "9006",
-     "weightClass": "106",
-     "round": "RR Rnd 2",
-     "a": "Test Szczecinski",
-     "b": "Test Wrestler 6"
+     "n": "74",
+     "weightClass": "+99",
+     "round": "SF",
+     "a": "Mark Macqueen",
+     "b": "Victor Hugo"
     }
    ]
   },
@@ -2183,11 +2183,11 @@
    "name": "Mat 3",
    "upcoming": [
     {
-     "n": "9007",
-     "weightClass": "106",
-     "round": "RR Rnd 3",
-     "a": "Test Szczecinski",
-     "b": "Test Szczecinski"
+     "n": "75",
+     "weightClass": "+65",
+     "round": "SF",
+     "a": "Helena Crevar",
+     "b": "Elizabeth Mitrovic"
     }
    ]
   }
