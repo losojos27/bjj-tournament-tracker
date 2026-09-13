@@ -1,5 +1,5 @@
 {
- "updated": "2026-09-13T09:56:50.795Z",
+ "updated": "2026-09-13T10:11:59.176Z",
  "event": {
   "id": "52703b65-bade-46e2-9ce2-399dd32d93e4",
   "name": "2026 ADCC World Championships",
@@ -339,10 +339,10 @@
      "seed": 6,
      "team": "Scotland"
     },
-    "w": null,
-    "decided": false,
-    "result": null,
-    "winType": null,
+    "w": 1,
+    "decided": true,
+    "result": "0-0",
+    "winType": "FOR",
     "mat": "Mat 2",
     "video": null
    }
@@ -681,7 +681,7 @@
     "decided": false,
     "result": null,
     "winType": null,
-    "mat": null,
+    "mat": "Mat 2",
     "video": null
    }
   },
@@ -1872,10 +1872,10 @@
      "seed": 7,
      "team": "USA"
     },
-    "w": null,
-    "decided": false,
-    "result": null,
-    "winType": null,
+    "w": 1,
+    "decided": true,
+    "result": "0-0 1:52",
+    "winType": "SUB",
     "mat": "Mat 1",
     "video": null
    }
@@ -2238,7 +2238,7 @@
     "decided": false,
     "result": null,
     "winType": null,
-    "mat": null,
+    "mat": "Mat 1",
     "video": null
    }
   },
@@ -2287,11 +2287,11 @@
    "name": "Mat 1",
    "upcoming": [
     {
-     "n": "89",
-     "weightClass": "+65",
+     "n": "93",
+     "weightClass": "-55",
      "round": "3",
-     "a": "Elizabeth Mitrovic",
-     "b": "Paige Ivette Clymer"
+     "a": "Ana Mayordomo",
+     "b": "Mayssa Bastos"
     }
    ]
   },
@@ -2299,11 +2299,11 @@
    "name": "Mat 2",
    "upcoming": [
     {
-     "n": "90",
-     "weightClass": "+99",
+     "n": "92",
+     "weightClass": "-99",
      "round": "3",
-     "a": "Felipe Pena",
-     "b": "Mark Macqueen"
+     "a": "Daniel Schuardt",
+     "b": "Achilles Rocha"
     }
    ]
   },
