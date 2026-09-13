@@ -1,5 +1,5 @@
 {
- "updated": "2026-09-13T11:22:33.939Z",
+ "updated": "2026-09-13T11:37:40.334Z",
  "event": {
   "id": "52703b65-bade-46e2-9ce2-399dd32d93e4",
   "name": "2026 ADCC World Championships",
@@ -317,10 +317,10 @@
         "seed": 7,
         "team": "Brazil"
        },
-       "w": null,
-       "decided": false,
-       "result": null,
-       "winType": null,
+       "w": 1,
+       "decided": true,
+       "result": "0-0 8:49",
+       "winType": "SUB",
        "mat": "Mat 2",
        "video": null
       }
@@ -2216,7 +2216,7 @@
        "decided": false,
        "result": null,
        "winType": null,
-       "mat": null,
+       "mat": "Mat 2",
        "video": null
       }
      ]
@@ -2290,13 +2290,6 @@
   {
    "name": "Mat 2",
    "upcoming": [
-    {
-     "n": "98",
-     "weightClass": "+99",
-     "round": "F",
-     "a": "Josh Saunders",
-     "b": "Victor Hugo"
-    },
     {
      "n": "99",
      "weightClass": "-65",
