@@ -1,5 +1,5 @@
 {
- "updated": "2026-09-13T12:53:11.092Z",
+ "updated": "2026-09-13T13:28:24.762Z",
  "event": {
   "id": "52703b65-bade-46e2-9ce2-399dd32d93e4",
   "name": "2026 ADCC World Championships",
@@ -1673,7 +1673,7 @@
        "decided": false,
        "result": null,
        "winType": null,
-       "mat": null,
+       "mat": "Mat 2",
        "video": null
       }
      ]
@@ -2212,12 +2212,12 @@
         "seed": 7,
         "team": "Brazil"
        },
-       "w": null,
-       "decided": false,
-       "result": null,
-       "winType": null,
+       "w": 0,
+       "decided": true,
+       "result": "3-0 25:09 TB1",
+       "winType": "SUB",
        "mat": "Mat 2",
-       "video": null
+       "video": "https://www.flograppling.com/events/14687695-2026-adcc-world-championships/videos?playing=16179796&limit=60"
       }
      ]
     }
@@ -2291,13 +2291,6 @@
    "name": "Mat 2",
    "upcoming": [
     {
-     "n": "101",
-     "weightClass": "-55",
-     "round": "F",
-     "a": "Jasmine Rocha",
-     "b": "Ana Rodrigues"
-    },
-    {
      "n": "102",
      "weightClass": "-88",
      "round": "F",
@@ -2310,6 +2303,13 @@
      "round": "F",
      "a": "Magomed Dzharbaev",
      "b": "Pj Barch"
+    },
+    {
+     "n": "104",
+     "weightClass": "-66",
+     "round": "F",
+     "a": "Kennedy Maciel",
+     "b": "Gavin Corbe"
     }
    ]
   },
