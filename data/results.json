@@ -1,5 +1,5 @@
 {
- "updated": "2026-09-13T11:42:43.088Z",
+ "updated": "2026-09-13T12:28:00.685Z",
  "event": {
   "id": "52703b65-bade-46e2-9ce2-399dd32d93e4",
   "name": "2026 ADCC World Championships",
@@ -997,7 +997,7 @@
        "decided": false,
        "result": null,
        "winType": null,
-       "mat": null,
+       "mat": "Mat 2",
        "video": null
       }
      ]
@@ -2031,12 +2031,12 @@
         "seed": 3,
         "team": "Brazil"
        },
-       "w": null,
-       "decided": false,
-       "result": null,
-       "winType": null,
+       "w": 0,
+       "decided": true,
+       "result": "0-0 32:29 TB2",
+       "winType": "SUB",
        "mat": "Mat 2",
-       "video": null
+       "video": "https://www.flograppling.com/events/14687695-2026-adcc-world-championships/videos?playing=16179271&limit=60"
       }
      ]
     }
@@ -2291,13 +2291,6 @@
    "name": "Mat 2",
    "upcoming": [
     {
-     "n": "99",
-     "weightClass": "-65",
-     "round": "F",
-     "a": "Ana Carolina Vieira",
-     "b": "Sarah Galvao"
-    },
-    {
      "n": "100",
      "weightClass": "-99",
      "round": "F",
@@ -2310,6 +2303,13 @@
      "round": "F",
      "a": "Jasmine Rocha",
      "b": "Ana Rodrigues"
+    },
+    {
+     "n": "102",
+     "weightClass": "-88",
+     "round": "F",
+     "a": "Pawel Jaworski",
+     "b": "Marlon Tajik"
     }
    ]
   },
