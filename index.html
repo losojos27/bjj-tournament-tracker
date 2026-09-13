@@ -219,6 +219,7 @@ async function loadLive(){
   try{ const r=await fetch(LIVE_URL,{cache:'no-store'}); if(!r.ok) throw new Error('HTTP '+r.status); const j=await r.json();
     const next={};
     for(const k in (j||{})){ const v=j[k]; if(!v||!v.matName||!v.boutNumber) continue;
+      if(isTestBout(v.division, v.weight, [v.redFirstName,v.redLastName,v.blueFirstName,v.blueLastName])) continue;   // the arena crew's test bouts
       next[String(v.boutNumber)]={ n:String(v.boutNumber), mat:v.matName, matIdx:(parseInt(String(v.matName).replace(/\D/g,''),10)||1)-1,
         red:{name:`${v.redFirstName||''} ${v.redLastName||''}`.trim(), seed:v.redSeed, team:v.redTeamName||'', score:v.redScore??0, pen:v.redPenalties??0},
         blue:{name:`${v.blueFirstName||''} ${v.blueLastName||''}`.trim(), seed:v.blueSeed, team:v.blueTeamName||'', score:v.blueScore??0, pen:v.bluePenalties??0},
@@ -229,6 +230,14 @@ async function loadLive(){
   if(quiet()) renderStatus(); else render();
 }
 
+// FloArena runs a "Test" division (weight "106", "Test Wrestler N") through the live systems before the day starts
+function isTestBout(division, weight, names){
+  if(/\btest\b/i.test(String(division||''))) return true;
+  if(String(weight||'').trim()==='106') return true;
+  const ns=(names||[]).map(x=>String(x||'').trim().toLowerCase());
+  if(ns[0]==='test'||ns[2]==='test') return true;
+  return false;
+}
 // ---------- bracket engine ----------
 function divs(){ return DATA?DATA.divs:[]; }
 function rounds(div){ return div.rounds.map(r=>r.name); }

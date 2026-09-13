@@ -93,8 +93,10 @@ for (const d of bracket.divisions) {
 let mats = [], upcomingShape = null;
 try {
   const up = await get(`event/${EVENT}/upcoming-bouts`);
-  mats = (up || []).filter(m => m && m.name).map(m => ({ name: m.name, upcoming: (m.bouts || []).map(x => {
-    const b = x.bout || x; // defensive: shape unverified until FloArena publishes an order
+  const realWc = new Set(divs.map(d => d.flo.weightClass));
+  const isTest = b => /\btest\b/i.test(b.weightClass?.division?.name || '') || b.weightClass?.name === '106' || /^test$/i.test(b.topWrestler?.firstName || '') || /^test$/i.test(b.bottomWrestler?.firstName || '') || (b.weightClass?.name && !realWc.has(b.weightClass.name));
+  mats = (up || []).filter(m => m && m.name).map(m => ({ name: m.name, upcoming: (m.bouts || []).filter(x => !isTest(x.bout || x)).map(x => {
+    const b = x.bout || x; // FloArena's bout shape, verified Sept 13
     return { n: b.boutNumber ?? b.number ?? null, weightClass: b.weightClass?.name || (typeof b.weightClass === 'string' ? b.weightClass : null),
       round: ROUND[b.roundName?.displayName] || b.roundName?.displayName || b.round || null,
       a: person(b.topWrestler)?.name || null, b: person(b.bottomWrestler)?.name || null };
