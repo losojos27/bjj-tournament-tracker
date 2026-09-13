@@ -1,5 +1,5 @@
 {
- "updated": "2026-09-13T17:05:01.377Z",
+ "updated": "2026-09-13T17:10:04.268Z",
  "event": {
   "id": "52703b65-bade-46e2-9ce2-399dd32d93e4",
   "name": "2026 ADCC World Championships",
@@ -2402,10 +2402,10 @@
         "seed": 2,
         "team": "Brazil"
        },
-       "w": null,
-       "decided": false,
-       "result": null,
-       "winType": null,
+       "w": 1,
+       "decided": true,
+       "result": "0-0 15:00 TB1",
+       "winType": "REF",
        "mat": "Mat 3",
        "video": null
       }
@@ -2478,7 +2478,11 @@
         "seed": 7,
         "team": "Brazil"
        },
-       "b": null,
+       "b": {
+        "name": "Felipe Costa",
+        "seed": 2,
+        "team": "Brazil"
+       },
        "w": null,
        "decided": false,
        "result": null,
@@ -2612,13 +2616,6 @@
   {
    "name": "Mat 3",
    "upcoming": [
-    {
-     "n": "208",
-     "weightClass": "Absolute",
-     "round": "R16",
-     "a": "Steffen Banta",
-     "b": "Felipe Costa"
-    },
     {
      "n": "211",
      "weightClass": "Absolute",
