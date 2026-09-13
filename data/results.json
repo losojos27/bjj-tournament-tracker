@@ -1,5 +1,5 @@
 {
- "updated": "2026-09-13T16:34:44.899Z",
+ "updated": "2026-09-13T16:39:47.646Z",
  "event": {
   "id": "52703b65-bade-46e2-9ce2-399dd32d93e4",
   "name": "2026 ADCC World Championships",
@@ -2274,7 +2274,7 @@
        "result": "5-0 14:11 TB1",
        "winType": "SUB",
        "mat": "Mat 1",
-       "video": null
+       "video": "https://www.flograppling.com/events/14687695-2026-adcc-world-championships/videos?playing=16180960&limit=60"
       },
       {
        "n": "202",
@@ -2288,12 +2288,12 @@
         "seed": 8,
         "team": "Brazil"
        },
-       "w": null,
-       "decided": false,
-       "result": null,
-       "winType": null,
+       "w": 0,
+       "decided": true,
+       "result": "2-2 15:00 TB1",
+       "winType": "REF",
        "mat": "Mat 2",
-       "video": null
+       "video": "https://www.flograppling.com/events/14687695-2026-adcc-world-championships/videos?playing=16180972&limit=60"
       },
       {
        "n": "203",
@@ -2312,7 +2312,7 @@
        "result": "2-0 10:00",
        "winType": "SCORE",
        "mat": "Mat 3",
-       "video": null
+       "video": "https://www.flograppling.com/events/14687695-2026-adcc-world-championships/videos?playing=16180959&limit=60"
       },
       {
        "n": "204",
@@ -2368,7 +2368,7 @@
        "decided": false,
        "result": null,
        "winType": null,
-       "mat": null,
+       "mat": "Mat 2",
        "video": null
       },
       {
@@ -2421,7 +2421,11 @@
         "seed": 1,
         "team": "Brazil"
        },
-       "b": null,
+       "b": {
+        "name": "Eoghan O'flanaghan",
+        "seed": 9,
+        "team": "United Kingdom"
+       },
        "w": null,
        "decided": false,
        "result": null,
@@ -2569,11 +2573,11 @@
    "name": "Mat 1",
    "upcoming": [
     {
-     "n": "201",
+     "n": "205",
      "weightClass": "Absolute",
      "round": "R16",
-     "a": "Felipe Pena",
-     "b": "Francis Pana"
+     "a": "Marlon Tajik",
+     "b": "Pouya Rahmani"
     }
    ]
   },
@@ -2581,11 +2585,11 @@
    "name": "Mat 2",
    "upcoming": [
     {
-     "n": "202",
+     "n": "206",
      "weightClass": "Absolute",
      "round": "R16",
-     "a": "Eoghan O'flanaghan",
-     "b": "Eli Braz"
+     "a": "Javier Zaruski",
+     "b": "Nick Hartman"
     }
    ]
   },
@@ -2593,11 +2597,11 @@
    "name": "Mat 3",
    "upcoming": [
     {
-     "n": "203",
+     "n": "204",
      "weightClass": "Absolute",
      "round": "R16",
-     "a": "Daniel Manasoiu",
-     "b": "Elijah Dorsey"
+     "a": "Ruslan Abdulaev",
+     "b": "Chris Wojcik"
     }
    ]
   }
