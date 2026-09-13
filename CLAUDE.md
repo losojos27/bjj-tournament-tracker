@@ -233,3 +233,19 @@ tabs and won't resize below ~360px; the agent forces a 390px layout width instea
   in local hours, so viewers outside CEST see wrong projections until a live bout anchors it.
 - The Reset button uses a two-tap confirm because native `confirm()` is blocked in the
   artifact's sandboxed iframe.
+
+## Next (agreed Sept 13, after ADCC ends)
+
+Make the tournament a selectable event, not a constant. Lee wants this to cover IBJJF opens,
+WNO, ADCC and everything between. Plan, in order:
+1. Pull the ADCC constants (event guid in sync and page, `DAY_DATES`, title, the ADCC day plan
+   in `DEFAULT_BLOCKS`, the 30-min-before-3rd-place rule, team = country) into one event record;
+   sync writes `data/<event>/results.json`; the page reads an event list, shows a picker, and
+   remembers the choice. Keep ADCC as the only entry at first so the shared link doesn't change.
+2. Before the next Flo event (WNO or whichever is first): add its record, run the sync a day
+   early, run `/spectator-audit` on it. FloArena events are configuration only (same endpoints,
+   different guid). Drop the block-order guess in favour of Flo's published order for non-ADCC
+   events; it only fit ADCC's day plan.
+3. IBJJF opens don't run on FloArena: they need a second source adapter producing the same
+   `results.json` shape. Size it after looking at what ibjjf.com actually exposes; don't promise
+   a duration before that.
