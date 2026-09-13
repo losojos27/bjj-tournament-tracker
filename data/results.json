@@ -1,5 +1,5 @@
 {
- "updated": "2026-09-13T14:53:57.940Z",
+ "updated": "2026-09-13T14:59:00.839Z",
  "event": {
   "id": "52703b65-bade-46e2-9ce2-399dd32d93e4",
   "name": "2026 ADCC World Championships",
@@ -1336,7 +1336,7 @@
        "result": "0-0 40:00 TB2",
        "winType": "REF",
        "mat": "Mat 2",
-       "video": null
+       "video": "https://www.flograppling.com/events/14687695-2026-adcc-world-championships/videos?playing=16180303&limit=60"
       }
      ]
     }
