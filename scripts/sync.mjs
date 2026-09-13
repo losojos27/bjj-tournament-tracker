@@ -77,7 +77,7 @@ const info = await get(`event/${EVENT}/info`);
 const bracket = await get(`bracket/${EVENT}`);
 const divs = [];
 for (const d of bracket.divisions) {
-  if (/^test$/i.test(d.name)) continue;
+  if (/\btest\b/i.test(d.name)) continue;
   for (const wc of d.weightClasses) {
     let raw = [];
     for (const p of wc.boutPools || []) raw = raw.concat(await get(`bracket/${EVENT}/bouts/${wc.guid}/pool/${p.guid}`));
@@ -89,22 +89,32 @@ for (const d of bracket.divisions) {
       size: rounds[0].bouts.length * 2, flo: { division: d.name, weightClass: wc.name, wcGuid: wc.guid }, rounds, third });
   }
 }
-// Upcoming order per mat, if FloArena publishes it (shape is best-effort; the page treats it as a hint).
+// FloArena's "Test" division (weight "106", "Test Wrestler N", bout numbers 9001+) shows up in the upcoming lists
+// before a day starts. Same rule as index.html's isTestBout; change both together.
+function isTestBout(b) {
+  if (!b) return true;
+  if (String(b.weightClass?.name || '').replace(/kg/i, '').trim() === '106') return true;
+  if (/^test\b/i.test(person(b.topWrestler)?.name || '') || /^test\b/i.test(person(b.bottomWrestler)?.name || '')) return true;
+  if (Number(b.boutNumber) >= 9000) return true;
+  return false;
+}
+// Upcoming order per mat, when FloArena publishes it. Shape verified Sept 13: each bout looks like a bracket bout.
 let mats = [], upcomingShape = null;
 try {
   const up = await get(`event/${EVENT}/upcoming-bouts`);
-  const realWc = new Set(divs.map(d => d.flo.weightClass));
-  const isTest = b => /\btest\b/i.test(b.weightClass?.division?.name || '') || b.weightClass?.name === '106' || /^test$/i.test(b.topWrestler?.firstName || '') || /^test$/i.test(b.bottomWrestler?.firstName || '') || (b.weightClass?.name && !realWc.has(b.weightClass.name));
-  mats = (up || []).filter(m => m && m.name).map(m => ({ name: m.name, upcoming: (m.bouts || []).filter(x => !isTest(x.bout || x)).map(x => {
-    const b = x.bout || x; // FloArena's bout shape, verified Sept 13
-    return { n: b.boutNumber ?? b.number ?? null, weightClass: b.weightClass?.name || (typeof b.weightClass === 'string' ? b.weightClass : null),
-      round: ROUND[b.roundName?.displayName] || b.roundName?.displayName || b.round || null,
-      a: person(b.topWrestler)?.name || null, b: person(b.bottomWrestler)?.name || null };
-  }) }));
-  const first = (up || []).find(m => m && m.bouts?.length)?.bouts?.[0];
-  if (first) { upcomingShape = Object.keys(first.bout || first); console.log('upcoming sample:', JSON.stringify(first).slice(0, 600)); }
-  const listed = mats.reduce((n, m) => n + m.upcoming.length, 0), usable = mats.reduce((n, m) => n + m.upcoming.filter(u => u.n != null).length, 0);
-  if (listed && !usable) { console.error(`upcoming-bouts lists ${listed} bouts but none yielded a bout number; fix the mapping in scripts/sync.mjs (see upcomingShape in results.json)`); process.exitCode = process.env.SYNC_STRICT ? 1 : 0; }
+  let listedReal = 0;
+  mats = (up || []).filter(m => m && m.name).map(m => {
+    const kept = (m.bouts || []).filter(b => b && !isTestBout(b));
+    listedReal += kept.length;
+    return { name: m.name, upcoming: kept.map(b => ({
+      n: b.boutNumber ?? null, weightClass: b.weightClass?.name || null,
+      round: ROUND[b.roundName?.displayName] || b.roundName?.displayName || null,
+      a: person(b.topWrestler)?.name || null, b: person(b.bottomWrestler)?.name || null })) };
+  });
+  const first = mats.flatMap(m => m.upcoming).length ? (up || []).flatMap(m => m?.bouts || []).find(b => b && !isTestBout(b)) : null;
+  if (first) { upcomingShape = Object.keys(first); console.log('upcoming sample:', JSON.stringify(first).slice(0, 400)); }
+  const usable = mats.reduce((n, m) => n + m.upcoming.filter(u => u.n != null).length, 0);
+  if (listedReal && !usable) { console.error(`upcoming-bouts lists ${listedReal} real bouts but none yielded a bout number; fix the mapping in scripts/sync.mjs (see upcomingShape in results.json)`); process.exitCode = process.env.SYNC_STRICT ? 1 : 0; }
 } catch (e) { console.warn('upcoming-bouts unavailable:', e.message); }
 
 const out = { updated: new Date().toISOString(), event: { id: EVENT, name: info.name, status: info.status, tz: info.timeZone, start: info.startDate, end: info.endDate }, divs, mats, upcomingShape };

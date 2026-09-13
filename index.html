@@ -219,23 +219,24 @@ async function loadLive(){
   try{ const r=await fetch(LIVE_URL,{cache:'no-store'}); if(!r.ok) throw new Error('HTTP '+r.status); const j=await r.json();
     const next={};
     for(const k in (j||{})){ const v=j[k]; if(!v||!v.matName||!v.boutNumber) continue;
-      if(isTestBout(v.division, v.weight, [v.redFirstName,v.redLastName,v.blueFirstName,v.blueLastName])) continue;   // the arena crew's test bouts
+      if(isTestBout(v.division, v.weight, [v.redFirstName,v.blueFirstName], v.boutNumber)) continue;   // the arena crew's test bouts
       next[String(v.boutNumber)]={ n:String(v.boutNumber), mat:v.matName, matIdx:(parseInt(String(v.matName).replace(/\D/g,''),10)||1)-1,
         red:{name:`${v.redFirstName||''} ${v.redLastName||''}`.trim(), seed:v.redSeed, team:v.redTeamName||'', score:v.redScore??0, pen:v.redPenalties??0},
         blue:{name:`${v.blueFirstName||''} ${v.blueLastName||''}`.trim(), seed:v.blueSeed, team:v.blueTeamName||'', score:v.blueScore??0, pen:v.bluePenalties??0},
         clock:v.clock||'', period:v.period||'', over:!!v.isMatchOver, winner:v.winner==='red'?0:v.winner==='blue'?1:null,
-        winType:v.winType||null, finalScore:v.finalScore||null, updated:v.updated||0, weight:v.weight||'', round:v.round||'', division:v.division||'' }; }
+        winType:v.winType||null, finalScore:v.finalScore||null, updated:v.updated||0, weight:v.weight||'', round:v.round||'' }; }
     LIVE=next; liveState='ok'; lastLive=Date.now();
   }catch(e){ liveState = liveState==='ok' ? 'bad' : 'off'; }
   if(quiet()) renderStatus(); else render();
 }
 
-// FloArena runs a "Test" division (weight "106", "Test Wrestler N") through the live systems before the day starts
-function isTestBout(division, weight, names){
+// FloArena runs a "Test" division (weight "106", "Test Wrestler N", bout numbers 9001+) through the live systems
+// before a day starts. Same rule as sync.mjs's isTestBout; change both together.
+function isTestBout(division, weight, names, boutNumber){
   if(/\btest\b/i.test(String(division||''))) return true;
-  if(String(weight||'').trim()==='106') return true;
-  const ns=(names||[]).map(x=>String(x||'').trim().toLowerCase());
-  if(ns[0]==='test'||ns[2]==='test') return true;
+  if(String(weight||'').replace(/kg/i,'').trim()==='106') return true;
+  if((names||[]).some(x=>/^test\b/i.test(String(x||'').trim()))) return true;
+  if(Number(boutNumber)>=9000) return true;
   return false;
 }
 // ---------- bracket engine ----------
@@ -517,7 +518,11 @@ function renderSettings(){
 function renderStatus(){
   const s=$('#status'); if(!s) return;
   const dataTxt = DATA ? `synced ${fmt(new Date(DATA.updated))}` : (dataErr?'<span class="bad">results failed</span>':'loading…');
-  const stale = DATA&&dataErr ? ' · <span class="bad">stale</span>' : '';
+  // results that fetch fine but are old are the failure mode that bit us: say so during a competition day
+  const ageMin = DATA ? (Date.now()-new Date(DATA.updated).getTime())/60000 : 0;
+  const eventDay = Object.values(DAY_DATES).includes(localDate());
+  const old = DATA&&eventDay&&ageMin>15 ? ` · <span class="bad">results ${ageMin<90?Math.round(ageMin)+' min':Math.round(ageMin/60)+' h'} old</span>` : '';
+  const stale = (DATA&&dataErr ? ' · <span class="bad">stale</span>' : '') + old;
   const n=liveInProgress().length;
   const liveTxt = liveState==='ok' ? (n?`<b>${n===1?'1 bout':n+' bouts'} on the mats</b>`:'nothing on the mats') : liveState==='bad' ? `<span class="bad">live feed lost</span>` : `live feed off`;
   s.innerHTML=`${liveTxt}${stale}<span class="sync"> · ${dataTxt}</span>`;
