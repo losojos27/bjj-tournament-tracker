@@ -1,5 +1,5 @@
 {
- "updated": "2026-09-13T13:28:24.762Z",
+ "updated": "2026-09-13T13:58:37.043Z",
  "event": {
   "id": "52703b65-bade-46e2-9ce2-399dd32d93e4",
   "name": "2026 ADCC World Championships",
@@ -993,12 +993,12 @@
         "seed": 7,
         "team": "Sweden"
        },
-       "w": null,
-       "decided": false,
-       "result": null,
-       "winType": null,
+       "w": 0,
+       "decided": true,
+       "result": "0-0 20:00 TB1",
+       "winType": "SCORE",
        "mat": "Mat 2",
-       "video": null
+       "video": "https://www.flograppling.com/events/14687695-2026-adcc-world-championships/videos?playing=16180018&limit=60"
       }
      ]
     }
@@ -2290,13 +2290,6 @@
   {
    "name": "Mat 2",
    "upcoming": [
-    {
-     "n": "102",
-     "weightClass": "-88",
-     "round": "F",
-     "a": "Pawel Jaworski",
-     "b": "Marlon Tajik"
-    },
     {
      "n": "103",
      "weightClass": "-77",
