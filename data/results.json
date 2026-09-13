@@ -1,5 +1,5 @@
 {
- "updated": "2026-09-13T16:44:50.483Z",
+ "updated": "2026-09-13T16:49:53.193Z",
  "event": {
   "id": "52703b65-bade-46e2-9ce2-399dd32d93e4",
   "name": "2026 ADCC World Championships",
@@ -2326,10 +2326,10 @@
         "seed": 4,
         "team": "USA"
        },
-       "w": null,
-       "decided": false,
-       "result": null,
-       "winType": null,
+       "w": 0,
+       "decided": true,
+       "result": "0-0 10:57 TB1",
+       "winType": "REF",
        "mat": "Mat 3",
        "video": null
       },
@@ -2406,7 +2406,7 @@
        "decided": false,
        "result": null,
        "winType": null,
-       "mat": null,
+       "mat": "Mat 3",
        "video": null
       }
      ]
@@ -2440,7 +2440,11 @@
         "seed": 12,
         "team": "USA"
        },
-       "b": null,
+       "b": {
+        "name": "Ruslan Abdulaev",
+        "seed": 13,
+        "team": "Russia"
+       },
        "w": null,
        "decided": false,
        "result": null,
@@ -2601,11 +2605,11 @@
    "name": "Mat 3",
    "upcoming": [
     {
-     "n": "204",
+     "n": "208",
      "weightClass": "Absolute",
      "round": "R16",
-     "a": "Ruslan Abdulaev",
-     "b": "Chris Wojcik"
+     "a": "Steffen Banta",
+     "b": "Felipe Costa"
     }
    ]
   }
