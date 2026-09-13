@@ -1,5 +1,5 @@
 {
- "updated": "2026-09-13T19:00:50.821Z",
+ "updated": "2026-09-13T19:41:04.891Z",
  "event": {
   "id": "52703b65-bade-46e2-9ce2-399dd32d93e4",
   "name": "2026 ADCC World Championships",
@@ -2607,12 +2607,12 @@
         "seed": null,
         "team": "Brazil"
        },
-       "w": null,
-       "decided": false,
-       "result": null,
-       "winType": null,
+       "w": 0,
+       "decided": true,
+       "result": "0-0 22:26 TB1",
+       "winType": "SUB",
        "mat": "Mat 2",
-       "video": null
+       "video": "https://www.flograppling.com/events/14687695-2026-adcc-world-championships/videos?playing=16182327&limit=60"
       }
      ]
     }
@@ -2624,13 +2624,6 @@
   {
    "name": "Mat 2",
    "upcoming": [
-    {
-     "n": "301",
-     "weightClass": "Super Fight Sun",
-     "round": "F",
-     "a": "Yuri Simoes",
-     "b": "Kaynan Duarte"
-    },
     {
      "n": "216",
      "weightClass": "Absolute",
