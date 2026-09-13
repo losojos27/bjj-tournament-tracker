@@ -1,5 +1,5 @@
 {
- "updated": "2026-09-13T18:15:32.846Z",
+ "updated": "2026-09-13T18:20:35.544Z",
  "event": {
   "id": "52703b65-bade-46e2-9ce2-399dd32d93e4",
   "name": "2026 ADCC World Championships",
@@ -2507,12 +2507,12 @@
         "seed": 13,
         "team": "Russia"
        },
-       "w": null,
-       "decided": false,
-       "result": null,
-       "winType": null,
+       "w": 0,
+       "decided": true,
+       "result": "7-0 13:15 TB1",
+       "winType": "SUB",
        "mat": "Mat 1",
-       "video": null
+       "video": "https://www.flograppling.com/events/14687695-2026-adcc-world-championships/videos?playing=16181732&limit=60"
       },
       {
        "n": "214",
@@ -2540,7 +2540,11 @@
      "bouts": [
       {
        "n": "216",
-       "a": null,
+       "a": {
+        "name": "Felipe Pena",
+        "seed": 1,
+        "team": "Brazil"
+       },
        "b": {
         "name": "Roosevelt Sousa",
         "seed": 7,
@@ -2558,7 +2562,11 @@
    ],
    "third": {
     "n": "215",
-    "a": null,
+    "a": {
+     "name": "Ruslan Abdulaev",
+     "seed": 13,
+     "team": "Russia"
+    },
     "b": {
      "name": "Marlon Tajik",
      "seed": 3,
@@ -2568,7 +2576,7 @@
     "decided": false,
     "result": null,
     "winType": null,
-    "mat": null,
+    "mat": "Mat 2",
     "video": null
    }
   },
@@ -2615,19 +2623,19 @@
  "mats": [
   {
    "name": "Mat 1",
-   "upcoming": [
-    {
-     "n": "213",
-     "weightClass": "Absolute",
-     "round": "SF",
-     "a": "Felipe Pena",
-     "b": "Ruslan Abdulaev"
-    }
-   ]
+   "upcoming": []
   },
   {
    "name": "Mat 2",
-   "upcoming": []
+   "upcoming": [
+    {
+     "n": "215",
+     "weightClass": "Absolute",
+     "round": "3",
+     "a": "Ruslan Abdulaev",
+     "b": "Marlon Tajik"
+    }
+   ]
   },
   {
    "name": "Mat 3",
