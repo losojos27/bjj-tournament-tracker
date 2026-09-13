@@ -1,5 +1,5 @@
 {
- "updated": "2026-09-13T10:32:10.507Z",
+ "updated": "2026-09-13T10:37:13.385Z",
  "event": {
   "id": "52703b65-bade-46e2-9ce2-399dd32d93e4",
   "name": "2026 ADCC World Championships",
@@ -1015,10 +1015,10 @@
      "seed": 11,
      "team": "South Africa"
     },
-    "w": null,
-    "decided": false,
-    "result": null,
-    "winType": null,
+    "w": 1,
+    "decided": true,
+    "result": "13-0 10:00",
+    "winType": "SCORE",
     "mat": "Mat 2",
     "video": null
    }
@@ -1691,10 +1691,10 @@
      "seed": 15,
      "team": "USA"
     },
-    "w": null,
-    "decided": false,
-    "result": null,
-    "winType": null,
+    "w": 0,
+    "decided": true,
+    "result": "0-0",
+    "winType": "FOR",
     "mat": "Mat 1",
     "video": null
    }
@@ -2285,27 +2285,11 @@
  "mats": [
   {
    "name": "Mat 1",
-   "upcoming": [
-    {
-     "n": "96",
-     "weightClass": "-66",
-     "round": "3",
-     "a": "Diego Pato",
-     "b": "Dominic Mejia"
-    }
-   ]
+   "upcoming": []
   },
   {
    "name": "Mat 2",
-   "upcoming": [
-    {
-     "n": "94",
-     "weightClass": "-88",
-     "round": "3",
-     "a": "Gabriel Brod",
-     "b": "Jozef Chen"
-    }
-   ]
+   "upcoming": []
   },
   {
    "name": "Mat 3",
