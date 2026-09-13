@@ -76,15 +76,20 @@ winners only when Flo hasn't filled the slot. That is what makes odd brackets wo
 bout #39 was a double DQ and Flo slotted the loser of #37 into the QF. Don't add hand-coded
 bracket overrides; fix the sync or the slot logic.
 
-**Schedule (`queue()`).** Today's matches in `DEFAULT_BLOCKS` order, placed on the
-earliest-free mat with per-round slot minutes. When `results.json` carries Flo's `mats[].upcoming`
+**Schedule (`queue()`).** Every unfought bout across both days in `DEFAULT_BLOCKS` order,
+placed on the earliest-free mat with per-round slot minutes (there is no day selector). When `results.json` carries Flo's `mats[].upcoming`
 lists they win: bouts are matched by number `n` (against every bracket bout, not just today's
 blocks) and placed on exactly the mats Flo lists, in Flo's order; unlisted bouts fall back to
 block order on those mats plus any mat with a live bout. Without lists, the mats are `S.mats`
 (plus any live mat) and the header says "(assumed)". The projection starts from a live
 in-progress bout (that mat is free at now + remaining clock + 2 min; earlier entries on that mat
 count as run), otherwise from the day's start on the event's calendar date (`DAY_DATES`), clamped
-to now. There is no manual anchor.
+to now and pushed to `S.breakUntil` while that is in the future. ADCC pauses ~30 minutes between
+the last semifinal and the first 3rd-place bout (Lee, Sept 13): `queue()` inserts that gap once,
+on every mat, when a projection crosses from semifinals into 3rd-place bouts. Anything Flo says
+beats the assumption: a live 3rd-place or final bout, or a recorded 3rd-place result, suppresses
+it, and if the semis were already over when the projection starts no gap is added (that's what
+"break until" is for). There is no manual anchor.
 
 **UI.** Sticky top header (title, status line, word tabs); no bottom nav so mobile Safari's
 bar doesn't stack against ours. Next up: a "nothing on the mats right now" line when nothing is

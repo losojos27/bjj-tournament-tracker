@@ -49,6 +49,10 @@ ok(q.list.every(x=>x.at.getTime()>=new Date(2026,8,12,11,0).getTime()), 'A: noth
 ok(!nums(q).includes('57') && !nums(q).includes('49'), 'A: decided bouts are not queued');
 { const lastSF=Math.max(...q.list.filter(x=>x.rName==='SF').map(x=>x.at.getTime()+20*60000)); const first3=Math.min(...q.list.filter(x=>x.rName==='3').map(x=>x.at.getTime()));
   ok(first3>=lastSF+30*60000, 'A: 3rd-place bouts start at least 30 min after the last semifinal ends'); }
+// G) Flo trumps the assumed intermission: a live 3rd-place bout in progress means no gap is inserted
+{ const d7=fixture(); setData(d7); setLive({'99':Object.assign(live(99,0),{round:'3rd Place'})}); const q7=queue();
+  const lastSF=Math.max(...q7.list.filter(x=>x.rName==='SF').map(x=>x.at.getTime())); const first3=Math.min(...q7.list.filter(x=>x.rName==='3'&&!x.onMat).map(x=>x.at.getTime()));
+  ok(first3<lastSF+50*60000, 'G: with a live 3rd-place bout on the feed, no 30-min gap is assumed'); }
 // F) semis already over when the projection starts: no automatic gap (an intermission then is the break-until setting's job)
 { const d6=fixture(); for(const div of d6.divs) for(const r of div.rounds) if(r.name==='SF'||r.name==='QF') for(const b of r.bouts){ b.w=0; b.decided=true; }
   setData(d6); setLive({}); const q6=queue(); const first=q6.list[0];
