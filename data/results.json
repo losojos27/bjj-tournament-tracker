@@ -1,9 +1,9 @@
 {
- "updated": "2026-09-13T10:47:19.122Z",
+ "updated": "2026-09-13T11:02:25.506Z",
  "event": {
   "id": "52703b65-bade-46e2-9ce2-399dd32d93e4",
   "name": "2026 ADCC World Championships",
-  "status": "live",
+  "status": "concluded",
   "tz": "Europe/Warsaw",
   "start": "2026-09-12T09:00:00+0000",
   "end": "2026-09-13T11:00:00+0000"
