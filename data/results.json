@@ -1,5 +1,5 @@
 {
- "updated": "2026-09-13T11:37:40.334Z",
+ "updated": "2026-09-13T11:42:43.088Z",
  "event": {
   "id": "52703b65-bade-46e2-9ce2-399dd32d93e4",
   "name": "2026 ADCC World Championships",
@@ -322,7 +322,7 @@
        "result": "0-0 8:49",
        "winType": "SUB",
        "mat": "Mat 2",
-       "video": null
+       "video": "https://www.flograppling.com/events/14687695-2026-adcc-world-championships/videos?playing=16179157&limit=60"
       }
      ]
     }
@@ -2303,6 +2303,13 @@
      "round": "F",
      "a": "Kaynan Duarte",
      "b": "Luke Griffith"
+    },
+    {
+     "n": "101",
+     "weightClass": "-55",
+     "round": "F",
+     "a": "Jasmine Rocha",
+     "b": "Ana Rodrigues"
     }
    ]
   },
