@@ -1,5 +1,5 @@
 {
- "updated": "2026-09-13T17:40:17.868Z",
+ "updated": "2026-09-13T17:45:20.636Z",
  "event": {
   "id": "52703b65-bade-46e2-9ce2-399dd32d93e4",
   "name": "2026 ADCC World Championships",
@@ -2431,7 +2431,7 @@
        "result": "3-0 10:00",
        "winType": "SCORE",
        "mat": "Mat 1",
-       "video": null
+       "video": "https://www.flograppling.com/events/14687695-2026-adcc-world-championships/videos?playing=16181396&limit=60"
       },
       {
        "n": "210",
@@ -2511,7 +2511,7 @@
        "decided": false,
        "result": null,
        "winType": null,
-       "mat": null,
+       "mat": "Mat 1",
        "video": null
       },
       {
@@ -2530,7 +2530,7 @@
        "decided": false,
        "result": null,
        "winType": null,
-       "mat": null,
+       "mat": "Mat 3",
        "video": null
       }
      ]
@@ -2607,7 +2607,15 @@
  "mats": [
   {
    "name": "Mat 1",
-   "upcoming": []
+   "upcoming": [
+    {
+     "n": "213",
+     "weightClass": "Absolute",
+     "round": "SF",
+     "a": "Felipe Pena",
+     "b": "Ruslan Abdulaev"
+    }
+   ]
   },
   {
    "name": "Mat 2",
@@ -2615,8 +2623,40 @@
   },
   {
    "name": "Mat 3",
-   "upcoming": []
+   "upcoming": [
+    {
+     "n": "214",
+     "weightClass": "Absolute",
+     "round": "SF",
+     "a": "Marlon Tajik",
+     "b": "Roosevelt Sousa"
+    }
+   ]
   }
  ],
- "upcomingShape": null
+ "upcomingShape": [
+  "guid",
+  "bottomWrestler",
+  "boutNumber",
+  "loserToBoutGuid",
+  "loserToTop",
+  "result",
+  "roundName",
+  "roundSpot",
+  "trueRound",
+  "winnerPoints",
+  "topPlacementPoints",
+  "maxPlace",
+  "sequenceNumber",
+  "topWrestler",
+  "winType",
+  "winnerToBoutGuid",
+  "winnerToTop",
+  "weightClass",
+  "isTopBye",
+  "isBottomBye",
+  "boutVideoUrl",
+  "winnerWrestlerGuid",
+  "redWrestlerGuid"
+ ]
 }
