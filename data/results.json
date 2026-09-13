@@ -1,5 +1,5 @@
 {
- "updated": "2026-09-13T10:27:07.688Z",
+ "updated": "2026-09-13T10:32:10.507Z",
  "event": {
   "id": "52703b65-bade-46e2-9ce2-399dd32d93e4",
   "name": "2026 ADCC World Championships",
@@ -1695,7 +1695,7 @@
     "decided": false,
     "result": null,
     "winType": null,
-    "mat": null,
+    "mat": "Mat 1",
     "video": null
    }
   },
@@ -2234,12 +2234,12 @@
      "seed": 3,
      "team": "Brazil"
     },
-    "w": null,
-    "decided": false,
-    "result": null,
-    "winType": null,
+    "w": 0,
+    "decided": true,
+    "result": "0-0 12:32 TB1",
+    "winType": "SUB",
     "mat": "Mat 1",
-    "video": null
+    "video": "https://www.flograppling.com/events/14687695-2026-adcc-world-championships/videos?playing=16179145&limit=60"
    }
   },
   {
@@ -2287,11 +2287,11 @@
    "name": "Mat 1",
    "upcoming": [
     {
-     "n": "93",
-     "weightClass": "-55",
+     "n": "96",
+     "weightClass": "-66",
      "round": "3",
-     "a": "Ana Mayordomo",
-     "b": "Mayssa Bastos"
+     "a": "Diego Pato",
+     "b": "Dominic Mejia"
     }
    ]
   },
