@@ -1,5 +1,5 @@
 {
- "updated": "2026-09-13T18:20:35.544Z",
+ "updated": "2026-09-13T18:25:38.385Z",
  "event": {
   "id": "52703b65-bade-46e2-9ce2-399dd32d93e4",
   "name": "2026 ADCC World Championships",
@@ -2554,7 +2554,7 @@
        "decided": false,
        "result": null,
        "winType": null,
-       "mat": null,
+       "mat": "Mat 2",
        "video": null
       }
      ]
@@ -2611,7 +2611,7 @@
        "decided": false,
        "result": null,
        "winType": null,
-       "mat": null,
+       "mat": "Mat 2",
        "video": null
       }
      ]
@@ -2622,10 +2622,6 @@
  ],
  "mats": [
   {
-   "name": "Mat 1",
-   "upcoming": []
-  },
-  {
    "name": "Mat 2",
    "upcoming": [
     {
@@ -2634,12 +2630,22 @@
      "round": "3",
      "a": "Ruslan Abdulaev",
      "b": "Marlon Tajik"
+    },
+    {
+     "n": "301",
+     "weightClass": "Super Fight Sun",
+     "round": "F",
+     "a": "Yuri Simoes",
+     "b": "Kaynan Duarte"
+    },
+    {
+     "n": "216",
+     "weightClass": "Absolute",
+     "round": "F",
+     "a": "Felipe Pena",
+     "b": "Roosevelt Sousa"
     }
    ]
-  },
-  {
-   "name": "Mat 3",
-   "upcoming": []
   }
  ],
  "upcomingShape": [
