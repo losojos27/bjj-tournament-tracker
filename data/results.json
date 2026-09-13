@@ -1,5 +1,5 @@
 {
- "updated": "2026-09-13T13:58:37.043Z",
+ "updated": "2026-09-13T14:53:57.940Z",
  "event": {
   "id": "52703b65-bade-46e2-9ce2-399dd32d93e4",
   "name": "2026 ADCC World Championships",
@@ -1331,10 +1331,10 @@
         "seed": 3,
         "team": "USA"
        },
-       "w": null,
-       "decided": false,
-       "result": null,
-       "winType": null,
+       "w": 0,
+       "decided": true,
+       "result": "0-0 40:00 TB2",
+       "winType": "REF",
        "mat": "Mat 2",
        "video": null
       }
@@ -2290,13 +2290,6 @@
   {
    "name": "Mat 2",
    "upcoming": [
-    {
-     "n": "103",
-     "weightClass": "-77",
-     "round": "F",
-     "a": "Magomed Dzharbaev",
-     "b": "Pj Barch"
-    },
     {
      "n": "104",
      "weightClass": "-66",
