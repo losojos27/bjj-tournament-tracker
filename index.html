@@ -188,6 +188,7 @@ const DEFAULT = {
   follow:['Felipe Costa','Victor Hugo'],
   // projection defaults (no UI: the live feed and Flo's published order override them as the day runs)
   mats:3, start1:'11:00', start2:'11:00',
+  breakUntil:'',                   // 'HH:MM' local: an intermission the feeds can't know about; ignored once past or once a bout is live
   dur:{R32:12, R16:12, QF:20, SF:20, '3':20, F:30},
   bracketDiv:null,                 // division shown on the Brackets tab
   v:9,
@@ -283,6 +284,7 @@ function localDate(){ const d=new Date(); return `${d.getFullYear()}-${String(d.
 const DAY_DATES={1:'2026-09-12',2:'2026-09-13'};
 function dayStart(d){ const t=(d===1?S.start1:S.start2).split(':'); const [y,mo,da]=DAY_DATES[d].split('-').map(Number); return new Date(y,mo-1,da,+t[0]||11,+t[1]||0,0,0); }
 function blocks(){ return DEFAULT_BLOCKS; }
+function breakEnd(){ const m=String(S.breakUntil||'').match(/^(\d{1,2}):(\d{2})$/); if(!m) return null; const d=new Date(); d.setHours(+m[1],+m[2],0,0); return d.getTime()>Date.now()?d:null; }
 function clockSecs(c){ const m=String(c||'').match(/(\d+):(\d+)/); return m? (+m[1])*60+(+m[2]) : 0; }
 function liveInProgress(){ const cut=Date.now()-3*3600e3; return Object.values(LIVE).filter(l=>!l.over&&l.updated>cut).sort((a,b)=>a.matIdx-b.matIdx); }
 function queue(){
@@ -295,7 +297,10 @@ function queue(){
   // the live feed anchors the projection: the earliest in-progress bout in the list is "now"; otherwise the day's start, never in the past
   const liveIdx=full.map((mo,i)=>inProg.some(l=>mo.bout&&l.n===String(mo.bout.n))?i:-1).filter(i=>i>=0);
   if(liveIdx.length){ from=Math.min(...liveIdx); startAt=new Date(); mode='live'; }
-  else if(Date.now()>startAt.getTime()) startAt=new Date();
+  else {
+    if(Date.now()>startAt.getTime()) startAt=new Date();
+    const br=breakEnd(); if(br&&br.getTime()>startAt.getTime()){ startAt=br; mode='break'; }
+  }
   // FloArena's published per-mat order, when it exists, beats the block-order guess.
   // Match by bout number against every bout in the bracket, not just today's blocks (the day tags are a guess).
   const byN=new Map();
@@ -377,7 +382,7 @@ function renderNext(){
   const {list:q,mode,floOrder,matCount:matsInUse}=queue();
   // the event is done when nothing is left to fight anywhere
   const dayDone=!q.length && blocks().some(b=>allMatches(b).length) && blocks().every(b=>allMatches(b).every(mo=>mo.w!==null));
-  let h=dayDone?'':`<div class="topline"><span class="note" style="margin:0">${matsInUse} mat${matsInUse===1?'':'s'}${floOrder?'':' (a guess)'} · times are estimates${mode==='live'?' · following the live feed':''}${floOrder?' · order from FloArena':''}</span></div>`;
+  let h=dayDone?'':`<div class="topline"><span class="note" style="margin:0">${matsInUse} mat${matsInUse===1?'':'s'}${floOrder?'':' (a guess)'} · times are estimates${mode==='live'?' · following the live feed':mode==='break'?' · break until '+fmt(breakEnd()):''}${floOrder?' · order from FloArena':''}</span></div>`;
   h+=renderMats();
   const fl=S.follow.filter(Boolean);
   const cards=[]; const seen=new Set();
@@ -409,7 +414,7 @@ function renderNext(){
   if(dayDone) h+=`<div class="panel">that’s the event. results are in brackets.</div>`;
   else if(!q.length) h+=`<div class="panel">nothing in the queue yet.</div>`;
   else h+=`<div class="stack">`;
-  if(!dayDone && q.length && liveState==='ok' && !liveInProgress().length) h+=`<div class="panel quiet">nothing on the mats right now. the times below are projected.</div>`;
+  if(!dayDone && q.length && liveState==='ok' && !liveInProgress().length) h+=`<div class="panel quiet">${mode==='break'?`break until ${fmt(breakEnd())}. the times below are projected from then.`:'nothing on the mats right now. the times below are projected.'}</div>`;
   // bouts where neither name is known yet collapse into one line at the point where they start
   const unknown=q.filter(mo=>mo.a.tbd&&mo.b.tbd); const firstUnknown=unknown[0];
   q.slice(0,48).forEach(mo=>{
@@ -504,10 +509,11 @@ function renderSettings(){
   <h2 class="section-title">projection</h2>
   <div class="panel">
     <div class="fields">
+      <label for="breakUntil">break until</label><input class="field" id="breakUntil" type="time" value="${esc(S.breakUntil||'')}">
       <label for="mats">mats running</label><input class="field" id="mats" type="number" inputmode="numeric" min="1" max="6" value="${+S.mats||3}">
       ${['R16','QF','SF','3','F'].map(k=>`<label for="dur-${k}">${ROUND_LABEL[k]||k} minutes</label><input class="field" id="dur-${k}" data-dur="${k}" type="number" inputmode="numeric" min="1" value="${+S.dur[k]||12}">`).join('')}
     </div>
-    <div class="note">used only until FloArena publishes the running order. minutes are per match slot, including the changeover.</div>
+    <div class="note">“break until” is for an intermission the feeds don’t announce: times project from then, and it’s ignored once it passes or a bout goes live. the rest is used only until FloArena publishes the running order; minutes are per match slot, including the changeover.</div>
   </div>
   <h2 class="section-title">data</h2>
   <div class="panel">
@@ -565,6 +571,7 @@ $('#main').addEventListener('change',e=>{
   const t=e.target;
   if(t.id==='follow'){ S.follow=t.value.split(',').map(x=>x.trim()).filter(Boolean); save(); }
   if(t.id==='mats'){ S.mats=Math.max(1,+t.value||1); save(); }
+  if(t.id==='breakUntil'){ S.breakUntil=t.value||''; save(); }
   if(t.dataset.dur){ S.dur[t.dataset.dur]=+t.value||12; save(); }
 });
 // refresh loops: results every 60s, live mats every 15s; the settings tab is left alone while you type

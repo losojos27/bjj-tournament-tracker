@@ -62,7 +62,9 @@ Three layers, all read-only:
    `winner`). Neither poll re-renders while the Settings tab is open (`quiet()`). On an event
    day the header shows "results N min old" in the warning colour once `updated` is more than
    15 minutes behind, so a healthy fetch of stale data is visible (a failed fetch shows "stale").
-3. **Local preferences (`S`, in localStorage).** Follow list, mats, slot durations,
+3. **Local preferences (`S`, in localStorage).** Follow list, mats, slot durations, `breakUntil`
+   (an intermission time no feed announces; the projection starts there while it's in the
+   future and nothing is live),
    chosen bracket division. `S.v` is a schema version; bump it and extend the migration in
    `loadState()` when the shape changes. Start times (`DEFAULT`) and block order
    (`DEFAULT_BLOCKS`) are code defaults with no UI.
