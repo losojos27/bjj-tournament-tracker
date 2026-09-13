@@ -1,5 +1,5 @@
 {
- "updated": "2026-09-13T19:41:04.891Z",
+ "updated": "2026-09-13T20:06:14.018Z",
  "event": {
   "id": "52703b65-bade-46e2-9ce2-399dd32d93e4",
   "name": "2026 ADCC World Championships",
@@ -2550,12 +2550,12 @@
         "seed": 7,
         "team": "Brazil"
        },
-       "w": null,
-       "decided": false,
-       "result": null,
-       "winType": null,
+       "w": 0,
+       "decided": true,
+       "result": "0-0 10:03",
+       "winType": "SUB",
        "mat": "Mat 2",
-       "video": null
+       "video": "https://www.flograppling.com/events/14687695-2026-adcc-world-championships/videos?playing=16182480&limit=60"
       }
      ]
     }
@@ -2622,41 +2622,17 @@
  ],
  "mats": [
   {
+   "name": "Mat 1",
+   "upcoming": []
+  },
+  {
    "name": "Mat 2",
-   "upcoming": [
-    {
-     "n": "216",
-     "weightClass": "Absolute",
-     "round": "F",
-     "a": "Felipe Pena",
-     "b": "Roosevelt Sousa"
-    }
-   ]
+   "upcoming": []
+  },
+  {
+   "name": "Mat 3",
+   "upcoming": []
   }
  ],
- "upcomingShape": [
-  "guid",
-  "bottomWrestler",
-  "boutNumber",
-  "loserToBoutGuid",
-  "loserToTop",
-  "result",
-  "roundName",
-  "roundSpot",
-  "trueRound",
-  "winnerPoints",
-  "topPlacementPoints",
-  "maxPlace",
-  "sequenceNumber",
-  "topWrestler",
-  "winType",
-  "winnerToBoutGuid",
-  "winnerToTop",
-  "weightClass",
-  "isTopBye",
-  "isBottomBye",
-  "boutVideoUrl",
-  "winnerWrestlerGuid",
-  "redWrestlerGuid"
- ]
+ "upcomingShape": null
 }
