@@ -1,5 +1,5 @@
 {
- "updated": "2026-09-13T06:17:18.129Z",
+ "updated": "2026-09-13T06:22:21.480Z",
  "event": {
   "id": "52703b65-bade-46e2-9ce2-399dd32d93e4",
   "name": "2026 ADCC World Championships",
@@ -628,7 +628,7 @@
      "name": "F",
      "bouts": [
       {
-       "n": "99",
+       "n": "100",
        "a": null,
        "b": null,
        "w": null,
@@ -950,7 +950,7 @@
      "name": "F",
      "bouts": [
       {
-       "n": "100",
+       "n": "102",
        "a": null,
        "b": null,
        "w": null,
@@ -1272,7 +1272,7 @@
      "name": "F",
      "bouts": [
       {
-       "n": "101",
+       "n": "103",
        "a": null,
        "b": null,
        "w": null,
@@ -1594,7 +1594,7 @@
      "name": "F",
      "bouts": [
       {
-       "n": "102",
+       "n": "104",
        "a": null,
        "b": null,
        "w": null,
@@ -1759,7 +1759,7 @@
      "name": "F",
      "bouts": [
       {
-       "n": "103",
+       "n": "97",
        "a": null,
        "b": null,
        "w": null,
@@ -1924,7 +1924,7 @@
      "name": "F",
      "bouts": [
       {
-       "n": "104",
+       "n": "99",
        "a": null,
        "b": null,
        "w": null,
@@ -2089,7 +2089,7 @@
      "name": "F",
      "bouts": [
       {
-       "n": "105",
+       "n": "101",
        "a": null,
        "b": null,
        "w": null,
