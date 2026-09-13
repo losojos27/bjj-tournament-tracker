@@ -1,5 +1,5 @@
 {
- "updated": "2026-09-13T16:14:37.318Z",
+ "updated": "2026-09-13T16:34:44.899Z",
  "event": {
   "id": "52703b65-bade-46e2-9ce2-399dd32d93e4",
   "name": "2026 ADCC World Championships",
@@ -2269,10 +2269,10 @@
         "seed": 16,
         "team": "Canada"
        },
-       "w": null,
-       "decided": false,
-       "result": null,
-       "winType": null,
+       "w": 0,
+       "decided": true,
+       "result": "5-0 14:11 TB1",
+       "winType": "SUB",
        "mat": "Mat 1",
        "video": null
       },
@@ -2307,10 +2307,10 @@
         "seed": 12,
         "team": "USA"
        },
-       "w": null,
-       "decided": false,
-       "result": null,
-       "winType": null,
+       "w": 1,
+       "decided": true,
+       "result": "2-0 10:00",
+       "winType": "SCORE",
        "mat": "Mat 3",
        "video": null
       },
@@ -2330,7 +2330,7 @@
        "decided": false,
        "result": null,
        "winType": null,
-       "mat": null,
+       "mat": "Mat 3",
        "video": null
       },
       {
@@ -2349,7 +2349,7 @@
        "decided": false,
        "result": null,
        "winType": null,
-       "mat": null,
+       "mat": "Mat 1",
        "video": null
       },
       {
@@ -2416,7 +2416,11 @@
      "bouts": [
       {
        "n": "209",
-       "a": null,
+       "a": {
+        "name": "Felipe Pena",
+        "seed": 1,
+        "team": "Brazil"
+       },
        "b": null,
        "w": null,
        "decided": false,
@@ -2427,7 +2431,11 @@
       },
       {
        "n": "210",
-       "a": null,
+       "a": {
+        "name": "Elijah Dorsey",
+        "seed": 12,
+        "team": "USA"
+       },
        "b": null,
        "w": null,
        "decided": false,
