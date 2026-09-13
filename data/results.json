@@ -1,5 +1,5 @@
 {
- "updated": "2026-09-13T10:17:01.953Z",
+ "updated": "2026-09-13T10:22:04.828Z",
  "event": {
   "id": "52703b65-bade-46e2-9ce2-399dd32d93e4",
   "name": "2026 ADCC World Championships",
@@ -677,12 +677,12 @@
      "seed": 2,
      "team": "Brazil"
     },
-    "w": null,
-    "decided": false,
-    "result": null,
-    "winType": null,
+    "w": 0,
+    "decided": true,
+    "result": "0-0 6:01",
+    "winType": "SUB",
     "mat": "Mat 2",
-    "video": null
+    "video": "https://www.flograppling.com/events/14687695-2026-adcc-world-championships/videos?playing=16179142&limit=60"
    }
   },
   {
@@ -1019,7 +1019,7 @@
     "decided": false,
     "result": null,
     "winType": null,
-    "mat": null,
+    "mat": "Mat 2",
     "video": null
    }
   },
@@ -1357,7 +1357,7 @@
     "decided": false,
     "result": null,
     "winType": null,
-    "mat": null,
+    "mat": "Mat 3",
     "video": null
    }
   },
@@ -2053,10 +2053,10 @@
      "seed": 2,
      "team": "USA"
     },
-    "w": null,
-    "decided": false,
-    "result": null,
-    "winType": null,
+    "w": 1,
+    "decided": true,
+    "result": "6-0 10:00",
+    "winType": "SCORE",
     "mat": "Mat 3",
     "video": null
    }
@@ -2299,11 +2299,11 @@
    "name": "Mat 2",
    "upcoming": [
     {
-     "n": "92",
-     "weightClass": "-99",
+     "n": "94",
+     "weightClass": "-88",
      "round": "3",
-     "a": "Daniel Schuardt",
-     "b": "Achilles Rocha"
+     "a": "Gabriel Brod",
+     "b": "Jozef Chen"
     }
    ]
   },
@@ -2311,11 +2311,11 @@
    "name": "Mat 3",
    "upcoming": [
     {
-     "n": "91",
-     "weightClass": "-65",
+     "n": "95",
+     "weightClass": "-77",
      "round": "3",
-     "a": "Mo Black",
-     "b": "Joslyn Molina"
+     "a": "Mateusz Szczecinski",
+     "b": "Jacob Bornemann"
     }
    ]
   }
