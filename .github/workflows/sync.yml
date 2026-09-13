@@ -1,30 +1,34 @@
 name: sync results from FloArena
 on:
   schedule:
-    - cron: '*/5 * * * *'   # GitHub's minimum; real cadence is usually 5-15 min
+    - cron: '*/5 * * * *'   # GitHub only honours this loosely (gaps of hours overnight), so each run loops itself
   workflow_dispatch:
 permissions:
   contents: write
 concurrency:
   group: sync
-  cancel-in-progress: false
+  cancel-in-progress: false   # a new fire waits for the running loop to finish, so coverage is continuous
 jobs:
   sync:
     runs-on: ubuntu-latest
+    timeout-minutes: 340
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-node@v4
         with:
           node-version: 22
-      - run: node scripts/sync.mjs
+      - name: Sync every 5 minutes for ~5.5 hours, committing when results change
         env:
-          SYNC_STRICT: '1'   # go red if Flo lists bouts we can't parse; results are still committed below
-      - name: Commit if results changed
-        if: always()   # the sync exits non-zero when Flo's upcoming shape can't be parsed; results still get committed
+          SYNC_STRICT: '1'
         run: |
-          if git diff --quiet -- data/results.json; then echo "no change"; exit 0; fi
           git config user.name "flo-sync"
           git config user.email "actions@users.noreply.github.com"
-          git add data/results.json
-          git commit -m "sync: results $(date -u +%Y-%m-%dT%H:%MZ)"
-          git push
+          for i in $(seq 1 66); do
+            node scripts/sync.mjs || echo "::warning::sync exited non-zero on pass $i (see log above)"
+            if ! git diff --quiet -- data/results.json; then
+              git add data/results.json
+              git commit -q -m "sync: results $(date -u +%Y-%m-%dT%H:%MZ)"
+              git pull -q --rebase && git push -q && echo "pushed pass $i"
+            fi
+            sleep 300
+          done
