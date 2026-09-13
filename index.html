@@ -9,6 +9,7 @@
 <meta name="apple-mobile-web-app-title" content="ADCC">
 <meta name="theme-color" content="#f1f0ed" media="(prefers-color-scheme: light)">
 <meta name="theme-color" content="#343331" media="(prefers-color-scheme: dark)">
+<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'unsafe-inline'; style-src 'self' 'unsafe-inline'; font-src 'self'; img-src 'self' data:; connect-src 'self' https://floarena.firebaseio.com; object-src 'none'; base-uri 'self'; form-action 'none'; frame-src 'none'">
 <script>try{var t=localStorage.getItem('bjjTracker.theme');if(t==='light'||t==='dark')document.documentElement.dataset.theme=t}catch(e){}</script>
 <link rel="stylesheet" href="field-manual-theme/theme.css">
 <style>
@@ -383,7 +384,7 @@ function renderNext(){
       let status='no match in today’s queue', out=false, champ=false;   // eliminated fighters get a neutral 'no scheduled matches' card, never their loss
       for(const div of divs()) for(const r of div.rounds) for(let m=0;m<r.bouts.length;m++){ const mo=matchObj(div,r.name,m);
         if(mo.w!==null&&mo.w>=0){ const l=mo.w===0?mo.b:mo.a; if(hit(l)) out=true; } }
-      for(const div of divs()){ const rn=rounds(div); const w=winnerOf(div,rn[rn.length-1],0); if(w!==null&&w>=0&&hit(slot(div,rn[rn.length-1],0,w))){ champ=true; status=`${div.name} champion 🥇`; } }
+      for(const div of divs()){ const rn=rounds(div); const w=winnerOf(div,rn[rn.length-1],0); if(w!==null&&w>=0&&hit(slot(div,rn[rn.length-1],0,w))){ champ=true; status=`${esc(div.name)} champion 🥇`; } }
       const alive=divs().some(div=>div.rounds.some(r=>r.bouts.some((b,m)=>winnerOf(div,r.name,m)===null&&(hit(b.a)||hit(b.b)))));
       if(out&&!alive&&!champ) status='no scheduled matches';
       if(dayDone&&!champ) continue;   // a finished day: don't say "no match in today's queue"
@@ -430,6 +431,8 @@ function backfilled(mo,s_){   // returns '' or a label like 'replacement after #
   if(!win) return `${p.name} in after the ${prev.n?'#'+prev.n+' ':''}${String(prev.winType||'').toUpperCase()==='DQ'?'disqualification':'no-winner bout'}`;
   return `${p.name} in for ${win.name}`;
 }
+// the feed's video URL is untrusted input: only https links on flograppling.com become hrefs
+function safeVideo(u){ return typeof u==='string' && /^https:\/\/([a-z0-9-]+\.)*flograppling\.com\//i.test(u) ? u : null; }
 let PROJ=new Map();   // key -> queued match, for the bracket's unfought boxes
 let bracketFresh=false; // set when the division changes: open on the first unfought round, chip in view
 function box(mo){
@@ -439,7 +442,8 @@ function box(mo){
   if(mo.src==='flo'&&(b.winType||b.result)) res=fmtResult(b.winType,b.result)+(mo.w<0?' · no winner':'');
   else if(mo.src==='live'&&mo.live) res=fmtResult(mo.live.winType,mo.live.finalScore)+' · live';
   const live=mo.live&&!mo.live.over;
-  const resHtml = res && b.video ? `<a class="res vid" href="${esc(b.video)}" target="_blank" rel="noopener" title="watch on FloGrappling">${esc(res)} ↗</a>` : `<span class="res">${esc(res)}</span>`;
+  const vid = safeVideo(b.video);
+  const resHtml = res && vid ? `<a class="res vid" href="${esc(vid)}" target="_blank" rel="noopener" title="watch on FloGrappling">${esc(res)} ↗</a>` : `<span class="res">${esc(res)}</span>`;
   const bf=backfilled(mo,0)||backfilled(mo,1);
   const meta=`<span class="num">${b.n?'#'+esc(b.n):''}${bf?' · '+esc(bf):''}</span>${live?`<span class="cue live">on the mat · ${esc(mo.live.clock)}</span>`:''}${resHtml}`;
   const fol=isFollow(mo.a)||isFollow(mo.b);

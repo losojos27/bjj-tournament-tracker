@@ -160,6 +160,25 @@ the look depends on" are binding:
 - Settled UI: day switch on Next up; a real column bracket with a division picker, not an
   accordion; tabs at the top; theme control in Settings; names copy, they don't link.
 
+## Security posture (audited Sept 13)
+
+- Public by design: the repo and the Pages site are public; the page holds no secrets, sets no
+  cookies, sends nothing anywhere. The only outbound requests are same-origin (`results.json`,
+  theme, fonts) and reads of FloArena's public Firebase feed. A `<meta>` CSP in the head pins
+  that: `connect-src 'self' https://floarena.firebaseio.com`, no objects/frames/forms, no
+  external scripts. Inline script/style are allowed because the page is one file. The meta is
+  ignored on the artifact host (it wraps the body), which has its own CSP.
+- Everything from the feeds is untrusted: every name, team, result, clock, round and label goes
+  through `esc()` before it becomes HTML (the champion-card division name was the one gap,
+  fixed). Video links are accepted only if they are `https://…flograppling.com/…`, checked in
+  both the sync and the page; anything else renders as plain text.
+- The Actions workflow runs only on schedule and manual dispatch (never on pull requests), with
+  the default `GITHUB_TOKEN` scoped to `contents: write`; it executes repo code, not feed data.
+  The cloud routine pushes as Lee with the repo cloned; its prompt limits it to three files.
+- Per-viewer state is localStorage only (follow list, day, mats, slot minutes, theme, division).
+- The `gh` token on Lee's Mac has the `workflow` scope (needed to push `sync.yml`); it is in the
+  macOS keychain, never in the repo. Git history was scanned for secrets: none.
+
 ## Known limitations
 
 - Every viewer's follow list and settings are local to their browser.

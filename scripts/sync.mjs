@@ -45,7 +45,8 @@ function bout(x) {
   // decided with no winner (e.g. a double DQ): winType is set but the winner guid matches neither athlete
   const decided = w !== null || !!(x.winType && (x.topWrestler || x.bottomWrestler));
   return { n: x.boutNumber || null, a: person(x.topWrestler), b: person(x.bottomWrestler), w, decided,
-    result: x.result || null, winType: x.winType || null, mat: x.mat?.name || null, video: x.boutVideoUrl || null,
+    result: x.result || null, winType: x.winType || null, mat: x.mat?.name || null,
+    video: /^https:\/\/([a-z0-9-]+\.)*flograppling\.com\//i.test(x.boutVideoUrl || '') ? x.boutVideoUrl : null,
     _g: x.guid, _to: x.winnerToBoutGuid, _toTop: x.winnerToTop, _lto: x.loserToBoutGuid, _num: Number(x.boutNumber) || 1e9, _spot: x.roundSpot ?? 0 };
 }
 const byNum = (a, b) => a._num - b._num || a._spot - b._spot;
