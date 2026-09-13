@@ -319,8 +319,13 @@ function queue(){
   // mats in use: the ones FloArena lists bouts for plus any with a live bout; otherwise every mat up to the configured count (or a live bout's mat)
   const active = floOrder ? [...new Set([...upMats.map(m=>m.idx), ...inProg.map(l=>l.matIdx)])].sort((a,b)=>a-b) : mats.map((_,k)=>k);
   const out=[], placed=new Set();
-  const place=(mo,mi)=>{ mo.at=new Date(mats[mi]); mo.mat=mi+1; mats[mi]+=(S.dur[mo.rName]||12)*60000; out.push(mo); placed.add(mo.key); };
-  const onMat=mo=>{ const l=mo.live; if(l&&!l.over&&inProg.includes(l)){ mo.at=new Date(); mo.mat=l.matIdx+1; mo.onMat=true; out.push(mo); placed.add(mo.key); return true; } return false; };
+  // ADCC pauses ~30 min after the last semifinal before the 3rd-place bouts (Lee, Sept 13). Applied once, at the
+  // first 3rd-place bout placed after a semifinal in this projection; every mat waits for the latest one to finish.
+  let sawEarlier=false, gapDone=false;
+  const INTERMISSION=30*60000;
+  const gapBefore=mo=>{ if(mo.rName==='3'&&sawEarlier&&!gapDone){ const t=Math.max(...mats)+INTERMISSION; for(let k=0;k<mats.length;k++) mats[k]=t; gapDone=true; } if(mo.rName!=='3'&&mo.rName!=='F') sawEarlier=true; };
+  const place=(mo,mi)=>{ gapBefore(mo); if(mo.rName==='3'&&gapDone) { mi=active[0]; for(const k of active) if(mats[k]<mats[mi]) mi=k; } mo.at=new Date(mats[mi]); mo.mat=mi+1; mats[mi]+=(S.dur[mo.rName]||12)*60000; out.push(mo); placed.add(mo.key); };
+  const onMat=mo=>{ const l=mo.live; if(l&&!l.over&&inProg.includes(l)){ if(mo.rName!=='3'&&mo.rName!=='F') sawEarlier=true; mo.at=new Date(); mo.mat=l.matIdx+1; mo.onMat=true; out.push(mo); placed.add(mo.key); return true; } return false; };
   for(const m of upMats) for(const mo of m.list){ if(placed.has(mo.key)||onMat(mo)||mo.w!==null) continue; place(mo,m.idx); }
   for(let i=from;i<full.length;i++){
     const mo=full[i]; if(placed.has(mo.key)||onMat(mo)||mo.w!==null) continue;

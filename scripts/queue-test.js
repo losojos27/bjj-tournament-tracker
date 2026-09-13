@@ -47,6 +47,12 @@ ok(!q.floOrder && q.mode==='schedule' && q.matCount===3, 'A: fallback path repor
 ok(nums(q).slice(0,3).join()==='58,77,78', 'A: the unfought day-1 quarterfinal comes first, then the men\'s semis: '+nums(q));
 ok(q.list.every(x=>x.at.getTime()>=new Date(2026,8,12,11,0).getTime()), 'A: nothing is projected before the first open day\'s start');
 ok(!nums(q).includes('57') && !nums(q).includes('49'), 'A: decided bouts are not queued');
+{ const lastSF=Math.max(...q.list.filter(x=>x.rName==='SF').map(x=>x.at.getTime()+20*60000)); const first3=Math.min(...q.list.filter(x=>x.rName==='3').map(x=>x.at.getTime()));
+  ok(first3>=lastSF+30*60000, 'A: 3rd-place bouts start at least 30 min after the last semifinal ends'); }
+// F) semis already over when the projection starts: no automatic gap (an intermission then is the break-until setting's job)
+{ const d6=fixture(); for(const div of d6.divs) for(const r of div.rounds) if(r.name==='SF'||r.name==='QF') for(const b of r.bouts){ b.w=0; b.decided=true; }
+  setData(d6); setLive({}); const q6=queue(); const first=q6.list[0];
+  ok(first&&first.rName==='3'&&first.at.getTime()<=Date.now()+60000, 'F: with semis done, the first 3rd-place bout projects from now, not now+30: '+(first&&first.at.toTimeString().slice(0,5))); }
 
 // B) Flo lists mats 1-2 only; a live bout is in progress on mat 3, which Flo lists nothing for
 let d=fixture(); d.mats=[{name:'Mat 1',upcoming:[{n:'78'},{n:'86'}]},{name:'Mat 2',upcoming:[{n:'77'}]}];
