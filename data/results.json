@@ -1,5 +1,5 @@
 {
- "updated": "2026-09-13T17:15:07.142Z",
+ "updated": "2026-09-13T17:35:14.933Z",
  "event": {
   "id": "52703b65-bade-46e2-9ce2-399dd32d93e4",
   "name": "2026 ADCC World Championships",
@@ -2464,12 +2464,12 @@
         "seed": 11,
         "team": "Uruguay"
        },
-       "w": null,
-       "decided": false,
-       "result": null,
-       "winType": null,
+       "w": 0,
+       "decided": true,
+       "result": "0-0 1:13",
+       "winType": "SUB",
        "mat": "Mat 3",
-       "video": null
+       "video": "https://www.flograppling.com/events/14687695-2026-adcc-world-championships/videos?playing=16181325&limit=60"
       },
       {
        "n": "212",
@@ -2487,7 +2487,7 @@
        "decided": false,
        "result": null,
        "winType": null,
-       "mat": null,
+       "mat": "Mat 3",
        "video": null
       }
      ]
@@ -2508,7 +2508,11 @@
       },
       {
        "n": "214",
-       "a": null,
+       "a": {
+        "name": "Marlon Tajik",
+        "seed": 3,
+        "team": "Sweden"
+       },
        "b": null,
        "w": null,
        "decided": false,
@@ -2617,11 +2621,11 @@
    "name": "Mat 3",
    "upcoming": [
     {
-     "n": "211",
+     "n": "212",
      "weightClass": "Absolute",
      "round": "QF",
-     "a": "Marlon Tajik",
-     "b": "Javier Zaruski"
+     "a": "Roosevelt Sousa",
+     "b": "Felipe Costa"
     }
    ]
   }
