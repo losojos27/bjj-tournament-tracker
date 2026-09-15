@@ -1,7 +1,9 @@
 name: sync results from FloArena
 on:
-  schedule:
-    - cron: '*/5 * * * *'   # GitHub only honours this loosely (gaps of hours overnight), so each run loops itself
+  # schedule is off between events (ADCC 2026 ended Sept 13). Re-enable the cron before the next one;
+  # GitHub only honours it loosely (gaps of hours overnight), which is why each run loops itself.
+  # schedule:
+  #   - cron: '*/5 * * * *'
   workflow_dispatch:
 permissions:
   contents: write
