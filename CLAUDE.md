@@ -234,9 +234,28 @@ tabs and won't resize below ~360px; the agent forces a 390px layout width instea
 - The Reset button uses a two-tap confirm because native `confirm()` is blocked in the
   artifact's sandboxed iframe.
 
-## Next (agreed Sept 13, after ADCC ends)
+## Next (agreed Sept 13–15, after ADCC ended)
 
-Make the tournament a selectable event, not a constant. Lee wants this to cover IBJJF opens,
+ADCC 2026 is done: Lee used the page all of finals day and reported no UX or functionality
+punch list. The sync schedule is commented out in `sync.yml` and the Day 2 routine is disabled;
+re-enable the cron before the next event. Three items, in this order:
+
+**0. A competition simulator** (Lee, Sept 15): a way to demo and test without waiting for a
+live event. Direction: a local, dependency-free server (`scripts/sim-server.mjs`) that serves
+the page plus fake `data/results.json` and `mats.json` endpoints from a timeline replayed out of
+real ADCC data (results stripped and re-applied in bout-number order at adjustable speed; a
+generated live feed with a counting clock, then `isMatchOver` + the real winner). Same-origin
+so the CSP needs no change; the page takes the live URL from a `?live=` param only on
+localhost. Feeds every later test, the audits, and the selector work.
+
+**1. Hosting for scale** (Lee, Sept 15): Lee expects to share the page with many parents at
+the next IBJJF Austin Open. Serving is not the constraint (GitHub Pages is a CDN); the real
+gaps are (a) IBJJF is not on FloArena, so the live layer and results need a new source
+adapter, (b) a sync that runs on a real schedule (EventBridge + Lambda every minute, not
+GitHub's loose cron), (c) a custom domain. AWS is justified for (b) and possibly a proxy for
+(a); the page itself can stay static anywhere. Size after inspecting ibjjf.com.
+
+**2. Tournament selector.** Make the tournament a selectable event, not a constant. Lee wants this to cover IBJJF opens,
 WNO, ADCC and everything between. Plan, in order:
 1. Pull the ADCC constants (event guid in sync and page, `DAY_DATES`, title, the ADCC day plan
    in `DEFAULT_BLOCKS`, the 30-min-before-3rd-place rule, team = country) into one event record;
