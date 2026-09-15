@@ -39,4 +39,5 @@ No build step, no dependencies (Node 18+ for the sync script). Serve over HTTP; 
 | `scripts/build-artifact.sh` | Builds `dist/artifact.html` for publishing as a Claude artifact. |
 | `.github/workflows/sync.yml` | Cron that runs the sync and commits changes. |
 | `CLAUDE.md` | Handoff notes, data sources, known issues. |
+| `docs/case-study.md` | How the app was designed and built, as a record of the back-and-forth. |
 | `archive/` | Original Claude-chat handoff bundle. |
