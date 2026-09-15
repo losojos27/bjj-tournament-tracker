@@ -13,6 +13,12 @@ the link. The repo name is deliberately generic because it will cover more than 
 - Claude artifact snapshot (no live feeds, results as of last republish):
   https://claude.ai/code/artifact/78d4a9a4-2636-4548-9de6-b03be85ae72e
 
+**Status (Sept 15, 2026):** ADCC 2026 is over and the page worked through finals day with no
+punch list. The sync cron is commented out and the Day 2 routine is disabled, so nothing runs
+between events. The agreed next work is at the end of this file under "Next": a competition
+simulator first, then hosting/data for the IBJJF Austin Open (January 2027), then a tournament
+selector. Start there.
+
 ## Commands
 
 ```
