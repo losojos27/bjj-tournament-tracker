@@ -249,7 +249,8 @@ so the CSP needs no change; the page takes the live URL from a `?live=` param on
 localhost. Feeds every later test, the audits, and the selector work.
 
 **1. Hosting for scale** (Lee, Sept 15): Lee expects to share the page with many parents at
-the next IBJJF Austin Open. Serving is not the constraint (GitHub Pages is a CDN); the real
+the next IBJJF Austin Open, which is in January 2027 — that is the real deadline. A WNO may
+happen before then, but it's one fight at a time and won't show the app's strengths. Serving is not the constraint (GitHub Pages is a CDN); the real
 gaps are (a) IBJJF is not on FloArena, so the live layer and results need a new source
 adapter, (b) a sync that runs on a real schedule (EventBridge + Lambda every minute, not
 GitHub's loose cron), (c) a custom domain. AWS is justified for (b) and possibly a proxy for
