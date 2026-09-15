@@ -19,6 +19,15 @@ between events. The agreed next work is at the end of this file under "Next": a 
 simulator first, then hosting/data for the IBJJF Austin Open (January 2027), then a tournament
 selector. Start there.
 
+`docs/case-study.md` is the story of how this was built with Lee over Sept 12–13 (also
+published as a page: https://claude.ai/code/artifact/8046ec54-d648-42d6-b131-dc48f14cbebe).
+Read its last two sections before a working session: "what made it work" and "what would have
+been faster" are the operating lessons. In short: Lee states constraints as they surface, so
+ask about the invisible ones early (who sees the page, what must never be manual); don't widen
+scope past the ask, rhetorical questions are not instructions; batch small changes into one
+verify-and-push cycle; run `/spectator-audit` before asking Lee for screenshots; and never let
+an unattended process run through an event without a test that simulates the failure.
+
 ## Commands
 
 ```
