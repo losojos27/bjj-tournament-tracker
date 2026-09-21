@@ -155,7 +155,8 @@ that survives a reload), shared by the server and the in-browser demo so they ca
 `./scripts/sim/core.mjs` and fetches the frozen fixture, both same-origin, so the CSP is
 unchanged and it is safe on the public site. `loadData`/`loadLive` take their input from
 `demoResults()`/`demoMats()` instead of the network, and the mats feed still goes through the
-real parser. Defaults: starts at the semifinals at ×20 (`?demo&from=start&speed=60` to change);
+real parser. Defaults: starts at the semifinals at ×10 (`?demo&from=start&speed=60` to change; the speed
+drop-down and pause sit in the demo line on Next up, the jump chips in Settings);
 the clock lives in sessionStorage keyed by the query string, so a reload continues and a
 different link starts fresh. Next up shows a "this is a demo" line, the header says "demo ×N",
 and Settings gains a demo panel (pause, speed, jump, restart, leave) that exists only in demo

@@ -49,6 +49,10 @@
   main > .section-title:first-child{margin-top:2px}
   .panel{background:var(--bg-card);border-radius:var(--radius-md);padding:12px 14px}
   .panel.quiet{color:var(--text-secondary);font-size:var(--fs-meta)}
+  .demo-bar{margin-bottom:10px;display:flex;flex-direction:column;gap:8px}
+  .demo-ctl{display:flex;align-items:center;gap:8px;flex-wrap:wrap}
+  .demo-ctl label{margin:0 0 0 4px}
+  .demo-ctl select.field{width:auto;padding:5px 8px;font-size:var(--fs-meta);-webkit-appearance:menulist;appearance:menulist}
   .stack{display:flex;flex-direction:column;gap:6px}
   .chip.warn{background:var(--cue-warning);color:var(--accent-contrast)}
   .chip:focus-visible{outline:2px solid var(--accent-soft);outline-offset:1px}
@@ -175,7 +179,7 @@ let DATA=null;            // parsed results.json
 let LIVE={};              // boutNumber -> live mat entry
 let liveState='off';      // 'ok' | 'bad' | 'off'
 let dataErr=null, lastLive=0;
-const quiet=()=>tab==='settings'&&DATA; // don't re-render under the user's fingers on Settings
+const quiet=()=>DATA&&(tab==='settings'||(document.activeElement&&document.activeElement.id==='demoSpeed')); // don't re-render under the user's fingers: Settings, or an open speed drop-down
 
 // Schedule blocks: the assumed order each day runs in, used only until FloArena publishes its own. `kind` matches results.json divisions.
 const DEFAULT_BLOCKS = [
@@ -240,6 +244,7 @@ function forgetConfirmed(){   // results.json has caught up (Flo's word wins, in
 }
 // ---------- demo: scripts/sim/core.mjs running in this browser ----------
 const demo={clock:null}; const DEMO_KEY='bjjTracker.demo';
+const DEMO_SPEEDS={default:10, list:[1,2,5,10,20,60,200]};   // ×1 is real time; at ×10 a seven-minute bout takes about 40 s
 let demoLoading=null;
 function demoReady(){ return demoLoading || (demoLoading=demoInit().catch(e=>{ demoLoading=null; throw e; })); }   // the two loaders start together; initialise once
 async function demoInit(){
@@ -247,7 +252,7 @@ async function demoInit(){
   const r=await fetch('scripts/sim/adcc-2026-final.json'); if(!r.ok) throw new Error('HTTP '+r.status);
   const final=await r.json(), tl=core.buildTimeline(final), q=new URLSearchParams(location.search);
   let saved=null; try{ const o=JSON.parse(sessionStorage.getItem(DEMO_KEY)||'null'); if(o&&o.q===location.search) saved=o.state; }catch(e){}   // a reload continues; a different link starts fresh
-  const from=q.get('from')||'SF', speed=Math.min(1000,Math.max(1,+q.get('speed')||20));
+  const from=q.get('from')||'SF', speed=Math.min(1000,Math.max(1,+q.get('speed')||DEMO_SPEEDS.default));
   Object.assign(demo,{core,final,tl,from,clock:core.createClock(tl,{speed,from,saved})});
   return demo;
 }
@@ -437,7 +442,11 @@ function renderNext(){
   const {list:q,mode,floOrder,matCount:matsInUse}=queue();
   // the event is done when nothing is left to fight anywhere
   const dayDone=!q.length && blocks().some(b=>allMatches(b).length) && blocks().every(b=>allMatches(b).every(mo=>mo.w!==null));
-  let h=DEMO?`<div class="panel quiet" style="margin-bottom:10px">this is a demo: a replay of ADCC 2026 at ×${simSpeed()}, not a live event. pause, speed and jump are in settings.</div>`:'';
+  let h='';
+  if(DEMO){ const c=demo.clock, sp=c?c.speed:simSpeed(); const opts=[...new Set([...DEMO_SPEEDS.list, sp])].sort((a,b)=>a-b);
+    h=`<div class="panel quiet demo-bar"><div>this is a demo: a replay of ADCC 2026, not a live event. jump to a round in settings.</div>
+      <div class="demo-ctl"><button type="button" class="chip small" data-demo="pause">${c&&c.paused?'resume':'pause'}</button>
+      <label for="demoSpeed">speed</label><select id="demoSpeed" class="field">${opts.map(x=>`<option value="${x}" ${x===sp?'selected':''}>×${x}${x===1?' (real time)':''}</option>`).join('')}</select></div></div>`; }
   h+=dayDone?'':`<div class="topline"><span class="note" style="margin:0">${matsInUse} mat${matsInUse===1?'':'s'}${floOrder?'':' (a guess)'} · times are estimates${mode==='live'?' · following the live feed':mode==='break'?' · break until '+fmt(breakEnd()):''}${floOrder?' · order from FloArena':''}</span></div>`;
   h+=renderMats();
   const fl=S.follow.filter(Boolean);
@@ -555,7 +564,7 @@ function renderSettings(){
   const demoPanel = DEMO&&dc ? `
   <h2 class="section-title">demo</h2>
   <div class="panel">
-    <div class="chip-row"><button type="button" class="chip" data-demo="pause">${dc.paused?'resume':'pause'}</button>${[5,20,60,200].map(x=>`<button type="button" class="chip ${dc.speed===x?'active':''}" data-demo="speed:${x}">×${x}</button>`).join('')}</div>
+    <div class="chip-row"><button type="button" class="chip" data-demo="pause">${dc.paused?'resume':'pause'}</button>${DEMO_SPEEDS.list.map(x=>`<button type="button" class="chip ${dc.speed===x?'active':''}" data-demo="speed:${x}">×${x}</button>`).join('')}</div>
     <div class="chip-row" style="margin-top:8px">${stages.filter(([k])=>dc.targets[k]!==undefined).map(([k,l])=>`<button type="button" class="chip" data-demo="jump:${k}">${l}</button>`).join('')}<button type="button" class="chip" data-demo="restart">restart</button></div>
     <div class="note">a replay of ADCC 2026 from its real results, mats and finish times, running in this browser. ×1 is real time. <a class="plain" href="./">leave the demo</a></div>
   </div>` : '';
@@ -638,6 +647,7 @@ $('#main').addEventListener('change',e=>{
   if(t.id==='follow'){ S.follow=t.value.split(',').map(x=>x.trim()).filter(Boolean); save(); }
   if(t.id==='mats'){ S.mats=Math.max(1,+t.value||1); save(); }
   if(t.id==='breakUntil'){ S.breakUntil=t.value||''; save(); }
+  if(t.id==='demoSpeed'){ t.blur(); demoControl('speed:'+t.value); }
   if(t.dataset.dur){ S.dur[t.dataset.dur]=+t.value||12; save(); }
 });
 // entry point. A test harness sets window.QUEUE_TEST to a callback and gets the engine instead of a boot.
