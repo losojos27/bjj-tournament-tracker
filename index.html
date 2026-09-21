@@ -217,8 +217,24 @@ let saveT;
 function save(){ clearTimeout(saveT); saveT=setTimeout(()=>store.set('adcc26', JSON.stringify(S)),150); }
 
 // ---------- data fetching ----------
+// Results the live feed has shown as final, kept until results.json confirms them. The feed holds only each mat's
+// CURRENT bout, so without this a finished bout went back to "undecided" the moment its mat moved on, and stayed
+// that way until the next sync: it reappeared in the queue and the next round lost its name. Found with the
+// simulator (Sept 21): at a 10-minute effective sync, 65 of ADCC's 121 results vanished for up to 6 minutes.
+const SEEN=new Map();                                  // bout number -> the finished live entry
+const SEEN_KEY='bjjTracker.seen.'+EVENT, SEEN_MAX_AGE=12*3600e3;
+let lastSimT=-1;
+function persistSeen(){ if(SIM) return; try{ localStorage.setItem(SEEN_KEY, JSON.stringify([...SEEN.values()])); }catch(e){} }
+function restoreSeen(){ if(SIM) return; try{ for(const l of JSON.parse(localStorage.getItem(SEEN_KEY)||'[]')) if(l&&l.n&&l.over&&(l.winner===0||l.winner===1)&&Date.now()-(l.updated||0)<SEEN_MAX_AGE) SEEN.set(String(l.n),l); }catch(e){} }
+function rememberFinished(){ let ch=false; for(const l of Object.values(LIVE)) if(l.over&&l.winner!==null&&!SEEN.has(l.n)){ SEEN.set(l.n,l); ch=true; } if(ch) persistSeen(); }
+function forgetConfirmed(){   // results.json has caught up (Flo's word wins, including a corrected result), or a simulation jumped back in time
+  if(!DATA) return; let ch=false;
+  if(SIM&&DATA.sim){ if(DATA.sim.t<lastSimT){ ch=SEEN.size>0; SEEN.clear(); } lastSimT=DATA.sim.t; }
+  for(const d of DATA.divs) for(const b of [...d.rounds.flatMap(r=>r.bouts), ...(d.third?[d.third]:[])]) if(b.n&&(b.w!==null&&b.w!==undefined||b.decided)&&SEEN.delete(String(b.n))) ch=true;
+  if(ch) persistSeen();
+}
 async function loadData(){
-  try{ const r=await fetch(DATA_URL+'?t='+Date.now(),{cache:'no-store'}); if(!r.ok) throw new Error('HTTP '+r.status); DATA=await r.json(); dataErr=null; }
+  try{ const r=await fetch(DATA_URL+'?t='+Date.now(),{cache:'no-store'}); if(!r.ok) throw new Error('HTTP '+r.status); DATA=await r.json(); dataErr=null; forgetConfirmed(); }
   catch(e){ dataErr=e; }
   if(quiet()) renderStatus(); else render();
 }
@@ -232,7 +248,7 @@ async function loadLive(){
         blue:{name:`${v.blueFirstName||''} ${v.blueLastName||''}`.trim(), seed:v.blueSeed, team:v.blueTeamName||'', score:v.blueScore??0, pen:v.bluePenalties??0},
         clock:v.clock||'', period:v.period||'', over:!!v.isMatchOver, winner:v.winner==='red'?0:v.winner==='blue'?1:null,
         winType:v.winType||null, finalScore:v.finalScore||null, updated:v.updated||0, weight:v.weight||'', round:v.round||'' }; }
-    LIVE=next; liveState='ok'; lastLive=Date.now();
+    LIVE=next; liveState='ok'; lastLive=Date.now(); rememberFinished();
   }catch(e){ liveState = liveState==='ok' ? 'bad' : 'off'; }
   if(quiet()) renderStatus(); else render();
 }
@@ -251,7 +267,7 @@ function divs(){ return DATA?DATA.divs:[]; }
 function rounds(div){ return div.rounds.map(r=>r.name); }
 function boutAt(div,rName,m){ if(rName==='3') return div.third; const r=div.rounds.find(r=>r.name===rName); return r?r.bouts[m]:null; }
 function keyOf(div,rName,m){ return `${div.id}|${rName}|${m}`; }
-function liveFor(b){ return b&&b.n ? LIVE[String(b.n)] : null; }
+function liveFor(b){ return b&&b.n ? (LIVE[String(b.n)] || SEEN.get(String(b.n)) || null) : null; }   // the mat's current bout, or a finish we saw earlier
 // winner of a bout: FloArena's result, else the live mat feed. Returns {w, src} or null.
 function winnerInfo(div,rName,m){
   const b=boutAt(div,rName,m); if(!b) return null;
@@ -589,9 +605,9 @@ $('#main').addEventListener('change',e=>{
   if(t.dataset.dur){ S.dur[t.dataset.dur]=+t.value||12; save(); }
 });
 // entry point. A test harness sets window.QUEUE_TEST to a callback and gets the engine instead of a boot.
-if(typeof window.QUEUE_TEST==='function') window.QUEUE_TEST({queue, S, SIM, setData:d=>{DATA=d;}, setLive:l=>{LIVE=l;}});
+if(typeof window.QUEUE_TEST==='function') window.QUEUE_TEST({queue, S, SIM, setData:d=>{DATA=d; forgetConfirmed();}, setLive:l=>{LIVE=l; rememberFinished();}, forget:()=>SEEN.clear(), seen:()=>SEEN.size});
 else {
-  loadState(); loadData(); loadLive();
+  loadState(); restoreSeen(); loadData(); loadLive();
   // refresh loops: results every 60 s, live mats every 15 s (3 s and 1.5 s in a simulation, which runs many times
   // faster than a real day); the settings tab is left alone while you type
   const every=(fn,ms)=>{ const tick=()=>{ if(!quiet()) fn(); setTimeout(tick,ms); }; setTimeout(tick,ms); };

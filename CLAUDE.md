@@ -91,7 +91,12 @@ Three layers, all read-only:
    `loadState()` when the shape changes. Start times (`DEFAULT`) and block order
    (`DEFAULT_BLOCKS`) are code defaults with no UI.
 
-**Results.** `winnerInfo()` precedence: FloArena → live feed (`isMatchOver` + `winner`). Nothing
+**Results.** `winnerInfo()` precedence: FloArena → live feed (`isMatchOver` + `winner`). The live
+feed holds only each mat's current bout, so a finish seen there is remembered (`SEEN`, persisted
+per event in localStorage for 12 h, never in sim mode) until `results.json` confirms the bout,
+at which point Flo's word wins and the memory is dropped. Without that, a finished bout went
+back to undecided once its mat moved on and stayed so until the next sync; the simulator showed
+65 of 121 ADCC results doing that for up to 6 minutes at a 10-minute effective sync. Nothing
 is entered by hand. `w === -1` means decided with no winner (double DQ); both render as out.
 Participants come from FloArena's own per-round lists (`slot()`) and are propagated from earlier
 winners only when Flo hasn't filled the slot. That is what makes odd brackets work: at -66kg

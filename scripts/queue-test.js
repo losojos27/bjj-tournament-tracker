@@ -18,7 +18,7 @@ function load(location){
   if(!api) throw new Error('index.html did not hand the engine to QUEUE_TEST');
   return api;
 }
-const {queue,S,setData,setLive,SIM}=load({hostname:'losojos27.github.io',search:''});
+const {queue,S,setData,setLive,SIM,forget,seen}=load({hostname:'losojos27.github.io',search:''});
 
 // ---- fixture: a men's division at the semifinal stage, a women's division at the quarterfinal stage
 const P=(name,seed,team='Brazil')=>({name,seed,team});
@@ -92,7 +92,18 @@ setData(d); setLive({'85':live(85,0,true,0)});           // #85 finished per the
 q=queue();
 ok(!nums(q).includes('78'), 'E: a decided-without-winner bout is not queued');
 ok(!nums(q).includes('85'), 'E: a bout the live feed reports finished is not queued');
+forget();
 
+// I) the live feed holds only each mat's current bout: a finish seen there must survive the mat moving on,
+//    until results.json confirms it (the bug the simulator found on Sept 21)
+{ forget(); setData(fixture()); setLive({'85':live(85,0,true,0)});
+  ok(!nums(queue()).includes('85'), 'I: a bout the live feed reports finished is not queued');
+  setLive({'86':live(86,0)});                                  // the mat has moved on to its next bout; #85 is gone from the feed
+  const qi=queue(); ok(!nums(qi).includes('85'), 'I: the finished bout stays decided after its mat moves on: '+nums(qi));
+  ok(seen()===1, 'I: exactly one remembered finish');
+  const d9=fixture(); const b85=d9.divs[1].rounds[1].bouts[0]; b85.w=1; b85.decided=true; setData(d9);   // results.json catches up (and disagrees: Flo wins)
+  ok(seen()===0, 'I: a finish is forgotten once results.json confirms the bout');
+  forget(); setLive({}); }
 // H) simulation mode: only on a local/private host, and projected slot lengths shrink by the sim's speed
 ok(SIM===false, 'H: the public site is not in sim mode');
 ok(load({hostname:'losojos27.github.io',search:'?sim'}).SIM===false, 'H: ?sim does nothing on the public hostname');
