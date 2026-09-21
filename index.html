@@ -240,8 +240,9 @@ function forgetConfirmed(){   // results.json has caught up (Flo's word wins, in
 }
 // ---------- demo: scripts/sim/core.mjs running in this browser ----------
 const demo={clock:null}; const DEMO_KEY='bjjTracker.demo';
-async function demoReady(){
-  if(demo.clock) return demo;
+let demoLoading=null;
+function demoReady(){ return demoLoading || (demoLoading=demoInit().catch(e=>{ demoLoading=null; throw e; })); }   // the two loaders start together; initialise once
+async function demoInit(){
   const core=await import('./scripts/sim/core.mjs');
   const r=await fetch('scripts/sim/adcc-2026-final.json'); if(!r.ok) throw new Error('HTTP '+r.status);
   const final=await r.json(), tl=core.buildTimeline(final), q=new URLSearchParams(location.search);
