@@ -3,7 +3,7 @@
 import fs from 'node:fs';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
-import { buildTimeline, resultsAt, matsFeedAt, upcomingAt, jumpTargets } from './core.mjs';
+import { buildTimeline, resultsAt, matsFeedAt, upcomingAt, jumpTargets, createClock } from './core.mjs';
 import { createSim, createServer } from './server.mjs';
 
 const HERE = path.dirname(fileURLToPath(import.meta.url));
@@ -80,6 +80,16 @@ let fake = 1_000_000; const sim = createSim({ speed: 20, sync: 300, now: () => f
   sim.setSync(0); ok(sim.results().divs.find(d => d.id === 'm99p').rounds[0].bouts[0].w !== null, 'with sync 0 the results file is live'); }
 { sim.pause(true); const t1 = sim.t(); fake += 60_000; ok(sim.t() === t1, 'paused time does not advance'); sim.pause(false); fake += 1000; ok(Math.abs(sim.t() - (t1 + 20)) < 1e-6, 'one wall second at ×20 is twenty event seconds');
   ok(sim.setSpeed(0) === false && sim.setSpeed(60) === true && sim.jump('nowhere') === false && sim.jump('finals') === true, 'controls validate their input'); }
+
+{ // the shared clock: starts where asked, survives a reload through its saved state, and rejects a corrupt one
+  let w = 5_000_000; const c = createClock(tl, { speed: 20, from: 'SF', now: () => w });
+  ok(c.t() === T.SF, 'a clock can start at a stage');
+  w += 10_000; const saved = c.state(); w += 5_000;
+  const c2 = createClock(tl, { speed: 1, from: 'start', now: () => w, saved });
+  ok(Math.abs(c2.t() - (T.SF + 15 * 20)) < 1e-6 && c2.speed === 20, 'a restored clock keeps running from its saved state, at its saved speed');
+  ok(createClock(tl, { from: 'QF', now: () => w, saved: { base: 'x' } }).t() === T.QF, 'a corrupt saved state falls back to a fresh clock');
+  c2.pause(true); const held = c2.t(); w += 99_000; ok(c2.t() === held && createClock(tl, { now: () => w, saved: c2.state() }).t() === held, 'a paused clock stays paused across a reload');
+  ok(Math.abs(c.snapshotWall() - (w - ((c.t() - c.snapshotT()) / c.speed) * 1000)) < 1e-6, 'the snapshot wall time trails now by the age of the snapshot'); }
 
 const server = createServer(sim);
 await new Promise(r => server.listen(0, '127.0.0.1', r));

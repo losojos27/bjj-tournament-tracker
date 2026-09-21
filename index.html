@@ -54,6 +54,7 @@
   .chip:focus-visible{outline:2px solid var(--accent-soft);outline-offset:1px}
   .topline{display:flex;align-items:center;justify-content:space-between;gap:10px;flex-wrap:wrap;margin:4px 0 12px}
   .note{font-size:var(--fs-meta);color:var(--text-muted);margin-top:8px}
+  a.plain{color:var(--text-primary);text-decoration:underline;text-decoration-color:var(--text-muted);text-underline-offset:3px}
   .swipe-hint{margin:0 0 10px}
   .actions{display:flex;gap:8px;margin-top:10px;flex-wrap:wrap}
   /* followed athletes */
@@ -158,10 +159,14 @@ const EVENT='52703b65-bade-46e2-9ce2-399dd32d93e4';
 // never a URL taken from the query string.
 const SIM = new URLSearchParams(location.search).has('sim') &&
   /^(localhost|127\.0\.0\.1|\[::1\]|10\.\d+\.\d+\.\d+|192\.168\.\d+\.\d+|172\.(1[6-9]|2\d|3[01])\.\d+\.\d+|[a-z0-9-]+\.local)$/i.test(location.hostname);
+// Demo: the same simulator running inside this browser, so a plain link can show the app in motion. Everything
+// it loads is same-origin (the sim core and a frozen copy of ADCC 2026), so it is safe on the public site.
+const DEMO = !SIM && new URLSearchParams(location.search).has('demo');
+const SIMULATED = SIM || DEMO;
 const DATA_URL = SIM ? 'sim/results.json' : 'data/results.json';
 const LIVE_URL = SIM ? 'sim/mats.json' : `https://floarena.firebaseio.com/${EVENT}/mats.json`;
 // a simulation runs many event-seconds per wall second; every projected duration is divided by this
-const simSpeed = () => (SIM && DATA && DATA.sim && DATA.sim.speed > 0) ? DATA.sim.speed : 1;
+const simSpeed = () => (SIMULATED && DATA && DATA.sim && DATA.sim.speed > 0) ? DATA.sim.speed : 1;
 const ROUND_LABEL={R32:'round of 32',R16:'round of 16',QF:'quarterfinal',SF:'semifinal',F:'final','3':'3rd place'};
 const ROUND_HEAD={R32:'round of 32',R16:'round of 16',QF:'quarterfinals',SF:'semifinals',F:'final','3':'3rd place'};
 const rl=r=>ROUND_LABEL[r]||r;
@@ -224,22 +229,42 @@ function save(){ clearTimeout(saveT); saveT=setTimeout(()=>store.set('adcc26', J
 const SEEN=new Map();                                  // bout number -> the finished live entry
 const SEEN_KEY='bjjTracker.seen.'+EVENT, SEEN_MAX_AGE=12*3600e3;
 let lastSimT=-1;
-function persistSeen(){ if(SIM) return; try{ localStorage.setItem(SEEN_KEY, JSON.stringify([...SEEN.values()])); }catch(e){} }
-function restoreSeen(){ if(SIM) return; try{ for(const l of JSON.parse(localStorage.getItem(SEEN_KEY)||'[]')) if(l&&l.n&&l.over&&(l.winner===0||l.winner===1)&&Date.now()-(l.updated||0)<SEEN_MAX_AGE) SEEN.set(String(l.n),l); }catch(e){} }
+function persistSeen(){ if(SIMULATED) return; try{ localStorage.setItem(SEEN_KEY, JSON.stringify([...SEEN.values()])); }catch(e){} }
+function restoreSeen(){ if(SIMULATED) return; try{ for(const l of JSON.parse(localStorage.getItem(SEEN_KEY)||'[]')) if(l&&l.n&&l.over&&(l.winner===0||l.winner===1)&&Date.now()-(l.updated||0)<SEEN_MAX_AGE) SEEN.set(String(l.n),l); }catch(e){} }
 function rememberFinished(){ let ch=false; for(const l of Object.values(LIVE)) if(l.over&&l.winner!==null&&!SEEN.has(l.n)){ SEEN.set(l.n,l); ch=true; } if(ch) persistSeen(); }
 function forgetConfirmed(){   // results.json has caught up (Flo's word wins, including a corrected result), or a simulation jumped back in time
   if(!DATA) return; let ch=false;
-  if(SIM&&DATA.sim){ if(DATA.sim.t<lastSimT){ ch=SEEN.size>0; SEEN.clear(); } lastSimT=DATA.sim.t; }
+  if(SIMULATED&&DATA.sim){ if(DATA.sim.t<lastSimT){ ch=SEEN.size>0; SEEN.clear(); } lastSimT=DATA.sim.t; }
   for(const d of DATA.divs) for(const b of [...d.rounds.flatMap(r=>r.bouts), ...(d.third?[d.third]:[])]) if(b.n&&(b.w!==null&&b.w!==undefined||b.decided)&&SEEN.delete(String(b.n))) ch=true;
   if(ch) persistSeen();
 }
+// ---------- demo: scripts/sim/core.mjs running in this browser ----------
+const demo={clock:null}; const DEMO_KEY='bjjTracker.demo';
+async function demoReady(){
+  if(demo.clock) return demo;
+  const core=await import('./scripts/sim/core.mjs');
+  const r=await fetch('scripts/sim/adcc-2026-final.json'); if(!r.ok) throw new Error('HTTP '+r.status);
+  const final=await r.json(), tl=core.buildTimeline(final), q=new URLSearchParams(location.search);
+  let saved=null; try{ const o=JSON.parse(sessionStorage.getItem(DEMO_KEY)||'null'); if(o&&o.q===location.search) saved=o.state; }catch(e){}   // a reload continues; a different link starts fresh
+  const from=q.get('from')||'SF', speed=Math.min(1000,Math.max(1,+q.get('speed')||20));
+  Object.assign(demo,{core,final,tl,from,clock:core.createClock(tl,{speed,from,saved})});
+  return demo;
+}
+function demoSave(){ try{ sessionStorage.setItem(DEMO_KEY, JSON.stringify({q:location.search,state:demo.clock.state()})); }catch(e){} }
+async function demoResults(){ const d=await demoReady(), c=d.clock; demoSave();
+  return d.core.resultsAt(d.final,d.tl,c.snapshotT(),{speed:c.speed,paused:c.paused,sync:c.sync,t:Math.round(c.t()),demo:true},c.snapshotWall()); }
+async function demoMats(){ const d=await demoReady(); return d.core.matsFeedAt(d.final,d.tl,d.clock.t(),Date.now(),d.clock.speed); }
+function demoControl(cmd){ const c=demo.clock; if(!c) return; const [k,v]=String(cmd).split(':');
+  if(k==='pause') c.pause(!c.paused); else if(k==='speed') c.setSpeed(+v); else if(k==='jump') c.jump(v); else if(k==='restart'){ c.reset(); c.jump(demo.from); }
+  demoSave(); loadData().then(loadLive).then(render); }
+
 async function loadData(){
-  try{ const r=await fetch(DATA_URL+'?t='+Date.now(),{cache:'no-store'}); if(!r.ok) throw new Error('HTTP '+r.status); DATA=await r.json(); dataErr=null; forgetConfirmed(); }
+  try{ if(DEMO) DATA=await demoResults(); else { const r=await fetch(DATA_URL+'?t='+Date.now(),{cache:'no-store'}); if(!r.ok) throw new Error('HTTP '+r.status); DATA=await r.json(); } dataErr=null; forgetConfirmed(); }
   catch(e){ dataErr=e; }
   if(quiet()) renderStatus(); else render();
 }
 async function loadLive(){
-  try{ const r=await fetch(LIVE_URL,{cache:'no-store'}); if(!r.ok) throw new Error('HTTP '+r.status); const j=await r.json();
+  try{ let j; if(DEMO) j=await demoMats(); else { const r=await fetch(LIVE_URL,{cache:'no-store'}); if(!r.ok) throw new Error('HTTP '+r.status); j=await r.json(); }   // the demo feed goes through the same parser as the real one
     const next={};
     for(const k in (j||{})){ const v=j[k]; if(!v||!v.matName||!v.boutNumber) continue;
       if(isTestBout(v.division, v.weight, [v.redFirstName,v.blueFirstName], v.boutNumber)) continue;   // the arena crew's test bouts
@@ -411,7 +436,8 @@ function renderNext(){
   const {list:q,mode,floOrder,matCount:matsInUse}=queue();
   // the event is done when nothing is left to fight anywhere
   const dayDone=!q.length && blocks().some(b=>allMatches(b).length) && blocks().every(b=>allMatches(b).every(mo=>mo.w!==null));
-  let h=dayDone?'':`<div class="topline"><span class="note" style="margin:0">${matsInUse} mat${matsInUse===1?'':'s'}${floOrder?'':' (a guess)'} · times are estimates${mode==='live'?' · following the live feed':mode==='break'?' · break until '+fmt(breakEnd()):''}${floOrder?' · order from FloArena':''}</span></div>`;
+  let h=DEMO?`<div class="panel quiet" style="margin-bottom:10px">this is a demo: a replay of ADCC 2026 at ×${simSpeed()}, not a live event. pause, speed and jump are in settings.</div>`:'';
+  h+=dayDone?'':`<div class="topline"><span class="note" style="margin:0">${matsInUse} mat${matsInUse===1?'':'s'}${floOrder?'':' (a guess)'} · times are estimates${mode==='live'?' · following the live feed':mode==='break'?' · break until '+fmt(breakEnd()):''}${floOrder?' · order from FloArena':''}</span></div>`;
   h+=renderMats();
   const fl=S.follow.filter(Boolean);
   const cards=[]; const seen=new Set();
@@ -524,7 +550,15 @@ function unmatchedFollows(){
 }
 function renderSettings(){
   const synced=DATA?fmt(new Date(DATA.updated)):'not loaded';
-  return `
+  const dc=demo.clock; const stages=[['start','start'],['QF','quarterfinals'],['SF','semifinals'],['third','3rd place'],['finals','finals'],['absolute','absolute']];
+  const demoPanel = DEMO&&dc ? `
+  <h2 class="section-title">demo</h2>
+  <div class="panel">
+    <div class="chip-row"><button type="button" class="chip" data-demo="pause">${dc.paused?'resume':'pause'}</button>${[5,20,60,200].map(x=>`<button type="button" class="chip ${dc.speed===x?'active':''}" data-demo="speed:${x}">×${x}</button>`).join('')}</div>
+    <div class="chip-row" style="margin-top:8px">${stages.filter(([k])=>dc.targets[k]!==undefined).map(([k,l])=>`<button type="button" class="chip" data-demo="jump:${k}">${l}</button>`).join('')}<button type="button" class="chip" data-demo="restart">restart</button></div>
+    <div class="note">a replay of ADCC 2026 from its real results, mats and finish times, running in this browser. ×1 is real time. <a class="plain" href="./">leave the demo</a></div>
+  </div>` : '';
+  return `${demoPanel}
   <h2 class="section-title">following</h2>
   <div class="panel">
     <input class="field" id="follow" value="${esc(S.follow.join(', '))}" placeholder="names or countries, comma separated" aria-label="following" autocomplete="off" autocapitalize="words">
@@ -555,12 +589,12 @@ function renderStatus(){
   const dataTxt = DATA ? `synced ${fmt(new Date(DATA.updated))}` : (dataErr?'<span class="bad">results failed</span>':'loading…');
   // results that fetch fine but are old are the failure mode that bit us: say so during a competition day
   const ageMin = DATA ? (Date.now()-new Date(DATA.updated).getTime())/60000 : 0;
-  const eventDay = SIM || Object.values(DAY_DATES).includes(localDate());
+  const eventDay = SIMULATED || Object.values(DAY_DATES).includes(localDate());
   const old = DATA&&eventDay&&ageMin>15 ? ` · <span class="bad">results ${ageMin<90?Math.round(ageMin)+' min':Math.round(ageMin/60)+' h'} old</span>` : '';
   const stale = (DATA&&dataErr ? ' · <span class="bad">stale</span>' : '') + old;
   const n=liveInProgress().length;
   const liveTxt = liveState==='ok' ? (n?`<b>${n===1?'1 bout':n+' bouts'} on the mats</b>`:'nothing on the mats') : liveState==='bad' ? `<span class="bad">live feed lost</span>` : `live feed off`;
-  const simTxt = SIM ? `<span class="bad">simulation${simSpeed()!==1?' ×'+simSpeed():''}${DATA&&DATA.sim&&DATA.sim.paused?' paused':''}</span> · ` : '';   // never mistakable for the real thing
+  const simTxt = SIMULATED ? `<span class="bad">${DEMO?'demo':'simulation'}${simSpeed()!==1?' ×'+simSpeed():''}${DATA&&DATA.sim&&DATA.sim.paused?' paused':''}</span> · ` : '';   // never mistakable for the real thing
   s.innerHTML=`${simTxt}${liveTxt}${stale}<span class="sync"> · ${dataTxt}</span>`;
 }
 function render(){
@@ -589,6 +623,7 @@ function toast(t){ const e=$('#toast'); e.textContent=t; e.classList.add('show')
 // ---------- events ----------
 document.querySelector('.tabs').addEventListener('click',e=>{ const b=e.target.closest('[data-tab]'); if(b){ tab=b.dataset.tab; render(); window.scrollTo(0,0);} });
 $('#main').addEventListener('click',e=>{
+  const dm=e.target.closest('[data-demo]'); if(dm){ demoControl(dm.dataset.demo); return; }
   const bd=e.target.closest('[data-bdiv]'); if(bd){ S.bracketDiv=bd.dataset.bdiv; bracketFresh=true; save(); render(); return; }
   const cp=e.target.closest('[data-copy]'); if(cp){ copyText(cp.dataset.copy); return; }
   const th=e.target.closest('[data-theme-set]'); if(th){ setThemeMode(th.dataset.themeSet); render(); return; }
@@ -605,13 +640,13 @@ $('#main').addEventListener('change',e=>{
   if(t.dataset.dur){ S.dur[t.dataset.dur]=+t.value||12; save(); }
 });
 // entry point. A test harness sets window.QUEUE_TEST to a callback and gets the engine instead of a boot.
-if(typeof window.QUEUE_TEST==='function') window.QUEUE_TEST({queue, S, SIM, setData:d=>{DATA=d; forgetConfirmed();}, setLive:l=>{LIVE=l; rememberFinished();}, forget:()=>SEEN.clear(), seen:()=>SEEN.size});
+if(typeof window.QUEUE_TEST==='function') window.QUEUE_TEST({queue, S, SIM, DEMO, setData:d=>{DATA=d; forgetConfirmed();}, setLive:l=>{LIVE=l; rememberFinished();}, forget:()=>SEEN.clear(), seen:()=>SEEN.size});
 else {
   loadState(); restoreSeen(); loadData(); loadLive();
   // refresh loops: results every 60 s, live mats every 15 s (3 s and 1.5 s in a simulation, which runs many times
   // faster than a real day); the settings tab is left alone while you type
   const every=(fn,ms)=>{ const tick=()=>{ if(!quiet()) fn(); setTimeout(tick,ms); }; setTimeout(tick,ms); };
-  every(loadData, SIM?3000:60000); every(loadLive, SIM?1500:15000);
+  every(loadData, SIMULATED?3000:60000); every(loadLive, SIMULATED?1500:15000);
   document.addEventListener('visibilitychange',()=>{ if(!document.hidden){ loadData(); loadLive(); } });
 }
 </script>

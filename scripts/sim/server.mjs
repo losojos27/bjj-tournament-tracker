@@ -13,7 +13,7 @@ import http from 'node:http';
 import fs from 'node:fs';
 import path from 'node:path';
 import { fileURLToPath, pathToFileURL } from 'node:url';
-import { buildTimeline, resultsAt, matsFeedAt, jumpTargets, summaryAt } from './core.mjs';
+import { buildTimeline, resultsAt, matsFeedAt, createClock, summaryAt } from './core.mjs';
 
 const HERE = path.dirname(fileURLToPath(import.meta.url));
 const ROOT = path.resolve(HERE, '..', '..');
@@ -23,26 +23,16 @@ const TYPES = { '.html': 'text/html; charset=utf-8', '.css': 'text/css; charset=
 export function createSim({ fixture = path.join(HERE, 'adcc-2026-final.json'), speed = 20, from = 'start', sync = 300, now = () => Date.now() } = {}) {
   const final = JSON.parse(fs.readFileSync(fixture, 'utf8'));
   const tl = buildTimeline(final);
-  const targets = jumpTargets(tl);
-  const st = { base: 0, wall0: now(), speed, paused: false, sync };
-  const t = () => Math.min(tl.total, st.base + (st.paused ? 0 : ((now() - st.wall0) / 1000) * st.speed));
-  const rebase = () => { st.base = t(); st.wall0 = now(); };
-  const sim = {
-    final, tl, targets, t,
-    jump(stage) { if (targets[stage] === undefined) return false; st.base = targets[stage]; st.wall0 = now(); return true; },
-    setSpeed(n) { if (!(n > 0 && n <= 5000)) return false; rebase(); st.speed = n; return true; },
-    setSync(n) { if (!(n >= 0 && n <= 3600)) return false; st.sync = n; return true; },
-    pause(p) { rebase(); st.paused = !!p; },
-    reset() { st.base = 0; st.wall0 = now(); st.paused = false; st.speed = speed; st.sync = sync; },
-    // the last moment a sync would have run: results.json is a snapshot, the mats feed is live
-    snapshotT() { const tt = t(); return st.sync > 0 ? Math.floor(tt / st.sync) * st.sync : tt; },
-    results() { const tt = t(), ts = sim.snapshotT(); return resultsAt(final, tl, ts, { speed: st.speed, paused: st.paused, sync: st.sync, t: Math.round(tt) }, now() - ((tt - ts) / st.speed) * 1000); },
-    mats() { return matsFeedAt(final, tl, t(), now(), st.speed); },
-    status() { const tt = t(); const hms = s => `${String(Math.floor(s / 3600)).padStart(2, '0')}:${String(Math.floor((s % 3600) / 60)).padStart(2, '0')}:${String(Math.floor(s % 60)).padStart(2, '0')}`;
-      return { t: Math.round(tt), total: Math.round(tl.total), clock: hms(tt), length: hms(tl.total), speed: st.speed, paused: st.paused, sync: st.sync, stages: Object.keys(targets), event: final.event?.name || '', ...summaryAt(tl, tt) }; },
+  const clock = createClock(tl, { speed, sync, from, now });
+  const hms = s => `${String(Math.floor(s / 3600)).padStart(2, '0')}:${String(Math.floor((s % 3600) / 60)).padStart(2, '0')}:${String(Math.floor(s % 60)).padStart(2, '0')}`;
+  return {
+    final, tl, targets: clock.targets, t: clock.t,
+    jump: s => clock.jump(s), setSpeed: n => clock.setSpeed(n), setSync: n => clock.setSync(n), pause: p => clock.pause(p), reset: () => clock.reset(), snapshotT: () => clock.snapshotT(),
+    results() { return resultsAt(final, tl, clock.snapshotT(), { speed: clock.speed, paused: clock.paused, sync: clock.sync, t: Math.round(clock.t()) }, clock.snapshotWall()); },
+    mats() { return matsFeedAt(final, tl, clock.t(), now(), clock.speed); },
+    status() { const tt = clock.t(); return { t: Math.round(tt), total: Math.round(tl.total), clock: hms(tt), length: hms(tl.total), speed: clock.speed, paused: clock.paused, sync: clock.sync,
+      stages: Object.keys(clock.targets), event: final.event?.name || '', ...summaryAt(tl, tt) }; },
   };
-  if (from !== 'start') sim.jump(from);
-  return sim;
 }
 
 export function createServer(sim, root = ROOT) {

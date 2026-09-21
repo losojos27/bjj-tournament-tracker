@@ -108,6 +108,10 @@ forget();
 ok(SIM===false, 'H: the public site is not in sim mode');
 ok(load({hostname:'losojos27.github.io',search:'?sim'}).SIM===false, 'H: ?sim does nothing on the public hostname');
 ok(load({hostname:'192.168.1.20',search:'?sim=1'}).SIM===true && load({hostname:'evil.example.com',search:'?sim'}).SIM===false, 'H: ?sim works on a private address and not on an arbitrary host');
+{ const pub=load({hostname:'losojos27.github.io',search:'?demo'}); ok(pub.DEMO===true && pub.SIM===false, 'H: ?demo enables the in-browser demo on the public site, without sim mode');
+  ok(load({hostname:'localhost',search:'?sim&demo'}).DEMO===false, 'H: the server simulation wins when both are asked for');
+  pub.S.mats=1; const d10=fixture(); d10.sim={speed:60,demo:true}; pub.setData(d10); pub.setLive({});
+  const q10=pub.queue().list.filter(x=>x.rName==='SF'); ok(Math.abs((q10[1].at-q10[0].at)/1000-20)<1, 'H: demo projections scale with the demo speed too'); }
 { const simApi=load({hostname:'localhost',search:'?sim'}); ok(simApi.SIM===true, 'H: ?sim on localhost enables sim mode');
   simApi.S.mats=1; const d8=fixture(); d8.sim={speed:20}; simApi.setData(d8); simApi.setLive({});
   const q8=simApi.queue().list.filter(x=>x.rName==='SF'); const gap=(q8[1].at-q8[0].at)/1000;

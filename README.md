@@ -6,6 +6,10 @@ each mat right now.
 
 **Live page:** https://losojos27.github.io/bjj-tournament-tracker/
 
+**Demo (no live event needed):** https://losojos27.github.io/bjj-tournament-tracker/?demo replays
+ADCC 2026 in your browser from its real results, mats and finish times, starting at the
+semifinals at 20× speed. Pause, speed and jump controls are under settings.
+
 ## How it stays live
 - `scripts/sync.mjs` pulls every division's bouts from FloArena's JSON endpoints and writes
   `data/results.json`. A GitHub Actions workflow (`.github/workflows/sync.yml`) runs

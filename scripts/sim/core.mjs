@@ -77,6 +77,31 @@ export function jumpTargets(tl) {
   return t;
 }
 
+// A controllable event clock, shared by the server and the in-browser demo so the two can't drift apart.
+// `saved` is a previous `state()`; an un-paused saved clock keeps running across a reload, as the event would.
+export function createClock(tl, { speed = 20, sync = 300, from = 'start', now = () => Date.now(), saved = null } = {}) {
+  const targets = jumpTargets(tl);
+  const dflt = { speed, sync };
+  const ok = saved && Number.isFinite(saved.base) && Number.isFinite(saved.wall0) && saved.speed > 0;
+  const st = ok ? { base: saved.base, wall0: saved.wall0, speed: saved.speed, paused: !!saved.paused, sync: saved.sync >= 0 ? saved.sync : sync }
+                : { base: targets[from] ?? 0, wall0: now(), speed, paused: false, sync };
+  const t = () => Math.max(0, Math.min(tl.total, st.base + (st.paused ? 0 : ((now() - st.wall0) / 1000) * st.speed)));
+  const rebase = () => { st.base = t(); st.wall0 = now(); };
+  return {
+    targets, t, state: () => ({ ...st }),
+    get speed() { return st.speed; }, get paused() { return st.paused; }, get sync() { return st.sync; },
+    jump(stage) { if (targets[stage] === undefined) return false; st.base = targets[stage]; st.wall0 = now(); return true; },
+    setSpeed(n) { if (!(n > 0 && n <= 5000)) return false; rebase(); st.speed = n; return true; },
+    setSync(n) { if (!(n >= 0 && n <= 3600)) return false; st.sync = n; return true; },
+    pause(p) { rebase(); st.paused = !!p; },
+    reset() { st.base = 0; st.wall0 = now(); st.paused = false; st.speed = dflt.speed; st.sync = dflt.sync; },
+    // the last moment a sync would have run: results.json is a snapshot, the mats feed is live
+    snapshotT() { const tt = t(); return st.sync > 0 ? Math.floor(tt / st.sync) * st.sync : tt; },
+    // wall-clock time of that snapshot, for results.json's `updated`
+    snapshotWall() { return now() - ((t() - this.snapshotT()) / st.speed) * 1000; },
+  };
+}
+
 // results.json as the sync would have written it at event time `t`. The real sync snapshots results and the
 // upcoming lists together every few minutes, so callers pass the time of the last snapshot, not "now".
 export function resultsAt(final, tl, t, sim = {}, updatedMs = Date.now()) {

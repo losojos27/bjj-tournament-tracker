@@ -10,6 +10,8 @@ Championship 2026, Kraków, Sept 12–13. Lee uses it on a phone in the arena; o
 the link. The repo name is deliberately generic because it will cover more than ADCC.
 
 - **Live page (the one to share):** https://losojos27.github.io/bjj-tournament-tracker/
+- **Demo link (a replay of ADCC 2026 running in the browser, safe to hand to anyone):**
+  https://losojos27.github.io/bjj-tournament-tracker/?demo
 - Claude artifact snapshot (no live feeds, results as of last republish):
   https://claude.ai/code/artifact/78d4a9a4-2636-4548-9de6-b03be85ae72e
 
@@ -146,6 +148,22 @@ the last finished bout left on the mat, plus the nameless stale entry the real f
 (`pause`, `speed`, `jump=<stage>`, `sync`, `reset`) and a control panel at `/sim/`. The results
 file is a **snapshot every `sync` event-seconds** while the mats feed is live, which is how the
 real system behaved and is what makes feed-versus-file bugs reproducible.
+`core.mjs` also holds the event clock (`createClock`: speed, pause, jump, sync, a saved state
+that survives a reload), shared by the server and the in-browser demo so they can't drift.
+
+**Demo mode (`?demo`, any host).** The same core runs inside the page: `demoReady()` imports
+`./scripts/sim/core.mjs` and fetches the frozen fixture, both same-origin, so the CSP is
+unchanged and it is safe on the public site. `loadData`/`loadLive` take their input from
+`demoResults()`/`demoMats()` instead of the network, and the mats feed still goes through the
+real parser. Defaults: starts at the semifinals at ×20 (`?demo&from=start&speed=60` to change);
+the clock lives in sessionStorage keyed by the query string, so a reload continues and a
+different link starts fresh. Next up shows a "this is a demo" line, the header says "demo ×N",
+and Settings gains a demo panel (pause, speed, jump, restart, leave) that exists only in demo
+mode. `SIMULATED = SIM || DEMO` gates everything the two share: scaled projections, fast
+polling, no persistence of remembered finishes. The server simulation wins if both are asked
+for. Pages serves `.mjs` as `text/javascript` (checked Sept 21); if that ever changes the
+import fails and the page says it couldn't load the bracket.
+
 The page enters sim mode only with `?sim` **and** a localhost or private-network hostname
 (`SIM` in `index.html`); both sim feeds are fixed same-origin paths, never a URL from the query
 string, so the CSP is unchanged and the public site can't be pointed anywhere. In sim mode the
@@ -287,10 +305,9 @@ ADCC 2026 is done: Lee used the page all of finals day and reported no UX or fun
 punch list. The sync schedule is commented out in `sync.yml` and the Day 2 routine is disabled;
 re-enable the cron before the next event. Three items, in this order:
 
-**0. A competition simulator** — built Sept 21 (`scripts/sim/`, see Architecture). Still open:
-a hosted, in-browser demo mode (the core is already browser-safe) if Lee wants a link he can
-hand to someone without his Mac on the same wifi; and failure injection (test-division bouts,
-a dead feed, an empty upcoming list) for rehearsing the Sept 13 incidents.
+**0. A competition simulator** — built Sept 21 (`scripts/sim/`, see Architecture), including the
+hosted `?demo` mode. Deliberately not built yet (Lee, Sept 21: "hold off"): failure injection
+(test-division bouts, a dead feed, an empty upcoming list) for rehearsing the Sept 13 incidents.
 
 **1. Hosting for scale** (Lee, Sept 15): Lee expects to share the page with many parents at
 the next IBJJF Austin Open, which is in January 2027 — that is the real deadline. A WNO may
