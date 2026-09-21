@@ -153,8 +153,15 @@
 // (a GitHub Actions cron reruns it every few minutes). Live mats: FloArena's public Firebase feed,
 // polled straight from the browser. Both are read-only; nothing is entered by hand.
 const EVENT='52703b65-bade-46e2-9ce2-399dd32d93e4';
-const DATA_URL='data/results.json';
-const LIVE_URL=`https://floarena.firebaseio.com/${EVENT}/mats.json`;
+// Simulation (scripts/sim/server.mjs): only with ?sim AND only when the page is served from this machine or a
+// private-network address. On the public site the parameter does nothing. Both sim feeds are same-origin paths,
+// never a URL taken from the query string.
+const SIM = new URLSearchParams(location.search).has('sim') &&
+  /^(localhost|127\.0\.0\.1|\[::1\]|10\.\d+\.\d+\.\d+|192\.168\.\d+\.\d+|172\.(1[6-9]|2\d|3[01])\.\d+\.\d+|[a-z0-9-]+\.local)$/i.test(location.hostname);
+const DATA_URL = SIM ? 'sim/results.json' : 'data/results.json';
+const LIVE_URL = SIM ? 'sim/mats.json' : `https://floarena.firebaseio.com/${EVENT}/mats.json`;
+// a simulation runs many event-seconds per wall second; every projected duration is divided by this
+const simSpeed = () => (SIM && DATA && DATA.sim && DATA.sim.speed > 0) ? DATA.sim.speed : 1;
 const ROUND_LABEL={R32:'round of 32',R16:'round of 16',QF:'quarterfinal',SF:'semifinal',F:'final','3':'3rd place'};
 const ROUND_HEAD={R32:'round of 32',R16:'round of 16',QF:'quarterfinals',SF:'semifinals',F:'final','3':'3rd place'};
 const rl=r=>ROUND_LABEL[r]||r;
@@ -315,7 +322,7 @@ function queue(){
   const floOrder=upMats.length>0;
   const nMats=Math.max(1,S.mats|0, ...inProg.map(l=>l.matIdx+1), ...upMats.map(m=>m.idx+1));
   const mats=Array.from({length:nMats},()=>startAt.getTime());
-  for(const l of inProg) mats[l.matIdx]=Date.now()+(Math.min(clockSecs(l.clock),20*60)+120)*1000; // remaining time + changeover
+  for(const l of inProg) mats[l.matIdx]=Date.now()+(Math.min(clockSecs(l.clock),20*60)+120)*1000/simSpeed(); // remaining time + changeover
   // mats in use: the ones FloArena lists bouts for plus any with a live bout; otherwise every mat up to the configured count (or a live bout's mat)
   const active = floOrder ? [...new Set([...upMats.map(m=>m.idx), ...inProg.map(l=>l.matIdx)])].sort((a,b)=>a-b) : mats.map((_,k)=>k);
   const out=[], placed=new Set();
@@ -323,9 +330,9 @@ function queue(){
   // first 3rd-place bout placed after a semifinal in this projection; every mat waits for the latest one to finish.
   // anything Flo says beats the assumption: a live 3rd-place/final bout, or a recorded 3rd-place result, means no gap
   let sawEarlier=false, gapDone = inProg.some(l=>/3rd|final/i.test(l.round||'')) || divs().some(d=>d.third&&d.third.w!==null&&d.third.w!==undefined);
-  const INTERMISSION=30*60000;
+  const INTERMISSION=30*60000/simSpeed();
   const gapBefore=mo=>{ if(mo.rName==='3'&&sawEarlier&&!gapDone){ const t=Math.max(...mats)+INTERMISSION; for(let k=0;k<mats.length;k++) mats[k]=t; gapDone=true; } if(mo.rName!=='3'&&mo.rName!=='F') sawEarlier=true; };
-  const place=(mo,mi)=>{ gapBefore(mo); if(mo.rName==='3'&&gapDone) { mi=active[0]; for(const k of active) if(mats[k]<mats[mi]) mi=k; } mo.at=new Date(mats[mi]); mo.mat=mi+1; mats[mi]+=(S.dur[mo.rName]||12)*60000; out.push(mo); placed.add(mo.key); };
+  const place=(mo,mi)=>{ gapBefore(mo); if(mo.rName==='3'&&gapDone) { mi=active[0]; for(const k of active) if(mats[k]<mats[mi]) mi=k; } mo.at=new Date(mats[mi]); mo.mat=mi+1; mats[mi]+=(S.dur[mo.rName]||12)*60000/simSpeed(); out.push(mo); placed.add(mo.key); };
   const onMat=mo=>{ const l=mo.live; if(l&&!l.over&&inProg.includes(l)){ if(mo.rName!=='3'&&mo.rName!=='F') sawEarlier=true; mo.at=new Date(); mo.mat=l.matIdx+1; mo.onMat=true; out.push(mo); placed.add(mo.key); return true; } return false; };
   for(const m of upMats) for(const mo of m.list){ if(placed.has(mo.key)||onMat(mo)||mo.w!==null) continue; place(mo,m.idx); }
   for(let i=from;i<full.length;i++){
@@ -532,12 +539,13 @@ function renderStatus(){
   const dataTxt = DATA ? `synced ${fmt(new Date(DATA.updated))}` : (dataErr?'<span class="bad">results failed</span>':'loading…');
   // results that fetch fine but are old are the failure mode that bit us: say so during a competition day
   const ageMin = DATA ? (Date.now()-new Date(DATA.updated).getTime())/60000 : 0;
-  const eventDay = Object.values(DAY_DATES).includes(localDate());
+  const eventDay = SIM || Object.values(DAY_DATES).includes(localDate());
   const old = DATA&&eventDay&&ageMin>15 ? ` · <span class="bad">results ${ageMin<90?Math.round(ageMin)+' min':Math.round(ageMin/60)+' h'} old</span>` : '';
   const stale = (DATA&&dataErr ? ' · <span class="bad">stale</span>' : '') + old;
   const n=liveInProgress().length;
   const liveTxt = liveState==='ok' ? (n?`<b>${n===1?'1 bout':n+' bouts'} on the mats</b>`:'nothing on the mats') : liveState==='bad' ? `<span class="bad">live feed lost</span>` : `live feed off`;
-  s.innerHTML=`${liveTxt}${stale}<span class="sync"> · ${dataTxt}</span>`;
+  const simTxt = SIM ? `<span class="bad">simulation${simSpeed()!==1?' ×'+simSpeed():''}${DATA&&DATA.sim&&DATA.sim.paused?' paused':''}</span> · ` : '';   // never mistakable for the real thing
+  s.innerHTML=`${simTxt}${liveTxt}${stale}<span class="sync"> · ${dataTxt}</span>`;
 }
 function render(){
   document.querySelectorAll('.tabs .tab').forEach(b=>b.classList.toggle('active',b.dataset.tab===tab));
@@ -580,13 +588,16 @@ $('#main').addEventListener('change',e=>{
   if(t.id==='breakUntil'){ S.breakUntil=t.value||''; save(); }
   if(t.dataset.dur){ S.dur[t.dataset.dur]=+t.value||12; save(); }
 });
-// refresh loops: results every 60s, live mats every 15s; the settings tab is left alone while you type
-setInterval(()=>{ if(!quiet()) loadData(); },60000);
-setInterval(()=>{ if(!quiet()) loadLive(); },15000);
-document.addEventListener('visibilitychange',()=>{ if(!document.hidden){ loadData(); loadLive(); } });
 // entry point. A test harness sets window.QUEUE_TEST to a callback and gets the engine instead of a boot.
-if(typeof window.QUEUE_TEST==='function') window.QUEUE_TEST({queue, S, setData:d=>{DATA=d;}, setLive:l=>{LIVE=l;}});
-else { loadState(); loadData(); loadLive(); }
+if(typeof window.QUEUE_TEST==='function') window.QUEUE_TEST({queue, S, SIM, setData:d=>{DATA=d;}, setLive:l=>{LIVE=l;}});
+else {
+  loadState(); loadData(); loadLive();
+  // refresh loops: results every 60 s, live mats every 15 s (3 s and 1.5 s in a simulation, which runs many times
+  // faster than a real day); the settings tab is left alone while you type
+  const every=(fn,ms)=>{ const tick=()=>{ if(!quiet()) fn(); setTimeout(tick,ms); }; setTimeout(tick,ms); };
+  every(loadData, SIM?3000:60000); every(loadLive, SIM?1500:15000);
+  document.addEventListener('visibilitychange',()=>{ if(!document.hidden){ loadData(); loadLive(); } });
+}
 </script>
 </body>
 </html>

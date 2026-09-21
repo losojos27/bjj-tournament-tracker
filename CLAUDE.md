@@ -13,6 +13,10 @@ the link. The repo name is deliberately generic because it will cover more than 
 - Claude artifact snapshot (no live feeds, results as of last republish):
   https://claude.ai/code/artifact/78d4a9a4-2636-4548-9de6-b03be85ae72e
 
+**Simulator (Sept 21, 2026):** `node scripts/sim/server.mjs` replays the finished ADCC as a live
+event, so nothing has to wait for a real one. See "Simulator" under Architecture. Use it before
+and after any change to the page's result or schedule logic.
+
 **Status (Sept 15, 2026):** ADCC 2026 is over and the page worked through finals day with no
 punch list. The sync cron is commented out and the Day 2 routine is disabled, so nothing runs
 between events. The agreed next work is at the end of this file under "Next": a competition
@@ -34,6 +38,9 @@ an unattended process run through an event without a test that simulates the fai
 node scripts/sync.mjs            # FloArena -> data/results.json (Node 18+, no deps)
 node scripts/queue-test.js       # schedule engine on its own small fixture (Flo lists, live bouts, DQs)
 scripts/sync-loop-test.sh        # the sync loop against a local bare repo with a competing push mid-loop
+node scripts/sim/test.mjs        # the competition simulator: timeline, both fake feeds, the HTTP server
+node scripts/sim/server.mjs      # run a simulated ADCC: tracker at http://localhost:8766/?sim, controls at /sim/
+                                 #   --speed 20 --from SF --sync 300 --port 8766 --host 0.0.0.0 (phone on the same wifi)
 python3 -m http.server 8000      # serve locally; open http://localhost:8000 (file:// breaks fetch and fonts)
 node --check <(sed -n '/<script id="app">/,/<\/script>/p' index.html | sed '1d;$d')   # syntax-check the app script
 scripts/build-artifact.sh        # index.html -> dist/artifact.html for the artifact host
@@ -119,6 +126,26 @@ disqualification"). Tapping any name copies it (no bio links: name spellings var
 across sites). Settings: following (unmatched entries flagged), appearance, projection,
 data/reset. Seeds are in the data but never shown. Redraws (the 15 s live poll) preserve the
 bracket's and the chip row's scroll positions.
+
+**Simulator (`scripts/sim/`).** `core.mjs` is pure (no Node imports, so it can run in a browser
+later): it turns a finished event (`adcc-2026-final.json`, a frozen copy of the final
+`results.json`; never point it at `data/results.json`) into a timeline in event-seconds. Each
+bout runs on its real mat for its real finish time, in bout-number order, never before the
+bouts feeding it are over, with the 30-minute intermission before 3rd place and a short stand-in
+for the overnight break. From that it generates, for any moment: `results.json` as the sync
+would have written it (later-round names hidden until the feeder is decided, exactly as Flo
+fills them; the double-DQ replacement appears when the DQ bout ends), Flo's per-mat upcoming
+lists, and the Firebase `mats` node (clock counting down, overtime periods, `red` = top slot,
+the last finished bout left on the mat, plus the nameless stale entry the real feed carries).
+`server.mjs` serves the repo plus `/sim/results.json`, `/sim/mats.json`, `/sim/control`
+(`pause`, `speed`, `jump=<stage>`, `sync`, `reset`) and a control panel at `/sim/`. The results
+file is a **snapshot every `sync` event-seconds** while the mats feed is live, which is how the
+real system behaved and is what makes feed-versus-file bugs reproducible.
+The page enters sim mode only with `?sim` **and** a localhost or private-network hostname
+(`SIM` in `index.html`); both sim feeds are fixed same-origin paths, never a URL from the query
+string, so the CSP is unchanged and the public site can't be pointed anywhere. In sim mode the
+page polls faster, divides every projected duration by `DATA.sim.speed`, and shows
+"simulation ×N" in the header in the warning colour.
 
 **Test data.** FloArena runs a "Test" division (weight "106", "Test Wrestler N", bout numbers
 9001+) through the live scoreboard and the upcoming lists before a day starts; on Sept 13 it
@@ -255,13 +282,10 @@ ADCC 2026 is done: Lee used the page all of finals day and reported no UX or fun
 punch list. The sync schedule is commented out in `sync.yml` and the Day 2 routine is disabled;
 re-enable the cron before the next event. Three items, in this order:
 
-**0. A competition simulator** (Lee, Sept 15): a way to demo and test without waiting for a
-live event. Direction: a local, dependency-free server (`scripts/sim-server.mjs`) that serves
-the page plus fake `data/results.json` and `mats.json` endpoints from a timeline replayed out of
-real ADCC data (results stripped and re-applied in bout-number order at adjustable speed; a
-generated live feed with a counting clock, then `isMatchOver` + the real winner). Same-origin
-so the CSP needs no change; the page takes the live URL from a `?live=` param only on
-localhost. Feeds every later test, the audits, and the selector work.
+**0. A competition simulator** — built Sept 21 (`scripts/sim/`, see Architecture). Still open:
+a hosted, in-browser demo mode (the core is already browser-safe) if Lee wants a link he can
+hand to someone without his Mac on the same wifi; and failure injection (test-division bouts,
+a dead feed, an empty upcoming list) for rehearsing the Sept 13 incidents.
 
 **1. Hosting for scale** (Lee, Sept 15): Lee expects to share the page with many parents at
 the next IBJJF Austin Open, which is in January 2027 — that is the real deadline. A WNO may

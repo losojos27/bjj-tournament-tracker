@@ -1,0 +1,78 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Simulator Controls</title>
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<script>try{var t=localStorage.getItem('bjjTracker.theme');if(t==='light'||t==='dark')document.documentElement.dataset.theme=t}catch(e){}</script>
+<link rel="stylesheet" href="/field-manual-theme/theme.css">
+<style>
+  html{font-size:17px}
+  @media (prefers-color-scheme: dark){ :root:not([data-theme="light"]){ --bg-card:#454340; --chip-bg:#454340; --text-muted:#979289; } }
+  :root[data-theme="dark"]{ --bg-card:#454340; --chip-bg:#454340; --text-muted:#979289; }
+  .container{max-width:720px}
+  .panel{background:var(--bg-card);border-radius:var(--radius-md);padding:12px 14px}
+  .panel .chip{background:var(--accent-soft);color:var(--text-primary)}
+  .panel .chip.active{background:var(--accent);color:var(--accent-contrast)}
+  .section-title{font-size:.86rem;font-weight:600;color:var(--text-muted);margin:18px 0 8px}
+  .big{font-family:var(--font-heading);font-size:1.6rem;font-weight:650;letter-spacing:-.02em;line-height:1.15;font-variant-numeric:tabular-nums}
+  .sub{font-size:.86rem;color:var(--text-muted);margin-top:2px}
+  .bar{height:6px;border-radius:3px;background:var(--chip-bg);margin-top:10px;overflow:hidden}
+  .bar i{display:block;height:100%;background:var(--accent);width:0}
+  .mat{display:grid;grid-template-columns:64px 1fr;gap:10px;padding:6px 0;font-size:.92rem}
+  .mat b{font-weight:600} .mat .next{color:var(--text-muted);font-size:.8rem}
+  .note{font-size:.86rem;color:var(--text-muted);margin-top:8px}
+  a.open{display:inline-block;margin-top:4px;color:var(--text-primary);text-decoration:underline;text-decoration-color:var(--text-muted);text-underline-offset:3px}
+</style>
+</head>
+<body>
+<main class="container">
+  <h1 class="page-title">simulator</h1>
+  <p class="subtitle" id="event">loading…</p>
+
+  <div class="panel">
+    <div class="big" id="clock">00:00:00</div>
+    <div class="sub" id="progress"></div>
+    <div class="bar"><i id="bar"></i></div>
+    <a class="open" href="/?sim" target="_blank" rel="noopener">open the tracker in sim mode ↗</a>
+  </div>
+
+  <h2 class="section-title">playback</h2>
+  <div class="panel"><div class="chip-row" id="playback"></div></div>
+
+  <h2 class="section-title">speed (event seconds per second)</h2>
+  <div class="panel"><div class="chip-row" id="speeds"></div>
+    <div class="note">×1 is a real-time replay. at ×20 a seven-minute bout takes about twenty seconds. the tracker's projected times scale with it.</div></div>
+
+  <h2 class="section-title">jump to</h2>
+  <div class="panel"><div class="chip-row" id="stages"></div></div>
+
+  <h2 class="section-title">results sync (event seconds between snapshots)</h2>
+  <div class="panel"><div class="chip-row" id="syncs"></div>
+    <div class="note">the real sync wrote results every five minutes, so a finish showed on the live feed first and in the bracket file later. 0 makes the file live.</div></div>
+
+  <h2 class="section-title">on the mats</h2>
+  <div class="panel" id="mats"></div>
+</main>
+<script>
+const $=s=>document.querySelector(s);
+const esc=s=>String(s??'').replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+const LABEL={start:'start',R16:'round of 16',QF:'quarterfinals',SF:'semifinals',third:'3rd place',finals:'finals',absolute:'absolute',superfight:'super fight',end:'end'};
+async function control(q){ const r=await fetch('/sim/control?'+q,{cache:'no-store'}); draw(await r.json()); }
+function chips(el,items,active,fn){ el.innerHTML=items.map(([v,l])=>`<button type="button" class="chip ${String(active)===String(v)?'active':''}" data-v="${esc(v)}">${esc(l)}</button>`).join(''); el.onclick=e=>{ const b=e.target.closest('[data-v]'); if(b) fn(b.dataset.v); }; }
+function draw(s){
+  $('#event').textContent=`replaying ${s.event||'the fixture'} · ${s.totalBouts} bouts · ${s.length} of event time`;
+  $('#clock').textContent=s.clock+(s.paused?' · paused':'');
+  $('#progress').textContent=`${s.decided} of ${s.totalBouts} bouts over · ×${s.speed} · results file every ${s.sync||0}s`;
+  $('#bar').style.width=(100*s.t/s.total).toFixed(1)+'%';
+  chips($('#playback'),[[s.paused?'resume':'pause',s.paused?'resume':'pause'],['reset','reset to the start']],null,v=>control(v==='reset'?'reset=1':v==='pause'?'pause=1':'pause=0'));
+  chips($('#speeds'),[1,5,20,60,200,1000].map(x=>[x,'×'+x]),s.speed,v=>control('speed='+v));
+  chips($('#stages'),s.stages.map(k=>[k,LABEL[k]||k]),null,v=>control('jump='+encodeURIComponent(v)));
+  chips($('#syncs'),[[0,'live'],[60,'60'],[300,'300'],[900,'900']],s.sync,v=>control('sync='+v));
+  $('#mats').innerHTML=s.mats.map(m=>`<div class="mat"><b>${esc(m.name.toLowerCase())}</b><div>${m.now?esc(m.now):'<span class="next">nothing on the mat</span>'}${m.next?`<div class="next">next: ${esc(m.next)}</div>`:''}</div></div>`).join('');
+}
+async function tick(){ try{ const r=await fetch('/sim/status.json',{cache:'no-store'}); draw(await r.json()); }catch(e){ $('#event').textContent='the simulator server is not answering'; } }
+tick(); setInterval(tick,1000);
+</script>
+</body>
+</html>

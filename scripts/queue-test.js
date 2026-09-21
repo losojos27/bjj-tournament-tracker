@@ -8,14 +8,17 @@ if(!m||m.length!==1) throw new Error(`expected exactly one <script id="app"> blo
 const src=m[0].replace(/^<script id="app">/,'').replace(/<\/script>$/,'');
 
 // ---- stubs: the engine never touches the DOM in queue(), but the script's top level references these
-let api=null;
-const el={innerHTML:'',addEventListener(){},classList:{toggle(){}},dataset:{},querySelector:()=>null,querySelectorAll:()=>[]};
-const window={QUEUE_TEST:a=>{api=a;},AppTheme:null,isSecureContext:false,scrollTo(){},addEventListener(){}};
-const document={querySelector:()=>el,querySelectorAll:()=>[],addEventListener(){},hidden:false,createElement:()=>({style:{},setAttribute(){},select(){},remove(){}}),body:{appendChild(){}},execCommand:()=>false};
-const localStorage={getItem:()=>null,setItem(){},removeItem(){}};
-new Function('window','document','localStorage','setInterval','fetch','navigator',src)(window,document,localStorage,()=>{},()=>new Promise(()=>{}),{});
-if(!api) throw new Error('index.html did not hand the engine to QUEUE_TEST');
-const {queue,S,setData,setLive}=api;
+function load(location){
+  let api=null;
+  const el={innerHTML:'',addEventListener(){},classList:{toggle(){}},dataset:{},querySelector:()=>null,querySelectorAll:()=>[]};
+  const window={QUEUE_TEST:a=>{api=a;},AppTheme:null,isSecureContext:false,scrollTo(){},addEventListener(){}};
+  const document={querySelector:()=>el,querySelectorAll:()=>[],addEventListener(){},hidden:false,createElement:()=>({style:{},setAttribute(){},select(){},remove(){}}),body:{appendChild(){}},execCommand:()=>false};
+  const localStorage={getItem:()=>null,setItem(){},removeItem(){}};
+  new Function('window','document','localStorage','setInterval','fetch','navigator','location',src)(window,document,localStorage,()=>{},()=>new Promise(()=>{}),{},location);
+  if(!api) throw new Error('index.html did not hand the engine to QUEUE_TEST');
+  return api;
+}
+const {queue,S,setData,setLive,SIM}=load({hostname:'losojos27.github.io',search:''});
 
 // ---- fixture: a men's division at the semifinal stage, a women's division at the quarterfinal stage
 const P=(name,seed,team='Brazil')=>({name,seed,team});
@@ -89,5 +92,14 @@ setData(d); setLive({'85':live(85,0,true,0)});           // #85 finished per the
 q=queue();
 ok(!nums(q).includes('78'), 'E: a decided-without-winner bout is not queued');
 ok(!nums(q).includes('85'), 'E: a bout the live feed reports finished is not queued');
+
+// H) simulation mode: only on a local/private host, and projected slot lengths shrink by the sim's speed
+ok(SIM===false, 'H: the public site is not in sim mode');
+ok(load({hostname:'losojos27.github.io',search:'?sim'}).SIM===false, 'H: ?sim does nothing on the public hostname');
+ok(load({hostname:'192.168.1.20',search:'?sim=1'}).SIM===true && load({hostname:'evil.example.com',search:'?sim'}).SIM===false, 'H: ?sim works on a private address and not on an arbitrary host');
+{ const simApi=load({hostname:'localhost',search:'?sim'}); ok(simApi.SIM===true, 'H: ?sim on localhost enables sim mode');
+  simApi.S.mats=1; const d8=fixture(); d8.sim={speed:20}; simApi.setData(d8); simApi.setLive({});
+  const q8=simApi.queue().list.filter(x=>x.rName==='SF'); const gap=(q8[1].at-q8[0].at)/1000;
+  ok(Math.abs(gap-20*60/20)<1, 'H: at ×20 a 20-minute semifinal slot projects as 60 s of wall time, got '+gap+'s'); }
 
 console.log(`ALL QUEUE CHECKS PASSED (${checks} checks)`);
