@@ -136,6 +136,33 @@
   .toast{position:fixed;bottom:calc(env(safe-area-inset-bottom) + 18px);left:50%;transform:translateX(-50%);background:var(--accent);color:var(--accent-contrast);padding:8px 14px;border-radius:var(--radius-pill);font-size:var(--fs-meta);opacity:0;transition:opacity .2s;pointer-events:none;z-index:300}
   .toast.show{opacity:1}
   @media (prefers-reduced-motion:reduce){.toast,.chip,.icon-btn{transition:none}}
+  /* wide (desktop/tablet landscape, >=1000px; html.wide is set by render()): the bracket on the left, one scrolling
+     column on the right with on the mats, up next, then following. No tabs: settings is a word in the header. The
+     column's type is the bracket boxes' scale, not the phone scale. (Lee, Sept 21, built from the mock.) */
+  .hlink{display:none;flex:none;font-size:.92rem;padding:0 0 0 14px}
+  html.wide .container{max-width:1600px}
+  html.wide .tabs{display:none}
+  html.wide .hlink{display:block}
+  html.wide main.container{padding-top:0;padding-bottom:0}
+  .desk{display:grid;grid-template-columns:minmax(0,1fr) 320px;height:calc(100dvh - var(--hdr,52px) - env(safe-area-inset-bottom));min-height:0}
+  @media (min-width:1200px){ .desk{grid-template-columns:minmax(0,1fr) 350px} }
+  .pane{min-width:0;overflow:auto;position:relative}
+  .pane-in{padding:6px 0 var(--spacing)}
+  .pane-in > .section-title:first-child{margin-top:2px}
+  .pane.rail{background:color-mix(in srgb, var(--bg-card) 38%, var(--bg-primary));margin-right:calc(-1*var(--spacing))}
+  .pane.rail .pane-in{padding:8px var(--spacing) var(--spacing) 14px;--fs-body:.94rem;--fs-meta:.8rem;--fs-eyebrow:.76rem;--fs-card-title:.94rem}
+  .rail .name{padding:2px 0;gap:5px;line-height:1.35}
+  .rail .t{font-size:.98rem} .rail .t small{font-size:.74rem}
+  .rail .row{grid-template-columns:82px 1fr;padding:9px 12px}
+  .rail .mats{grid-template-columns:1fr}
+  .rail .mat .who{font-size:.94rem;padding:1px 0} .rail .mat .hd,.rail .mat .ft{font-size:.76rem}
+  .rail .panel{padding:9px 12px}
+  .rail .big{font-size:1rem} .rail .sub{font-size:.76rem}
+  .rail .cue{font-size:.64rem}
+  .rail .topline{margin:2px 0 10px}
+  html.wide .bwrap{margin:0;padding-left:0}
+  html.wide .chips{padding-top:6px}
+  html.wide .pane.main .pane-in{padding-right:var(--spacing)}
 </style>
 </head>
 <body>
@@ -143,6 +170,7 @@
   <div class="container topbar">
     <div class="title">ADCC 2026 <span class="muted">Kraków</span></div>
     <div class="status" id="status"></div>
+    <button class="tab hlink" data-tab="settings" type="button">settings</button>
   </div>
   <nav class="container tabs" aria-label="sections">
     <button class="tab active" data-tab="next" type="button">next up</button>
@@ -184,7 +212,9 @@ let DATA=null;            // parsed results.json
 let LIVE={};              // boutNumber -> live mat entry
 let liveState='off';      // 'ok' | 'bad' | 'off'
 let dataErr=null, lastLive=0;
-const quiet=()=>DATA&&(tab==='settings'||(document.activeElement&&document.activeElement.id==='demoSpeed')); // don't re-render under the user's fingers: Settings, or an open speed drop-down
+const wide=()=>!!(window.matchMedia&&window.matchMedia('(min-width:1000px)').matches);   // desktop/tablet: bracket + column, no tabs
+const quiet=()=>DATA&&((tab==='settings'&&!wide())||(document.activeElement&&document.activeElement.id==='demoSpeed')); // don't re-render under the user's fingers: Settings (on a phone; wide mode refreshes only the column), or an open speed drop-down
+function refresh(){ if(quiet()) renderStatus(); else if(wide()&&tab==='settings'&&$('#prail')){ renderStatus(); renderRail(); } else render(); }   // what the polls call
 
 // Schedule blocks: the assumed order each day runs in, used only until FloArena publishes its own. `kind` matches results.json divisions.
 const DEFAULT_BLOCKS = [
@@ -266,13 +296,13 @@ async function demoResults(){ const d=await demoReady(), c=d.clock; demoSave();
   return d.core.resultsAt(d.final,d.tl,c.snapshotT(),{speed:c.speed,paused:c.paused,sync:c.sync,t:Math.round(c.t()),demo:true},c.snapshotWall()); }
 async function demoMats(){ const d=await demoReady(); return d.core.matsFeedAt(d.final,d.tl,d.clock.t(),Date.now(),d.clock.speed); }
 function demoControl(cmd){ const c=demo.clock; if(!c) return; const [k,v]=String(cmd).split(':');
-  if(k==='pause') c.pause(!c.paused); else if(k==='speed') c.setSpeed(+v); else if(k==='jump'){ c.jump(v); tab='next'; window.scrollTo(0,0); }
+  if(k==='pause') c.pause(!c.paused); else if(k==='speed') c.setSpeed(+v); else if(k==='jump'){ c.jump(v); if(wide()) $('#prail')?.scrollTo(0,0); else tab='next'; window.scrollTo(0,0); }
   demoSave(); loadData().then(loadLive).then(render); }
 
 async function loadData(){
   try{ if(DEMO) DATA=await demoResults(); else { const r=await fetch(DATA_URL+'?t='+Date.now(),{cache:'no-store'}); if(!r.ok) throw new Error('HTTP '+r.status); DATA=await r.json(); } dataErr=null; forgetConfirmed(); }
   catch(e){ dataErr=e; }
-  if(quiet()) renderStatus(); else render();
+  refresh();
 }
 async function loadLive(){
   try{ let j; if(DEMO) j=await demoMats(); else { const r=await fetch(LIVE_URL,{cache:'no-store'}); if(!r.ok) throw new Error('HTTP '+r.status); j=await r.json(); }   // the demo feed goes through the same parser as the real one
@@ -286,7 +316,7 @@ async function loadLive(){
         winType:v.winType||null, finalScore:v.finalScore||null, updated:v.updated||0, weight:v.weight||'', round:v.round||'' }; }
     LIVE=next; liveState='ok'; lastLive=Date.now(); rememberFinished();
   }catch(e){ liveState = liveState==='ok' ? 'bad' : 'off'; }
-  if(quiet()) renderStatus(); else render();
+  refresh();
 }
 
 // FloArena runs a "Test" division (weight "106", "Test Wrestler N", bout numbers 9001+) through the live systems
@@ -458,7 +488,7 @@ function renderMats(ms){
   }
   return h+`</div>`;
 }
-function renderNext(){
+function renderNext({followLast=false}={}){   // followLast: the wide column puts following after the queue
   const {list:q,mode,floOrder,matCount:matsInUse}=queue();
   // the event is done when nothing is left to fight anywhere
   const dayDone=!q.length && blocks().some(b=>allMatches(b).length) && blocks().every(b=>allMatches(b).every(mo=>mo.w!==null));
@@ -494,7 +524,8 @@ function renderNext(){
     }
   }
   cards.sort((x,y)=>x.at-y.at);
-  if(cards.length) h+=`<h2 class="section-title">following</h2><div class="stack">${cards.map(c=>c.html).join('')}</div>`;
+  const folHtml=cards.length?`<h2 class="section-title">following</h2><div class="stack">${cards.map(c=>c.html).join('')}</div>`:'';
+  if(!followLast) h+=folHtml;
   h+=`<h2 class="section-title">up next</h2>`;
   if(dayDone) h+=`<div class="panel">that’s the event. results are in brackets.</div>`;
   else if(!q.length) h+=`<div class="panel">nothing in the queue yet.</div>`;
@@ -514,6 +545,7 @@ function renderNext(){
       <div class="vs">${pName(mo.a,mo,0,{seed:false})}${pName(mo.b,mo,1,{seed:false})}</div></div></div>`;
   });
   if(q.length) h+=`</div>`;
+  if(followLast) h+=folHtml;
   h+=`<div class="note">${DEMO?'everything here is '+SOURCE.name+'. ':floOrder?'results and the running order come from FloArena. ':'results come from FloArena. today’s mats and times are our guess until FloArena posts the order. '}tap a name to copy it.</div>`;
   return h;
 }
@@ -631,23 +663,44 @@ function renderStatus(){
   const simTxt = SIMULATED ? `<span class="bad">${DEMO?'demo':'simulation'}${simSpeed()!==1?' ×'+simSpeed():''}${DATA&&DATA.sim&&DATA.sim.paused?' paused':''}</span> · ` : '';   // never mistakable for the real thing
   s.innerHTML=`${simTxt}${liveTxt}${stale}<span class="sync"> · ${dataTxt}</span>`;
 }
+// a bracket redraw into `root`: keep where the bracket and the chip row were scrolled to (keepX/keepC from before the
+// redraw, -1 for a fresh open), then place a fresh open on the last completed round with the next one peeking in
+function placeBracket(root,keepX,keepC){
+  const bw2=root.querySelector('.bwrap'), ch2=root.querySelector('.chips'); if(!bw2||!ch2) return;
+  if(keepC>=0) ch2.scrollLeft=keepC; else ch2.querySelector('.chip.active')?.scrollIntoView({inline:'center',block:'nearest'});
+  if(keepX>=0) bw2.scrollLeft=keepX;
+  else { const i=+bw2.dataset.openCol||0; const col=bw2.querySelectorAll('.col')[i]; if(col&&i>0) bw2.scrollLeft=Math.max(0,col.offsetLeft-parseInt(getComputedStyle(bw2).paddingLeft||0)); }
+  const hint=root.querySelector('.swipe-hint'); if(hint) hint.hidden = bw2.scrollWidth<=bw2.clientWidth+2;
+}
+function bracketScroll(root){ const bw=root.querySelector('.bwrap'), ch=root.querySelector('.chips'); return [bw&&!bracketFresh?bw.scrollLeft:-1, ch&&!bracketFresh?ch.scrollLeft:-1]; }
 function render(){
+  const w=wide(); document.documentElement.classList.toggle('wide',w);
   document.querySelectorAll('.tabs .tab').forEach(b=>b.classList.toggle('active',b.dataset.tab===tab));
+  const hl=$('.hlink'); if(hl) hl.textContent = tab==='settings'?'bracket':'settings';
   renderStatus();
   if(!DATA){ $('#main').innerHTML = dataErr ? `<div class="panel">couldn’t load the bracket (${esc(dataErr.message)}). retrying every minute.</div>` : `<div class="panel">loading bracket…</div>`; return; }
+  if(w){ renderDesk(); return; }
   // redraws (live poll) must not lose where the bracket or the chip row was scrolled to
-  const bw=$('#main').querySelector('.bwrap'); const keepX=bw&&!bracketFresh?bw.scrollLeft:-1;
-  const ch=$('#main').querySelector('.chips'); const keepC=ch&&!bracketFresh?ch.scrollLeft:-1;
-  bracketFresh=false;
+  const [keepX,keepC]=bracketScroll($('#main')); bracketFresh=false;
   $('#main').innerHTML = tab==='next'?renderNext():tab==='brackets'?renderBrackets():renderSettings();
-  if(tab==='brackets'){
-    const bw2=$('#main').querySelector('.bwrap'), ch2=$('#main').querySelector('.chips');
-    if(keepC>=0) ch2.scrollLeft=keepC; else ch2.querySelector('.chip.active')?.scrollIntoView({inline:'center',block:'nearest'});
-    if(keepX>=0) bw2.scrollLeft=keepX;
-    else { const i=+bw2.dataset.openCol||0; const col=bw2.querySelectorAll('.col')[i]; if(col&&i>0) bw2.scrollLeft=Math.max(0,col.offsetLeft-parseInt(getComputedStyle(bw2).paddingLeft||0)); }  // fresh open: the last completed round fully in view at the left, the next round peeking in
-    const hint=$('#main').querySelector('.swipe-hint'); if(hint) hint.hidden = bw2.scrollWidth<=bw2.clientWidth+2;
-  }
+  if(tab==='brackets') placeBracket($('#main'),keepX,keepC);
 }
+// wide: two panes that scroll on their own under the header. The main pane is the bracket (or settings, via the
+// header word); the column is next up with following last. Each pane keeps its own scroll across redraws.
+function renderDesk(){
+  const m=$('#main');
+  if(!m.querySelector('.desk')) m.innerHTML=`<div class="desk"><section class="pane main" id="pmain"><div class="pane-in"></div></section><aside class="pane rail" id="prail"><div class="pane-in"></div></aside></div>`;
+  document.documentElement.style.setProperty('--hdr', $('.top').offsetHeight+'px');
+  renderMainPane(); renderRail();
+}
+function renderMainPane(){
+  const p=$('#pmain'), inner=p.firstElementChild; const keepY=p.scrollTop;
+  const [keepX,keepC]=bracketScroll(inner); bracketFresh=false;
+  inner.innerHTML = tab==='settings'?renderSettings():renderBrackets();
+  if(tab!=='settings') placeBracket(inner,keepX,keepC);
+  p.scrollTop=keepY;
+}
+function renderRail(){ const p=$('#prail'); if(!p) return; const keepY=p.scrollTop; p.firstElementChild.innerHTML=renderNext({followLast:true}); p.scrollTop=keepY; }
 async function copyText(t){
   try{ if(navigator.clipboard&&window.isSecureContext){ await navigator.clipboard.writeText(t); toast(`copied ${t}`); return; } }catch(e){}
   try{ const ta=document.createElement('textarea'); ta.value=t; ta.setAttribute('readonly',''); ta.style.position='fixed'; ta.style.opacity='0'; document.body.appendChild(ta); ta.select(); const ok=document.execCommand('copy'); ta.remove(); toast(ok?`copied ${t}`:'couldn’t copy'); }catch(e){ toast('couldn’t copy'); }
@@ -655,7 +708,7 @@ async function copyText(t){
 function toast(t){ const e=$('#toast'); e.textContent=t; e.classList.add('show'); clearTimeout(toast.t); toast.t=setTimeout(()=>e.classList.remove('show'),3000); }
 
 // ---------- events ----------
-document.querySelector('.tabs').addEventListener('click',e=>{ const b=e.target.closest('[data-tab]'); if(b){ tab=b.dataset.tab; render(); window.scrollTo(0,0);} });
+document.querySelector('.top').addEventListener('click',e=>{ const b=e.target.closest('[data-tab]'); if(b){ tab = wide()&&b.dataset.tab==='settings'&&tab==='settings' ? 'brackets' : b.dataset.tab; render(); window.scrollTo(0,0); $('#pmain')?.scrollTo(0,0); } });   // in wide mode the header word toggles settings and the bracket
 $('#main').addEventListener('click',e=>{
   const dm=e.target.closest('[data-demo]'); if(dm){ demoControl(dm.dataset.demo); return; }
   const bd=e.target.closest('[data-bdiv]'); if(bd){ S.bracketDiv=bd.dataset.bdiv; bracketFresh=true; save(); render(); return; }
@@ -683,6 +736,7 @@ else {
   const every=(fn,ms)=>{ const tick=()=>{ if(!quiet()) fn(); setTimeout(tick,ms); }; setTimeout(tick,ms); };
   every(loadData, SIMULATED?3000:60000); every(loadLive, SIMULATED?1500:15000);
   document.addEventListener('visibilitychange',()=>{ if(!document.hidden){ loadData(); loadLive(); } });
+  if(window.matchMedia) window.matchMedia('(min-width:1000px)').addEventListener('change',()=>{ if(tab==='next'&&wide()) tab='brackets'; render(); });   // rotating a tablet swaps layouts
 }
 </script>
 </body>

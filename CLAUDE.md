@@ -138,6 +138,22 @@ across sites). Settings: following (unmatched entries flagged), appearance, proj
 data/reset. Seeds are in the data but never shown. Redraws (the 15 s live poll) preserve the
 bracket's and the chip row's scroll positions.
 
+**Wide layout (desktop / tablet landscape, ≥ 1000px; `html.wide`, set by `render()` from
+`wide()`).** Built Sept 21 from a mock Lee picked: the bracket fills the left, and one column
+on the right (`.pane.rail`, 320px, 350px from 1200px) scrolls on its own with on the mats, up
+next, then following last (`renderNext({followLast:true})`). No tabs: "settings" is a word in
+the header (`.hlink`) that swaps the bracket pane for settings and back. Both panes sit under
+the sticky header at `100dvh − --hdr`, so the page itself never scrolls; each pane keeps its own
+scroll across redraws (`renderMainPane`/`renderRail`), and the polls go through `refresh()`,
+which redraws only the column while settings is open in wide mode (`quiet()` still freezes the
+whole page on a phone). The column's type is set to the bracket boxes' scale (names .94rem,
+meta .76rem) by overriding the `--fs-*` tokens on `.pane.rail .pane-in`, per Lee: the phone
+scale beside the bracket looked oversized. A `matchMedia` change listener re-renders when a
+tablet rotates. Lee's read on following in the column: keep it, at the bottom; drop it if it
+isn't earning the space. The mock that settled left-vs-right and the type scale:
+https://claude.ai/artifact/FMqBZEdRhEeHnuLd8R29do (research summary: right rail for
+secondary content, bracket reads left-to-right from the left edge).
+
 **Simulator (`scripts/sim/`).** `core.mjs` is pure (no Node imports, so it can run in a browser
 later): it turns a finished event (`adcc-2026-final.json`, a frozen copy of the final
 `results.json`; never point it at `data/results.json`) into a timeline in event-seconds. Each
