@@ -102,6 +102,8 @@
   .mat .who .sc{font-weight:650;font-variant-numeric:tabular-nums;min-width:22px;text-align:right}
   .mat .who.w{color:var(--win)} .mat .who.l{color:var(--lose)} .mat .who.follow{font-weight:650}
   .mat .ft{font-size:var(--fs-eyebrow);color:var(--text-muted);margin-top:4px}
+  .mat.done{opacity:.72}
+  .mat.done .ft b{color:var(--text-primary);font-weight:600}
   /* bracket: columns per round; connectors are the one place an edge is load-bearing */
   .chips{display:flex;gap:6px;overflow-x:auto;padding:2px 0 10px;scrollbar-width:none}
   .chips::-webkit-scrollbar{display:none}
@@ -261,7 +263,7 @@ async function demoResults(){ const d=await demoReady(), c=d.clock; demoSave();
   return d.core.resultsAt(d.final,d.tl,c.snapshotT(),{speed:c.speed,paused:c.paused,sync:c.sync,t:Math.round(c.t()),demo:true},c.snapshotWall()); }
 async function demoMats(){ const d=await demoReady(); return d.core.matsFeedAt(d.final,d.tl,d.clock.t(),Date.now(),d.clock.speed); }
 function demoControl(cmd){ const c=demo.clock; if(!c) return; const [k,v]=String(cmd).split(':');
-  if(k==='pause') c.pause(!c.paused); else if(k==='speed') c.setSpeed(+v); else if(k==='jump') c.jump(v); else if(k==='restart'){ c.reset(); c.jump(demo.from); }
+  if(k==='pause') c.pause(!c.paused); else if(k==='speed') c.setSpeed(+v); else if(k==='jump'){ c.jump(v); tab='next'; window.scrollTo(0,0); }
   demoSave(); loadData().then(loadLive).then(render); }
 
 async function loadData(){
@@ -414,9 +416,9 @@ function pName(p,mo,s,opts={}){
 function fmtResult(winType,result){
   const r=String(result||''); const score=(r.match(/^(\d+-\d+)/)||[])[1]; const time=(r.match(/(\d+:\d+)/)||[])[1]; const ot=/TB|OT/i.test(r)?' · overtime':'';
   const t=String(winType||'').toUpperCase();
-  if(t==='SUB') return `submission${time?' '+time:''}${ot}`;
-  if(t==='SCORE'||t==='PTS'||t==='DEC') return `${score?score+' points':'on points'}${ot}`;
-  if(t==='REF') return `ref decision${ot}`;
+  if(t==='SUB') return `submission${time?' at '+time:''}${ot}`;
+  if(t==='SCORE'||t==='PTS'||t==='DEC'){ if(score&&score!=='0-0') return `${score} on points${ot}`; return ot?'won in overtime':'on points'; }
+  if(t==='REF') return `referee decision${ot}`;
   if(t==='DQ') return 'disqualified';
   if(t==='INJ'||t==='MED') return 'injury';
   if(t==='WO'||t==='FF') return 'walkover';
@@ -428,13 +430,23 @@ function resultPill(mo){
   if(mo.src==='live'&&mo.live) return `<span class="res">${esc(fmtResult(mo.live.winType,mo.live.finalScore))} · live</span>`;
   return '';
 }
+// the feed keeps each mat's latest bout; a finished one stays on its card, dimmed with the result, until the mat's
+// next bout starts (or ~10 min pass), so a viewer who glanced away still sees who won
+function matCards(){
+  const live=liveInProgress(); const recent=10*60000/simSpeed();
+  const done=Object.values(LIVE).filter(l=>l.over&&Date.now()-l.updated<recent&&!live.some(x=>x.matIdx===l.matIdx));
+  return [...live,...done].sort((a,b)=>a.matIdx-b.matIdx);
+}
 function renderMats(){
-  const ms=liveInProgress();   // finished bouts leave the mats; their result lives in the bracket
-  if(!ms.length) return '';
-  let h=`<h2 class="section-title">on the mats <span style="font-weight:400">· FloArena live</span></h2><div class="mats">`;
+  const ms=matCards(); if(!ms.length) return '';
+  let h=`<h2 class="section-title">on the mats <span style="font-weight:400">· ${DEMO?'replayed from ADCC 2026':'FloArena live'}</span></h2><div class="mats">`;
   for(const l of ms){
-    const who=(p,i)=>`<div class="who ${isFollow(p)?'follow':''}"><button type="button" class="who-l" data-copy="${esc(p.name)}" title="copy name">${flagHtml(p.team)}<span class="nm">${esc(p.name)}</span></button><span class="sc">${p.score}${p.pen?`<small class="muted"> p${p.pen}</small>`:''}</span></div>`;
-    h+=`<div class="panel mat"><div class="hd"><span><b>${esc(String(l.mat).toLowerCase())}</b> · ${esc(l.weight)}${l.weight&&!/kg|abs/i.test(l.weight)?'kg':''} ${esc(l.round)} · #${esc(l.n)}</span><span class="clock">${esc(l.clock)}${l.period&&l.period!=='1'?' '+esc(l.period):''}</span></div>${who(l.red,0)}${who(l.blue,1)}<div class="ft"><span class="cue live">live</span> updated ${ago(l.updated)}</div></div>`;
+    const who=(p,i)=>`<div class="who ${l.over?(l.winner===i?'w':'l'):''} ${isFollow(p)?'follow':''}"><button type="button" class="who-l" data-copy="${esc(p.name)}" title="copy name">${flagHtml(p.team)}<span class="nm">${esc(p.name)}</span></button><span class="sc">${p.score}${p.pen?`<small class="muted"> p${p.pen}</small>`:''}</span></div>`;
+    const head=`<b>${esc(String(l.mat).toLowerCase())}</b> · ${esc(l.weight)}${l.weight&&!/kg|abs/i.test(l.weight)?'kg':''} ${esc(l.round)} · #${esc(l.n)}`;
+    if(l.over){ const winner=l.winner===0?l.red:l.winner===1?l.blue:null;
+      const score=l.winner===1&&/^\d+-\d+$/.test(l.finalScore||'') ? l.finalScore.split('-').reverse().join('-') : l.finalScore;   // the feed's score is red-blue; read it winner-first, as results elsewhere are
+      h+=`<div class="panel mat done"><div class="hd"><span>${head}</span><span>final</span></div>${who(l.red,0)}${who(l.blue,1)}<div class="ft">${winner?`<b>${esc(winner.name)}</b> won · `:''}${esc(fmtResult(l.winType,score))} · ended ${ago(l.updated)}</div></div>`; }
+    else h+=`<div class="panel mat"><div class="hd"><span>${head}</span><span class="clock">${esc(l.clock)}${l.period&&l.period!=='1'?' overtime':''}</span></div>${who(l.red,0)}${who(l.blue,1)}<div class="ft"><span class="cue live">${DEMO?'replay':'live'}</span> updated ${ago(l.updated)}</div></div>`;
   }
   return h+`</div>`;
 }
@@ -444,10 +456,10 @@ function renderNext(){
   const dayDone=!q.length && blocks().some(b=>allMatches(b).length) && blocks().every(b=>allMatches(b).every(mo=>mo.w!==null));
   let h='';
   if(DEMO){ const c=demo.clock, sp=c?c.speed:simSpeed(); const opts=[...new Set([...DEMO_SPEEDS.list, sp])].sort((a,b)=>a-b);
-    h=`<div class="panel quiet demo-bar"><div>this is a demo: a replay of ADCC 2026, not a live event. jump to a round in settings.</div>
+    h=`<div class="panel quiet demo-bar"><div>this is a demo: a replay of ADCC 2026, not a live event. two fighters are followed as an example; change them, or jump to a round, in settings.</div>
       <div class="demo-ctl"><button type="button" class="chip small" data-demo="pause">${c&&c.paused?'resume':'pause'}</button>
       <label for="demoSpeed">speed</label><select id="demoSpeed" class="field">${opts.map(x=>`<option value="${x}" ${x===sp?'selected':''}>×${x}${x===1?' (real time)':''}</option>`).join('')}</select></div></div>`; }
-  h+=dayDone?'':`<div class="topline"><span class="note" style="margin:0">${matsInUse} mat${matsInUse===1?'':'s'}${floOrder?'':' (a guess)'} · times are estimates${mode==='live'?' · following the live feed':mode==='break'?' · break until '+fmt(breakEnd()):''}${floOrder?' · order from FloArena':''}</span></div>`;
+  h+=dayDone?'':`<div class="topline"><span class="note" style="margin:0">${matsInUse} mat${matsInUse===1?'':'s'}${floOrder?'':' (a guess)'} · times are estimates${DEMO?' · replayed from ADCC 2026':mode==='live'?' · following the live feed':mode==='break'?' · break until '+fmt(breakEnd()):''}${floOrder&&!DEMO?' · order from FloArena':''}</span></div>`;
   h+=renderMats();
   const fl=S.follow.filter(Boolean);
   const cards=[]; const seen=new Set();
@@ -479,7 +491,7 @@ function renderNext(){
   if(dayDone) h+=`<div class="panel">that’s the event. results are in brackets.</div>`;
   else if(!q.length) h+=`<div class="panel">nothing in the queue yet.</div>`;
   else h+=`<div class="stack">`;
-  if(!dayDone && q.length && liveState==='ok' && !liveInProgress().length) h+=`<div class="panel quiet">${mode==='break'?`break until ${fmt(breakEnd())}. the times below are projected from then.`:'nothing on the mats right now. the times below are projected.'}</div>`;
+  if(!dayDone && q.length && liveState==='ok' && !matCards().length) h+=`<div class="panel quiet">${mode==='break'?`break until ${fmt(breakEnd())}. the times below are projected from then.`:'nothing on the mats right now. the times below are projected.'}</div>`;
   // bouts where neither name is known yet collapse into one line at the point where they start
   const unknown=q.filter(mo=>mo.a.tbd&&mo.b.tbd); const firstUnknown=unknown[0];
   q.slice(0,48).forEach(mo=>{
@@ -494,7 +506,7 @@ function renderNext(){
       <div class="vs">${pName(mo.a,mo,0,{seed:false})}${pName(mo.b,mo,1,{seed:false})}</div></div></div>`;
   });
   if(q.length) h+=`</div>`;
-  h+=`<div class="note">${floOrder?'results and the running order come from FloArena. ':'results come from FloArena. today’s mats and times are our guess until FloArena posts the order. '}tap a name to copy it.</div>`;
+  h+=`<div class="note">${DEMO?'everything here is replayed from ADCC 2026’s real results. ':floOrder?'results and the running order come from FloArena. ':'results come from FloArena. today’s mats and times are our guess until FloArena posts the order. '}tap a name to copy it.</div>`;
   return h;
 }
 function currentDiv(){
@@ -564,9 +576,12 @@ function renderSettings(){
   const demoPanel = DEMO&&dc ? `
   <h2 class="section-title">demo</h2>
   <div class="panel">
+    <div class="note" style="margin:0 0 10px">a replay of ADCC 2026 from its real results, mats and finish times, running in this browser.</div>
+    <label style="margin-top:0">speed (×1 is real time)</label>
     <div class="chip-row"><button type="button" class="chip" data-demo="pause">${dc.paused?'resume':'pause'}</button>${DEMO_SPEEDS.list.map(x=>`<button type="button" class="chip ${dc.speed===x?'active':''}" data-demo="speed:${x}">×${x}</button>`).join('')}</div>
-    <div class="chip-row" style="margin-top:8px">${stages.filter(([k])=>dc.targets[k]!==undefined).map(([k,l])=>`<button type="button" class="chip" data-demo="jump:${k}">${l}</button>`).join('')}<button type="button" class="chip" data-demo="restart">restart</button></div>
-    <div class="note">a replay of ADCC 2026 from its real results, mats and finish times, running in this browser. ×1 is real time. <a class="plain" href="./">leave the demo</a></div>
+    <label>jump to</label>
+    <div class="chip-row">${[['R16','round of 16 (day 1)'],['QF','quarterfinals'],['SF','semifinals'],['third','3rd place'],['finals','finals'],['absolute','absolute']].filter(([k])=>dc.targets[k]!==undefined).map(([k,l])=>`<button type="button" class="chip" data-demo="jump:${k}">${l}</button>`).join('')}</div>
+    <div class="note"><a class="plain" href="./">leave the demo and see the real page</a></div>
   </div>` : '';
   return `${demoPanel}
   <h2 class="section-title">following</h2>
@@ -590,7 +605,7 @@ function renderSettings(){
   </div>
   <h2 class="section-title">data</h2>
   <div class="panel">
-    <div class="note" style="margin:0">bracket, results, and mat order come from FloArena (last synced ${synced}). live scores and the clock come from FloArena’s mat feed. times are projected from that, never typed in. the follow list and these settings live in this browser only.</div>
+    <div class="note" style="margin:0">${DEMO?'this is a replay of ADCC 2026 from its real results, mats and finish times; nothing here is live.':`bracket, results, and mat order come from FloArena (last synced ${synced}). live scores and the clock come from FloArena’s mat feed.`} times are projected from that, never typed in. the follow list and these settings live in this browser only.</div>
     <div class="actions"><button type="button" class="chip warn" id="reset">reset everything</button></div>
   </div>`;
 }
@@ -620,7 +635,7 @@ function render(){
     const bw2=$('#main').querySelector('.bwrap'), ch2=$('#main').querySelector('.chips');
     if(keepC>=0) ch2.scrollLeft=keepC; else ch2.querySelector('.chip.active')?.scrollIntoView({inline:'center',block:'nearest'});
     if(keepX>=0) bw2.scrollLeft=keepX;
-    else { const i=+bw2.dataset.firstOpen||0; const col=bw2.querySelectorAll('.col')[i]; if(col&&i>0) bw2.scrollLeft=Math.max(0,col.offsetLeft+col.offsetWidth+parseInt(getComputedStyle(bw2).paddingLeft||0)-bw2.clientWidth); }  // fresh open: the first unfought round sits flush right, results to its left
+    else { const i=(+bw2.dataset.firstOpen||0)-1; const col=bw2.querySelectorAll('.col')[i]; if(col&&i>0) bw2.scrollLeft=Math.max(0,col.offsetLeft-parseInt(getComputedStyle(bw2).paddingLeft||0)); }  // fresh open: the last completed round fully in view at the left, the next round peeking in
     const hint=$('#main').querySelector('.swipe-hint'); if(hint) hint.hidden = bw2.scrollWidth<=bw2.clientWidth+2;
   }
 }
