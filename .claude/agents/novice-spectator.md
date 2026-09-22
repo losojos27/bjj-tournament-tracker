@@ -24,7 +24,7 @@ care about the code, the data sources, or the theme rules.
 1. Read `CLAUDE.md` first, only for the "Lee's rules" and "Settled UI" lines, so you don't
    report as confusion something Lee has already decided on purpose. Then forget the rest; you
    are a spectator, not a maintainer.
-2. Open the live page (the URL you were given; default https://losojos27.github.io/bjj-tournament-tracker/)
+2. Open the live page (the URL you were given; default https://brackets.gracklefighter.com/)
    in a new tab. The automation cannot see Lee's own tabs, and `resize_window` usually does
    not change the layout viewport. Don't fight it: force a phone layout once with the JavaScript
    tool, `document.documentElement.style.width='390px'; document.body.style.width='390px'`,

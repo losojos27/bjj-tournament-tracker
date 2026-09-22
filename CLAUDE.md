@@ -9,9 +9,10 @@ BJJ tournament brackets and projects mat times, fed by FloArena. First event: AD
 Championship 2026, Kraków, Sept 12–13. Lee uses it on a phone in the arena; other people get
 the link. The repo name is deliberately generic because it will cover more than ADCC.
 
-- **Live page (the one to share):** https://losojos27.github.io/bjj-tournament-tracker/
+- **Live page (the one to share):** https://brackets.gracklefighter.com/ (GitHub Pages behind a
+  custom domain; the old https://losojos27.github.io/bjj-tournament-tracker/ redirects there)
 - **Demo link (a replay of ADCC 2026 running in the browser, safe to hand to anyone):**
-  https://losojos27.github.io/bjj-tournament-tracker/?demo
+  https://brackets.gracklefighter.com/?demo
 - Claude artifact snapshot (no live feeds, results as of last republish):
   https://claude.ai/code/artifact/78d4a9a4-2636-4548-9de6-b03be85ae72e
 
@@ -284,6 +285,18 @@ tabs and won't resize below ~360px; the agent forces a 390px layout width instea
   Settings; unknown-name bouts collapse into one line; no seeds on screen; the follow colour is
   a tint, not a name colour.
 
+## Infrastructure (`infra/`, Sept 21)
+
+Terraform for the AWS side, account `576982585955`, profile `personal_terraform`, `us-east-1`.
+`infra/bootstrap` made the state bucket `bjj-tournament-tracker-tfstate-6548a670` (versioned,
+encrypted, private; locking via S3 conditional writes, no DynamoDB) — run once, never again.
+`infra/` is one flat root with remote state in that bucket; today it holds the Route53 CNAME
+`brackets.gracklefighter.com → losojos27.github.io` (the `gracklefighter.com` zone already
+existed and is not managed here). The GitHub side is set by hand: the Pages custom domain (which
+made GitHub commit the `CNAME` file) and HTTPS enforcement. `cd infra && terraform plan` should
+show no changes. The results sync on Lambda + EventBridge goes in this root when it's built.
+The page's CSP, `SIM` gate and demo are hostname-agnostic, verified on the new origin.
+
 ## Security posture (audited Sept 13)
 
 - Public by design: the repo and the Pages site are public; the page holds no secrets, sets no
@@ -326,8 +339,9 @@ the next IBJJF Austin Open, which is in January 2027 — that is the real deadli
 happen before then, but it's one fight at a time and won't show the app's strengths. Serving is not the constraint (GitHub Pages is a CDN); the real
 gaps are (a) IBJJF is not on FloArena, so the live layer and results need a new source
 adapter, (b) a sync that runs on a real schedule (EventBridge + Lambda every minute, not
-GitHub's loose cron), (c) a custom domain. AWS is justified for (b) and possibly a proxy for
-(a); the page itself can stay static anywhere. Size after inspecting ibjjf.com.
+GitHub's loose cron), (c) a custom domain — done Sept 21, brackets.gracklefighter.com via Terraform in `infra/`.
+AWS is justified for (b) and possibly a proxy for (a); the page itself stays on Pages. Agreed
+order: selector → a day on ibjjf.com's data → the sync on Lambda → (domain, done).
 
 **2. Tournament selector.** Make the tournament a selectable event, not a constant. Lee wants this to cover IBJJF opens,
 WNO, ADCC and everything between. Plan, in order:

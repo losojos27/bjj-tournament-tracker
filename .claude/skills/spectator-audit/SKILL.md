@@ -6,7 +6,7 @@ description: Run the novice-spectator agent against the live tracker (or a URL y
 Launch the `novice-spectator` agent with the Agent tool (`subagent_type: "novice-spectator"`).
 
 Prompt it with:
-- the URL to audit: the argument if one was given, else `https://losojos27.github.io/bjj-tournament-tracker/`
+- the URL to audit: the argument if one was given, else `https://brackets.gracklefighter.com/`
 - the current local date and time (run `date`), so it knows whether the event is live, between
   days, or over, and can judge empty states fairly
 - a reminder that it is read-only and must close its browser tab

@@ -4,9 +4,9 @@ Bracket and schedule tracker for the ADCC World Championship 2026 (Kraków, Sept
 Results come from FloArena automatically; the page projects mat times and shows what is on
 each mat right now.
 
-**Live page:** https://losojos27.github.io/bjj-tournament-tracker/
+**Live page:** https://brackets.gracklefighter.com/
 
-**Demo (no live event needed):** https://losojos27.github.io/bjj-tournament-tracker/?demo replays
+**Demo (no live event needed):** https://brackets.gracklefighter.com/?demo replays
 ADCC 2026 in your browser from its real results, mats and finish times, starting at the
 semifinals at 10× speed. Pause and a speed drop-down sit at the top of the page; jump-to-a-round
 controls are under settings.
@@ -44,6 +44,7 @@ No build step, no dependencies (Node 18+ for the sync script). Serve over HTTP; 
 | `scripts/sync-loop.sh` | The loop the workflow runs: reset, sync, commit, push, sleep. |
 | `scripts/sync-loop-test.sh` | Integration test of that loop against a local bare repo. |
 | `scripts/sim/` | Competition simulator: replays the finished event through fake versions of both feeds. |
+| `infra/` | Terraform for the AWS side: the custom domain's DNS record, state bucket bootstrap. |
 | `scripts/build-artifact.sh` | Builds `dist/artifact.html` for publishing as a Claude artifact. |
 | `.github/workflows/sync.yml` | Cron that runs the sync and commits changes. |
 | `CLAUDE.md` | Handoff notes, data sources, known issues. |
