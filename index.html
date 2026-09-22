@@ -173,6 +173,9 @@ const DATA_URL = SIM ? 'sim/results.json' : 'data/results.json';
 const LIVE_URL = SIM ? 'sim/mats.json' : `https://floarena.firebaseio.com/${EVENT}/mats.json`;
 // a simulation runs many event-seconds per wall second; every projected duration is divided by this
 const simSpeed = () => (SIMULATED && DATA && DATA.sim && DATA.sim.speed > 0) ? DATA.sim.speed : 1;
+// what the page says its data is: one place, so demo mode never claims to be live anywhere
+const SOURCE = DEMO ? { name:'replayed from ADCC 2026', cue:'replay', note:'this is a replay of ADCC 2026 from its real results, mats and finish times; nothing here is live.' }
+                    : { name:'FloArena live', cue:'live', note:null };
 const ROUND_LABEL={R32:'round of 32',R16:'round of 16',QF:'quarterfinal',SF:'semifinal',F:'final','3':'3rd place'};
 const ROUND_HEAD={R32:'round of 32',R16:'round of 16',QF:'quarterfinals',SF:'semifinals',F:'final','3':'3rd place'};
 const rl=r=>ROUND_LABEL[r]||r;
@@ -412,22 +415,27 @@ function pName(p,mo,s,opts={}){
   const seed='';   // seeds stay in the data but read as scores on screen
   return `<button type="button" class="${c}" data-copy="${esc(p.name)}" title="copy name">${flagHtml(p.team)}${seed}<span class="nm">${esc(p.name)}</span></button>`;
 }
-// "SUB" + "6-0 6:53" -> "submission 6:53"; "SCORE" + "5-0 15:00 TB1" -> "5-0 points · overtime"; "REF" -> "ref decision"
-function fmtResult(winType,result){
-  const r=String(result||''); const score=(r.match(/^(\d+-\d+)/)||[])[1]; const time=(r.match(/(\d+:\d+)/)||[])[1]; const ot=/TB|OT/i.test(r)?' · overtime':'';
+// Flo's result string is "<score> <total match time> [TB1]"; the time is cumulative, so an overtime finish at
+// 14:17 means 4:17 into overtime after 10:00 of regulation. "SUB" + "6-0 6:53" -> "submission at 6:53";
+// "SCORE" + "5-0 15:00 TB1" -> "5-0 on points · overtime"; "REF" -> "referee decision". The live feed has no
+// time and keeps its overtime marker in `period`, so callers pass that as `overtime`.
+function fmtResult(winType,result,overtime){
+  const r=String(result||''); const score=(r.match(/^(\d+-\d+)/)||[])[1]; const time=(r.match(/(\d+:\d+)/)||[])[1]; const ot=(overtime||/TB|OT/i.test(r))?' · overtime':'';
   const t=String(winType||'').toUpperCase();
   if(t==='SUB') return `submission${time?' at '+time:''}${ot}`;
   if(t==='SCORE'||t==='PTS'||t==='DEC'){ if(score&&score!=='0-0') return `${score} on points${ot}`; return ot?'won in overtime':'on points'; }
   if(t==='REF') return `referee decision${ot}`;
   if(t==='DQ') return 'disqualified';
   if(t==='INJ'||t==='MED') return 'injury';
-  if(t==='WO'||t==='FF') return 'walkover';
+  if(t==='WO'||t==='FF'||t==='FOR') return 'forfeit';
   return [t.toLowerCase(),r].filter(Boolean).join(' ');
 }
+// a finished live-feed entry as result text: the feed's score is red-blue, results read winner-first
+function liveResult(l){ if(!l) return ''; const sc=/^\d+-\d+$/.test(l.finalScore||'')?(l.winner===1?l.finalScore.split('-').reverse().join('-'):l.finalScore):''; return fmtResult(l.winType,sc,!!(l.period&&l.period!=='1')); }
 function resultPill(mo){
   const b=mo.bout;
   if(mo.src==='flo'&&b) return `<span class="res">${esc(fmtResult(b.winType,b.result))}</span>`;
-  if(mo.src==='live'&&mo.live) return `<span class="res">${esc(fmtResult(mo.live.winType,mo.live.finalScore))} · live</span>`;
+  if(mo.src==='live'&&mo.live) return `<span class="res">${esc(liveResult(mo.live)||'result in')} · live</span>`;
   return '';
 }
 // the feed keeps each mat's latest bout; a finished one stays on its card, dimmed with the result, until the mat's
@@ -437,16 +445,16 @@ function matCards(){
   const done=Object.values(LIVE).filter(l=>l.over&&Date.now()-l.updated<recent&&!live.some(x=>x.matIdx===l.matIdx));
   return [...live,...done].sort((a,b)=>a.matIdx-b.matIdx);
 }
-function renderMats(){
-  const ms=matCards(); if(!ms.length) return '';
-  let h=`<h2 class="section-title">on the mats <span style="font-weight:400">· ${DEMO?'replayed from ADCC 2026':'FloArena live'}</span></h2><div class="mats">`;
+function renderMats(ms){
+  if(!ms.length) return '';
+  let h=`<h2 class="section-title">on the mats <span style="font-weight:400">· ${SOURCE.name}</span></h2><div class="mats">`;
   for(const l of ms){
-    const who=(p,i)=>`<div class="who ${l.over?(l.winner===i?'w':'l'):''} ${isFollow(p)?'follow':''}"><button type="button" class="who-l" data-copy="${esc(p.name)}" title="copy name">${flagHtml(p.team)}<span class="nm">${esc(p.name)}</span></button><span class="sc">${p.score}${p.pen?`<small class="muted"> p${p.pen}</small>`:''}</span></div>`;
+    const who=(p,i)=>`<div class="who ${l.over&&l.winner!==null?(l.winner===i?'w':'l'):''} ${isFollow(p)?'follow':''}"><button type="button" class="who-l" data-copy="${esc(p.name)}" title="copy name">${flagHtml(p.team)}<span class="nm">${esc(p.name)}</span></button><span class="sc">${p.score}${p.pen?`<small class="muted"> p${p.pen}</small>`:''}</span></div>`;
     const head=`<b>${esc(String(l.mat).toLowerCase())}</b> · ${esc(l.weight)}${l.weight&&!/kg|abs/i.test(l.weight)?'kg':''} ${esc(l.round)} · #${esc(l.n)}`;
     if(l.over){ const winner=l.winner===0?l.red:l.winner===1?l.blue:null;
-      const score=l.winner===1&&/^\d+-\d+$/.test(l.finalScore||'') ? l.finalScore.split('-').reverse().join('-') : l.finalScore;   // the feed's score is red-blue; read it winner-first, as results elsewhere are
-      h+=`<div class="panel mat done"><div class="hd"><span>${head}</span><span>final</span></div>${who(l.red,0)}${who(l.blue,1)}<div class="ft">${winner?`<b>${esc(winner.name)}</b> won · `:''}${esc(fmtResult(l.winType,score))} · ended ${ago(l.updated)}</div></div>`; }
-    else h+=`<div class="panel mat"><div class="hd"><span>${head}</span><span class="clock">${esc(l.clock)}${l.period&&l.period!=='1'?' overtime':''}</span></div>${who(l.red,0)}${who(l.blue,1)}<div class="ft"><span class="cue live">${DEMO?'replay':'live'}</span> updated ${ago(l.updated)}</div></div>`;
+      const bits=[winner?`<b>${esc(winner.name)}</b> won`:'result in', esc(liveResult(l)), 'ended '+ago(l.updated)].filter(Boolean);   // no dangling separators when the feed lacks a finish or a winner
+      h+=`<div class="panel mat done"><div class="hd"><span>${head}</span><span>final</span></div>${who(l.red,0)}${who(l.blue,1)}<div class="ft">${bits.join(' · ')}</div></div>`; }
+    else h+=`<div class="panel mat"><div class="hd"><span>${head}</span><span class="clock">${esc(l.clock)}${l.period&&l.period!=='1'?' overtime':''}</span></div>${who(l.red,0)}${who(l.blue,1)}<div class="ft"><span class="cue live">${SOURCE.cue}</span> updated ${ago(l.updated)}</div></div>`;
   }
   return h+`</div>`;
 }
@@ -459,8 +467,8 @@ function renderNext(){
     h=`<div class="panel quiet demo-bar"><div>this is a demo: a replay of ADCC 2026, not a live event. two fighters are followed as an example; change them, or jump to a round, in settings.</div>
       <div class="demo-ctl"><button type="button" class="chip small" data-demo="pause">${c&&c.paused?'resume':'pause'}</button>
       <label for="demoSpeed">speed</label><select id="demoSpeed" class="field">${opts.map(x=>`<option value="${x}" ${x===sp?'selected':''}>×${x}${x===1?' (real time)':''}</option>`).join('')}</select></div></div>`; }
-  h+=dayDone?'':`<div class="topline"><span class="note" style="margin:0">${matsInUse} mat${matsInUse===1?'':'s'}${floOrder?'':' (a guess)'} · times are estimates${DEMO?' · replayed from ADCC 2026':mode==='live'?' · following the live feed':mode==='break'?' · break until '+fmt(breakEnd()):''}${floOrder&&!DEMO?' · order from FloArena':''}</span></div>`;
-  h+=renderMats();
+  h+=dayDone?'':`<div class="topline"><span class="note" style="margin:0">${matsInUse} mat${matsInUse===1?'':'s'}${floOrder?'':' (a guess)'} · times are estimates${DEMO?' · '+SOURCE.name:mode==='live'?' · following the live feed':mode==='break'?' · break until '+fmt(breakEnd()):''}${floOrder&&!DEMO?' · order from FloArena':''}</span></div>`;
+  const onMats=matCards(); h+=renderMats(onMats);
   const fl=S.follow.filter(Boolean);
   const cards=[]; const seen=new Set();
   for(const f of fl){
@@ -491,7 +499,7 @@ function renderNext(){
   if(dayDone) h+=`<div class="panel">that’s the event. results are in brackets.</div>`;
   else if(!q.length) h+=`<div class="panel">nothing in the queue yet.</div>`;
   else h+=`<div class="stack">`;
-  if(!dayDone && q.length && liveState==='ok' && !matCards().length) h+=`<div class="panel quiet">${mode==='break'?`break until ${fmt(breakEnd())}. the times below are projected from then.`:'nothing on the mats right now. the times below are projected.'}</div>`;
+  if(!dayDone && q.length && liveState==='ok' && !onMats.length) h+=`<div class="panel quiet">${mode==='break'?`break until ${fmt(breakEnd())}. the times below are projected from then.`:'nothing on the mats right now. the times below are projected.'}</div>`;
   // bouts where neither name is known yet collapse into one line at the point where they start
   const unknown=q.filter(mo=>mo.a.tbd&&mo.b.tbd); const firstUnknown=unknown[0];
   q.slice(0,48).forEach(mo=>{
@@ -506,7 +514,7 @@ function renderNext(){
       <div class="vs">${pName(mo.a,mo,0,{seed:false})}${pName(mo.b,mo,1,{seed:false})}</div></div></div>`;
   });
   if(q.length) h+=`</div>`;
-  h+=`<div class="note">${DEMO?'everything here is replayed from ADCC 2026’s real results. ':floOrder?'results and the running order come from FloArena. ':'results come from FloArena. today’s mats and times are our guess until FloArena posts the order. '}tap a name to copy it.</div>`;
+  h+=`<div class="note">${DEMO?'everything here is '+SOURCE.name+'. ':floOrder?'results and the running order come from FloArena. ':'results come from FloArena. today’s mats and times are our guess until FloArena posts the order. '}tap a name to copy it.</div>`;
   return h;
 }
 function currentDiv(){
@@ -532,7 +540,7 @@ function box(mo){
   let res='';
   const pj=PROJ.get(mo.key); if(pj&&mo.w===null&&!(mo.live&&!mo.live.over)) res=pj.onMat?`on mat ${pj.mat}`:`${fmt(pj.at)} · mat ${pj.mat}`;
   if(mo.src==='flo'&&(b.winType||b.result)) res=fmtResult(b.winType,b.result)+(mo.w<0?' · no winner':'');
-  else if(mo.src==='live'&&mo.live) res=fmtResult(mo.live.winType,mo.live.finalScore)+' · live';
+  else if(mo.src==='live'&&mo.live) res=(liveResult(mo.live)||'result in')+' · live';
   const live=mo.live&&!mo.live.over;
   const vid = safeVideo(b.video);
   const resHtml = res && vid ? `<a class="res vid" href="${esc(vid)}" target="_blank" rel="noopener" title="watch on FloGrappling">${esc(res)} ↗</a>` : `<span class="res">${esc(res)}</span>`;
@@ -546,11 +554,12 @@ function renderBrackets(){
   PROJ=new Map(queue().list.map(mo=>[mo.key,mo]));
   let h=`<div class="chips">${ds.map(d=>{ const rn=rounds(d); const c=winnerOf(d,rn[rn.length-1],0); return `<button type="button" data-bdiv="${esc(d.id)}" class="chip ${d.id===div.id?'active':''}">${esc(d.name)}${c!==null&&c>=0?' 🥇':''}</button>`; }).join('')}</div>`;
   const n1=div.rounds[0].bouts.length;
-  let firstOpen=div.rounds.findIndex(r=>r.bouts.some((b,m)=>winnerOf(div,r.name,m)===null)); if(firstOpen<0) firstOpen=div.rounds.length-1;
+  let firstOpen=div.rounds.findIndex(r=>r.bouts.some((b,m)=>winnerOf(div,r.name,m)===null)); if(firstOpen<0) firstOpen=div.rounds.length;   // all decided: the final is the last completed round
+  const openCol=Math.max(0,firstOpen-1);   // the column a fresh open scrolls to (see render()); the hint must agree with it
   const anyOpen=div.rounds.some(r=>r.bouts.some((b,m)=>winnerOf(div,r.name,m)===null));
   h+=`<h2 class="section-title">${esc(div.name)}${anyOpen?'<span style="font-weight:400"> · times are estimates</span>':''}</h2>`;
-  h+=`<div class="note swipe-hint" hidden>${firstOpen>0?'swipe right for earlier rounds and results, left for later rounds.':'swipe left for later rounds.'}</div>`;
-  h+=`<div class="bwrap" data-first-open="${firstOpen}"><div class="bracket" style="--n1:${n1}">`;
+  h+=`<div class="note swipe-hint" hidden>${openCol>0?'swipe right for earlier rounds and results, left for later rounds.':'swipe left for later rounds.'}</div>`;
+  h+=`<div class="bwrap" data-open-col="${openCol}"><div class="bracket" style="--n1:${n1}">`;
   for(const r of div.rounds){
     h+=`<div class="col"><h3>${ROUND_HEAD[r.name]||r.name}</h3><div class="slots">`;
     for(let m=0;m<r.bouts.length;m++) h+=`<div class="slot">${box(matchObj(div,r.name,m))}</div>`;
@@ -572,11 +581,11 @@ function unmatchedFollows(){
 }
 function renderSettings(){
   const synced=DATA?fmt(new Date(DATA.updated)):'not loaded';
-  const dc=demo.clock; const stages=[['start','start'],['QF','quarterfinals'],['SF','semifinals'],['third','3rd place'],['finals','finals'],['absolute','absolute']];
+  const dc=demo.clock;
   const demoPanel = DEMO&&dc ? `
   <h2 class="section-title">demo</h2>
   <div class="panel">
-    <div class="note" style="margin:0 0 10px">a replay of ADCC 2026 from its real results, mats and finish times, running in this browser.</div>
+    <div class="note" style="margin:0 0 10px">${SOURCE.note} it runs in this browser.</div>
     <label style="margin-top:0">speed (×1 is real time)</label>
     <div class="chip-row"><button type="button" class="chip" data-demo="pause">${dc.paused?'resume':'pause'}</button>${DEMO_SPEEDS.list.map(x=>`<button type="button" class="chip ${dc.speed===x?'active':''}" data-demo="speed:${x}">×${x}</button>`).join('')}</div>
     <label>jump to</label>
@@ -605,7 +614,7 @@ function renderSettings(){
   </div>
   <h2 class="section-title">data</h2>
   <div class="panel">
-    <div class="note" style="margin:0">${DEMO?'this is a replay of ADCC 2026 from its real results, mats and finish times; nothing here is live.':`bracket, results, and mat order come from FloArena (last synced ${synced}). live scores and the clock come from FloArena’s mat feed.`} times are projected from that, never typed in. the follow list and these settings live in this browser only.</div>
+    <div class="note" style="margin:0">${DEMO?SOURCE.note:`bracket, results, and mat order come from FloArena (last synced ${synced}). live scores and the clock come from FloArena’s mat feed.`} times are projected from that, never typed in. the follow list and these settings live in this browser only.</div>
     <div class="actions"><button type="button" class="chip warn" id="reset">reset everything</button></div>
   </div>`;
 }
@@ -617,8 +626,8 @@ function renderStatus(){
   const eventDay = SIMULATED || Object.values(DAY_DATES).includes(localDate());
   const old = DATA&&eventDay&&ageMin>15 ? ` · <span class="bad">results ${ageMin<90?Math.round(ageMin)+' min':Math.round(ageMin/60)+' h'} old</span>` : '';
   const stale = (DATA&&dataErr ? ' · <span class="bad">stale</span>' : '') + old;
-  const n=liveInProgress().length;
-  const liveTxt = liveState==='ok' ? (n?`<b>${n===1?'1 bout':n+' bouts'} on the mats</b>`:'nothing on the mats') : liveState==='bad' ? `<span class="bad">live feed lost</span>` : `live feed off`;
+  const n=liveInProgress().length, lingering=n?0:matCards().length;   // the section below shows finished cards for a while; say so rather than "nothing"
+  const liveTxt = liveState==='ok' ? (n?`<b>${n===1?'1 bout':n+' bouts'} on the mats</b>`:lingering?'between bouts':'nothing on the mats') : liveState==='bad' ? `<span class="bad">live feed lost</span>` : `live feed off`;
   const simTxt = SIMULATED ? `<span class="bad">${DEMO?'demo':'simulation'}${simSpeed()!==1?' ×'+simSpeed():''}${DATA&&DATA.sim&&DATA.sim.paused?' paused':''}</span> · ` : '';   // never mistakable for the real thing
   s.innerHTML=`${simTxt}${liveTxt}${stale}<span class="sync"> · ${dataTxt}</span>`;
 }
@@ -635,7 +644,7 @@ function render(){
     const bw2=$('#main').querySelector('.bwrap'), ch2=$('#main').querySelector('.chips');
     if(keepC>=0) ch2.scrollLeft=keepC; else ch2.querySelector('.chip.active')?.scrollIntoView({inline:'center',block:'nearest'});
     if(keepX>=0) bw2.scrollLeft=keepX;
-    else { const i=(+bw2.dataset.firstOpen||0)-1; const col=bw2.querySelectorAll('.col')[i]; if(col&&i>0) bw2.scrollLeft=Math.max(0,col.offsetLeft-parseInt(getComputedStyle(bw2).paddingLeft||0)); }  // fresh open: the last completed round fully in view at the left, the next round peeking in
+    else { const i=+bw2.dataset.openCol||0; const col=bw2.querySelectorAll('.col')[i]; if(col&&i>0) bw2.scrollLeft=Math.max(0,col.offsetLeft-parseInt(getComputedStyle(bw2).paddingLeft||0)); }  // fresh open: the last completed round fully in view at the left, the next round peeking in
     const hint=$('#main').querySelector('.swipe-hint'); if(hint) hint.hidden = bw2.scrollWidth<=bw2.clientWidth+2;
   }
 }
@@ -666,7 +675,7 @@ $('#main').addEventListener('change',e=>{
   if(t.dataset.dur){ S.dur[t.dataset.dur]=+t.value||12; save(); }
 });
 // entry point. A test harness sets window.QUEUE_TEST to a callback and gets the engine instead of a boot.
-if(typeof window.QUEUE_TEST==='function') window.QUEUE_TEST({queue, S, SIM, DEMO, setData:d=>{DATA=d; forgetConfirmed();}, setLive:l=>{LIVE=l; rememberFinished();}, forget:()=>SEEN.clear(), seen:()=>SEEN.size});
+if(typeof window.QUEUE_TEST==='function') window.QUEUE_TEST({queue, S, SIM, DEMO, fmtResult, liveResult, setData:d=>{DATA=d; forgetConfirmed();}, setLive:l=>{LIVE=l; rememberFinished();}, forget:()=>SEEN.clear(), seen:()=>SEEN.size});
 else {
   loadState(); restoreSeen(); loadData(); loadLive();
   // refresh loops: results every 60 s, live mats every 15 s (3 s and 1.5 s in a simulation, which runs many times

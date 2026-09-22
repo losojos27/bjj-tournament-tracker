@@ -138,7 +138,10 @@ export function matsFeedAt(final, tl, t, wallNow = Date.now(), speed = 1) {
     const it = onMat.reduce((a, b) => (b.start > a.start ? b : a));
     const live = t < it.over; const b = it.b; const reg = tl.options.regulation;
     const e = Math.min(t - it.start, it.finish);
-    const ot = e > reg ? Math.ceil((e - reg) / 300) : 0;
+    // overtime: Flo's own flag on the result ("… 10:00 TB1") is the truth once the bout is over; while it runs, the
+    // elapsed time decides. The real feed keeps the period ("TB1", clock "0:00") on a finished bout, so this does too.
+    const flagged = /TB(\d)/i.exec(String(b.result || ''));
+    const ot = !live && flagged ? +flagged[1] : e > reg ? Math.ceil((e - reg) / 300) : 0;
     const [ws, ls] = parseScore(b.result); const redWon = b.w === 0;
     const showScore = !live || e >= it.finish * 0.7;               // ADCC points come late
     const red = showScore ? (redWon ? ws : ls) : 0, blue = showScore ? (redWon ? ls : ws) : 0;

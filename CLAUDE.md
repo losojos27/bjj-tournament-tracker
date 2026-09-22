@@ -124,11 +124,13 @@ it, and if the semis were already over when the projection starts no gap is adde
 bar doesn't stack against ours. Next up: a "nothing on the mats right now" line when nothing is
 live, live mat cards (a finished bout lingers on its mat card, dimmed with "X won · finish",
 until the mat's next bout starts or ~10 min pass, so a viewer who glanced away still sees who
-won; the demo audit found the card vanishing too fast), a "following" section (one card per followed fighter with a
+won; the demo audit found the card vanishing too fast; the header then reads "between bouts"
+rather than "nothing on the mats"; a followed fighter's loss showing there is fine by Lee), a "following" section (one card per followed fighter with a
 match today, or a neutral "no scheduled matches" card), then the queue of every unfought bout across both days in running order, minus
 the ones on the mats; bouts whose names are both unknown collapse into one line. Brackets: division chips, a heading naming the division,
 a swipe hint that hides when the bracket fits, one column per round with CSS connectors,
-opened with the last completed round fully in view at the left and the next round peeking in; finished bouts link to Flo's video; slots
+opened with the last completed round fully in view at the left and the next round peeking in
+(a fully decided division opens on its final); the swipe hint keys on the same column; finished bouts link to Flo's video; slots
 filled by someone who didn't win the feeding bout are labelled ("X in after the #39
 disqualification"). Tapping any name copies it (no bio links: name spellings vary too much
 across sites). Settings: following (unmatched entries flagged), appearance, projection,
@@ -161,9 +163,15 @@ drop-down and pause sit in the demo line on Next up, the jump chips in Settings)
 the clock lives in sessionStorage keyed by the query string, so a reload continues and a
 different link starts fresh. Next up shows a "this is a demo" line, the header says "demo ×N",
 and Settings gains a demo panel (speed row, jump-to row, a leave link) that exists only in demo
-mode; a jump lands on Next up. In demo mode the page never says "FloArena" or "live": every
-such line reads "replayed from ADCC 2026" and the cue tag says "replay". Finishes read
-"submission at 7:54", "3-0 on points", "referee decision · overtime", "won in overtime". `SIMULATED = SIM || DEMO` gates everything the two share: scaled projections, fast
+mode; a jump lands on Next up. `SOURCE` (one object) is the only place the page names its data:
+"FloArena live" / "live" normally, "replayed from ADCC 2026" / "replay" in demo mode; never
+inline the words elsewhere. Finishes read "submission at 14:17 · overtime", "3-0 on points",
+"referee decision · overtime", "won in overtime", "forfeit". Flo's result time is cumulative
+(14:17 is 4:17 into overtime after 10:00 of regulation), so it is shown as is. Live-sourced
+results go through `liveResult()`: the feed's score is red-blue and is read winner-first, and
+its overtime marker is `period` ("TB1"), which Flo keeps on a finished bout; Flo also flags
+overtime on bouts that ended at exactly regulation ("2-0 10:00 TB1"), so the simulator takes the
+flag from the result string once a bout is over. `SIMULATED = SIM || DEMO` gates everything the two share: scaled projections, fast
 polling, no persistence of remembered finishes. The server simulation wins if both are asked
 for. Pages serves `.mjs` as `text/javascript` (checked Sept 21); if that ever changes the
 import fails and the page says it couldn't load the bracket.

@@ -3,7 +3,7 @@
 import fs from 'node:fs';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
-import { buildTimeline, resultsAt, matsFeedAt, upcomingAt, jumpTargets, createClock } from './core.mjs';
+import { buildTimeline, resultsAt, matsFeedAt, upcomingAt, jumpTargets, createClock, parseFinish } from './core.mjs';
 import { createSim, createServer } from './server.mjs';
 
 const HERE = path.dirname(fileURLToPath(import.meta.url));
@@ -66,7 +66,12 @@ ok(JSON.stringify(rEnd.divs.map(d => [d.rounds, d.third])) === JSON.stringify(fi
 { // overtime: a bout finishing past regulation reports a TB period
   const otBout = tl.items.find(i => i.finish > tl.options.regulation + 60);
   const f = Object.values(matsFeedAt(final, tl, otBout.start + tl.options.regulation + 30)).find(v => v.boutNumber === String(otBout.b.n));
-  ok(f && /^TB\d$/.test(f.period), 'a bout past regulation shows an overtime period'); }
+  ok(f && /^TB\d$/.test(f.period), 'a bout past regulation shows an overtime period');
+  const g = Object.values(matsFeedAt(final, tl, otBout.over + 5)).find(v => v.boutNumber === String(otBout.b.n));
+  ok(g && g.isMatchOver && /^TB\d$/.test(g.period), 'a finished overtime bout keeps its overtime period, as the real feed does');
+  const edge = tl.items.find(i => /TB1/.test(i.b.result) && parseFinish(i.b.result) === tl.options.regulation);   // "2-0 10:00 TB1": Flo says overtime at exactly regulation
+  const h = edge && Object.values(matsFeedAt(final, tl, edge.over + 5)).find(v => v.boutNumber === String(edge.b.n));
+  ok(!edge || (h && h.period === 'TB1'), 'a bout Flo flagged as overtime at exactly regulation still reads overtime when finished'); }
 
 // ---- the server: snapshot lag, controls, static files, traversal
 let fake = 1_000_000; const sim = createSim({ speed: 20, sync: 300, now: () => fake });

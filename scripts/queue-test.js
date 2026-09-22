@@ -18,7 +18,7 @@ function load(location){
   if(!api) throw new Error('index.html did not hand the engine to QUEUE_TEST');
   return api;
 }
-const {queue,S,setData,setLive,SIM,forget,seen}=load({hostname:'losojos27.github.io',search:''});
+const api0=load({hostname:'losojos27.github.io',search:''}); const {queue,S,setData,setLive,SIM,forget,seen}=api0;
 
 // ---- fixture: a men's division at the semifinal stage, a women's division at the quarterfinal stage
 const P=(name,seed,team='Brazil')=>({name,seed,team});
@@ -116,5 +116,13 @@ ok(load({hostname:'192.168.1.20',search:'?sim=1'}).SIM===true && load({hostname:
   simApi.S.mats=1; const d8=fixture(); d8.sim={speed:20}; simApi.setData(d8); simApi.setLive({});
   const q8=simApi.queue().list.filter(x=>x.rName==='SF'); const gap=(q8[1].at-q8[0].at)/1000;
   ok(Math.abs(gap-20*60/20)<1, 'H: at ×20 a 20-minute semifinal slot projects as 60 s of wall time, got '+gap+'s'); }
+
+// J) result wording: Flo's times are cumulative; the live feed's score is red-blue and its overtime lives in `period`
+{ const f=api0.fmtResult, lr=api0.liveResult;
+  ok(f('SUB','0-0 14:17 TB1')==='submission at 14:17 · overtime' && f('SCORE','5-0 15:00 TB1')==='5-0 on points · overtime' && f('SCORE','0-0 15:00 TB1')==='won in overtime' && f('REF','0-0 14:17 TB1')==='referee decision · overtime' && f('FOR','0-0')==='forfeit' && f('SUB','6-0 6:53')==='submission at 6:53', 'J: finishes read as finishes, with the cumulative match time');
+  const L=(w,score,period,winType)=>({over:true,winner:w,finalScore:score,period,winType});
+  ok(lr(L(1,'0-3','1','SCORE'))==='3-0 on points', 'J: a blue (bottom-slot) win reads winner-first: '+lr(L(1,'0-3','1','SCORE')));
+  ok(lr(L(0,'0-0','TB1','SCORE'))==='won in overtime' && lr(L(0,'0-0','TB1','REF'))==='referee decision · overtime', 'J: overtime reaches live-sourced results through the period field');
+  ok(lr(L(0,null,'1',null))==='', 'J: a feed entry with no finish yields empty text, not dangling separators'); }
 
 console.log(`ALL QUEUE CHECKS PASSED (${checks} checks)`);
