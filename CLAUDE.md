@@ -16,15 +16,17 @@ the link. The repo name is deliberately generic because it will cover more than 
 - Claude artifact snapshot (no live feeds, results as of last republish):
   https://claude.ai/code/artifact/78d4a9a4-2636-4548-9de6-b03be85ae72e
 
-**Simulator (Sept 21, 2026):** `node scripts/sim/server.mjs` replays the finished ADCC as a live
-event, so nothing has to wait for a real one. See "Simulator" under Architecture. Use it before
-and after any change to the page's result or schedule logic.
+**Status (Sept 27, 2026):** ADCC 2026 is over; the page worked through finals day with no punch
+list. Since then: the competition simulator and hosted `?demo` (Sept 21), the custom domain via
+Terraform (Sept 21), and the wide desktop/tablet layout (Sept 21) are done and pushed. The sync
+cron is commented out and the Day 2 routine is disabled, so nothing runs between events. Next
+is the tournament selector, then a look at ibjjf.com's data for the IBJJF Austin Open (January
+2027, the real deadline), then the sync on Lambda; details under "Next" at the end. Use the
+simulator (`node scripts/sim/server.mjs`, "Simulator" under Architecture) before and after any
+change to result or schedule logic; nothing has to wait for a live event.
 
-**Status (Sept 15, 2026):** ADCC 2026 is over and the page worked through finals day with no
-punch list. The sync cron is commented out and the Day 2 routine is disabled, so nothing runs
-between events. The agreed next work is at the end of this file under "Next": a competition
-simulator first, then hosting/data for the IBJJF Austin Open (January 2027), then a tournament
-selector. Start there.
+`archive/adcc-tracker.zip` is the original Claude-chat prototype Lee handed over on Sept 12;
+history only. `dist/` is git-ignored build output.
 
 `docs/case-study.md` is the story of how this was built with Lee over Sept 12–13 (also
 published as a page: https://claude.ai/code/artifact/8046ec54-d648-42d6-b131-dc48f14cbebe).
@@ -41,12 +43,13 @@ an unattended process run through an event without a test that simulates the fai
 node scripts/sync.mjs            # FloArena -> data/results.json (Node 18+, no deps)
 node scripts/queue-test.js       # schedule engine on its own small fixture (Flo lists, live bouts, DQs)
 scripts/sync-loop-test.sh        # the sync loop against a local bare repo with a competing push mid-loop
-node scripts/sim/test.mjs        # the competition simulator: timeline, both fake feeds, the HTTP server
+node scripts/sim/test.mjs        # the competition simulator: timeline, both fake feeds, the HTTP server (114 checks)
 node scripts/sim/server.mjs      # run a simulated ADCC: tracker at http://localhost:8766/?sim, controls at /sim/
                                  #   --speed 20 --from SF --sync 300 --port 8766 --host 0.0.0.0 (phone on the same wifi)
 python3 -m http.server 8000      # serve locally; open http://localhost:8000 (file:// breaks fetch and fonts)
 node --check <(sed -n '/<script id="app">/,/<\/script>/p' index.html | sed '1d;$d')   # syntax-check the app script
 scripts/build-artifact.sh        # index.html -> dist/artifact.html for the artifact host
+terraform -chdir=infra plan      # AWS side (profile personal_terraform); should say "No changes" between infra work
 gh workflow run sync.yml         # trigger a sync on GitHub now
 gh run list -w sync.yml -L5      # is the sync loop running?
 /spectator-audit [url]           # in Claude Code: the novice-spectator agent walks the live page and reports confusions
@@ -55,13 +58,23 @@ gh run list -w sync.yml -L5      # is the sync loop running?
 The app script is `<script id="app">`; both the `--check` command and `queue-test.js` anchor on
 that id (the head also has a one-line theme bootstrap `<script>`, and `theme.js` loads by src).
 The script's last statement is the entry point: if `window.QUEUE_TEST` is a function it hands
-the engine (`queue`, `S`, `setData`, `setLive`) to it instead of booting; that is how the test
-loads the real code with stubs.
+the engine (`queue`, `S`, `SIM`, `DEMO`, `fmtResult`, `liveResult`, `setData`, `setLive`,
+`forget`, `seen`) to it instead of booting; that is how the test loads the real code with stubs
+(a stubbed `document`/`window`, so `render()` never runs there — UI changes are checked in a
+browser against the demo, not by the harness). The three test files are each one script with
+sequential `ok()` checks that throw on the first failure; there is no per-test selection, so
+run the whole file (`node scripts/queue-test.js`, ~34 checks in scenarios A–J).
 
-Deploy is `git push` to `main`; GitHub Pages redeploys in about a minute. To update the artifact
-snapshot: run the build script, then publish `dist/artifact.html` with `data/results.json`
-attached (plus `field-manual-theme/theme.css`, `theme.js`, and both woff2 fonts the first time
-or whenever the theme changes).
+Browser checks: serve the repo (`python3 -m http.server 8000`), open `http://localhost:8000/?demo`
+(the replay needs no live event), and use the Chrome tools; the wide layout kicks in at ≥ 1000px
+and the phone path can be forced from the console with
+`window.matchMedia=q=>({matches:false,addEventListener(){}}); render()`.
+
+Deploy is `git push` to `main`; GitHub Pages redeploys in about a minute at the custom domain.
+The artifact snapshot (v32) predates the demo, the SEEN memory and the wide layout; if it is
+ever republished, run the build script, then publish `dist/artifact.html` with
+`data/results.json` attached (plus `field-manual-theme/theme.css`, `theme.js`, and both woff2
+fonts the first time or whenever the theme changes). The live page is what gets shared now.
 
 ## Architecture
 
@@ -346,9 +359,12 @@ ADCC 2026 is done: Lee used the page all of finals day and reported no UX or fun
 punch list. The sync schedule is commented out in `sync.yml` and the Day 2 routine is disabled;
 re-enable the cron before the next event. Three items, in this order:
 
-**0. A competition simulator** — built Sept 21 (`scripts/sim/`, see Architecture), including the
-hosted `?demo` mode. Deliberately not built yet (Lee, Sept 21: "hold off"): failure injection
+**0. A competition simulator** — done Sept 21 (`scripts/sim/`, see Architecture), including the
+hosted `?demo` mode. Deliberately not built (Lee, Sept 21: "hold off"): failure injection
 (test-division bouts, a dead feed, an empty upcoming list) for rehearsing the Sept 13 incidents.
+Also done since: the wide layout (Sept 21, "Wide layout" under Architecture); one open question
+from it is whether narrower bracket columns (~220px) are wanted on a laptop, where a four-round
+men's bracket still scrolls sideways below ~1500px — Lee hasn't said.
 
 **1. Hosting for scale** (Lee, Sept 15): Lee expects to share the page with many parents at
 the next IBJJF Austin Open, which is in January 2027 — that is the real deadline. A WNO may
