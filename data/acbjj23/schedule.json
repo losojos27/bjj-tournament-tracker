@@ -1,5 +1,5 @@
 {
- "updated": "2026-11-13T22:35:37.591Z",
+ "updated": "2026-11-13T22:45:46.151Z",
  "ok": true,
  "problems": [],
  "source": "smoothcomp",
@@ -26,9 +26,9 @@
    "seq": 3,
    "name": "SUPER CUP / GI / FINAL MATCH / ABSOLUTE / UP TO 80KG",
    "start": "2026-11-13T22:34:45.000Z",
-   "end": "2026-11-13T22:45:45.000Z",
-   "running": 1,
-   "finished": 0,
+   "end": "2026-11-13T22:44:41.000Z",
+   "running": 0,
+   "finished": 1,
    "total": 1
   },
   {
