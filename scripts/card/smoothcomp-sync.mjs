@@ -48,7 +48,7 @@ async function main() {
   if (!r.ok) throw new Error(`schedule HTTP ${r.status}`);
   const body = buildSchedule(await r.json(), card);
   const prev = existsSync(out) ? JSON.parse(readFileSync(out, 'utf8')) : null;
-  const same = prev && JSON.stringify({ ...prev, updated: 0 }) === JSON.stringify({ ...body, updated: 0 });
+  const same = prev && JSON.stringify({ ...prev, updated: 0 }) === JSON.stringify({ updated: 0, ...body });   // same key order as the file
   if (same && Date.now() - Date.parse(prev.updated) < HEARTBEAT_MS) { console.log('schedule unchanged'); return; }
   writeFileSync(out, JSON.stringify({ updated: new Date().toISOString(), ...body }, null, 1) + '\n');
   const done = body.blocks.filter(b => b.finished >= b.total).length, on = body.blocks.filter(b => b.running > 0).map(b => b.seq);
