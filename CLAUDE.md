@@ -44,6 +44,8 @@ node scripts/sync.mjs            # FloArena -> data/results.json (Node 18+, no d
 node scripts/queue-test.js       # schedule engine on its own small fixture (Flo lists, live bouts, DQs)
 scripts/sync-loop-test.sh        # the sync loop against a local bare repo with a competing push mid-loop
 node scripts/sim/test.mjs        # the competition simulator: timeline, both fake feeds, the HTTP server (114 checks)
+node scripts/card/test.mjs       # the fight-card projection and the ACBJJ card parser (22 checks)
+node scripts/card/acbjj-sync.mjs # ACBJJ's card page -> data/acbjj23/card.json
 node scripts/sim/server.mjs      # run a simulated ADCC: tracker at http://localhost:8766/?sim, controls at /sim/
                                  #   --speed 20 --from SF --sync 300 --port 8766 --host 0.0.0.0 (phone on the same wifi)
 python3 -m http.server 8000      # serve locally; open http://localhost:8000 (file:// breaks fetch and fonts)
@@ -219,6 +221,35 @@ starting "Test", bout number ≥ 9000; the page also checks the feed's `division
 predicates must be changed together. There is deliberately no "is this weight class in the
 bracket" allowlist: a real division with an empty pool (the Absolute before it fills) would be
 dropped by it.
+
+## Fight-card events (`acbjj23/`, built Nov 13, 2026: the first non-Flo event)
+
+ACBJJ 23 (Rio, Nov 13, 2026) is a card, not a tournament: one mat, 20 single bouts, no brackets.
+It has its own page, https://brackets.gracklefighter.com/acbjj23/ (`acbjj23/index.html`), which
+shares the theme and the UI rules above but none of the bracket code; `index.html` was not
+touched. The tournament selector still doesn't exist; this page is what a "card" event type
+looks like when it does.
+
+- **Card:** `scripts/card/acbjj-sync.mjs` reads https://events.acbjj.com/card23.html (static
+  HTML, the card inline as `var FIGHTS = [...]`, plus `var PRELIMS_FROM`) and writes
+  `data/acbjj23/card.json`. The site bills from the main event (n = 1) down and **the night runs
+  in the reverse of that** (`seq`); checked against ACBJJ 22, where Tapology's recorded bout
+  order was the site's list reversed. Run by hand; no cron.
+- **No live feed exists.** The official site has no results fields and never added any to
+  ACBJJ 22's page; the public Telegram channel (`t.me/s/ACBJJ`, readable without a login)
+  carried no per-bout posts during ACBJJ 22; Tapology had full ACBJJ 22 results with methods and
+  times but is hand-entered, blocks non-browser fetches (403), and its ACBJJ 23 card disagreed
+  with the official one. The broadcast (YouTube) is the only real-time source.
+- **`data/acbjj23/results.json`** is therefore written by whoever is watching, never by the
+  sync: `{updated, now:{n, seenAt, startedAt?}, results:{"<n>":{w, how, time, endedAt}}}`, keyed
+  by billing number `n`, `w` = 0 (`a`) / 1 (`b`) / -1 (no winner). Empty is a valid state.
+- **Projection (`scripts/card/engine.mjs`, pure; tests in `scripts/card/test.mjs`).** With
+  nothing recorded it is the clock alone: `start` plus `slotMin` (15, from ACBJJ 22's 22 bouts in
+  5 h 33 min) per bout, and the page says every time is an estimate. A recorded finish or a
+  recent `now` anchors everything after it; an observation older than 25 minutes stops claiming
+  a bout is live. A bout that must be over with no result recorded is "no result yet", never
+  "up next". The follow card follows the same neutral rule as the bracket page.
+- Local state: `bjjTracker.acbjj23` (follow list), plus the shared `bjjTracker.theme`.
 
 ## FloArena data sources (found by watching the arena page's network traffic)
 

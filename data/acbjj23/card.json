@@ -1,0 +1,412 @@
+{
+ "id": "acbjj23",
+ "title": "ACBJJ 23",
+ "place": "Rio de Janeiro",
+ "source": "https://events.acbjj.com/card23.html",
+ "watch": "https://www.youtube.com/live/ZrKLsVbpIRc",
+ "start": "2026-11-13T21:00:00Z",
+ "slotMin": 15,
+ "bouts": [
+  {
+   "n": 1,
+   "seq": 20,
+   "cat": "Main Event Battle Match 100kg",
+   "prelim": false,
+   "a": {
+    "name": "Rousimar Palhares",
+    "abb": "BRA",
+    "country": "Brazil",
+    "team": "Palhares Jiu-Jitsu Team",
+    "rec": "0-0"
+   },
+   "b": {
+    "name": "Andre Galvao",
+    "abb": "BRA",
+    "country": "Brazil",
+    "team": "Atos Jiu-Jitsu",
+    "rec": "1-0"
+   }
+  },
+  {
+   "n": 2,
+   "seq": 19,
+   "cat": "Co-Main Event All-Stars No-Gi Match 90kg",
+   "prelim": false,
+   "a": {
+    "name": "Andre Muniz",
+    "abb": "BRA",
+    "country": "Brazil",
+    "team": "TFT",
+    "rec": "0-0"
+   },
+   "b": {
+    "name": "Rodolfo Vieira",
+    "abb": "BRA",
+    "country": "Brazil",
+    "team": "GFTeam",
+    "rec": "0-0"
+   }
+  },
+  {
+   "n": 3,
+   "seq": 18,
+   "cat": "Battle Match 80kg",
+   "prelim": false,
+   "a": {
+    "name": "Rashid Magomedov",
+    "abb": "RUS",
+    "country": "Russia",
+    "team": "Gorets",
+    "rec": "0-1"
+   },
+   "b": {
+    "name": "Edson Barboza",
+    "abb": "BRA",
+    "country": "Brazil",
+    "team": "ATT",
+    "rec": "0-0"
+   }
+  },
+  {
+   "n": 4,
+   "seq": 17,
+   "cat": "Grand Title Gi Match 60kg",
+   "prelim": false,
+   "a": {
+    "name": "Bruno Borges",
+    "abb": "BRA",
+    "country": "Brazil",
+    "team": "Abu Dhabi Police Academy",
+    "rec": "1-0"
+   },
+   "b": {
+    "name": "Diogo Reis",
+    "abb": "BRA",
+    "country": "Brazil",
+    "team": "Agora Jiu-Jitsu",
+    "rec": "0-0"
+   }
+  },
+  {
+   "n": 5,
+   "seq": 16,
+   "cat": "All-Stars No-Gi Match 80kg",
+   "prelim": false,
+   "a": {
+    "name": "Daniel Santos",
+    "abb": "BRA",
+    "country": "Brazil",
+    "team": "Instituto Allan Nascimento",
+    "rec": "0-0"
+   },
+   "b": {
+    "name": "Yusuf Raisov",
+    "abb": "RUS",
+    "country": "Russia",
+    "team": "Akhmat",
+    "rec": "3-1"
+   }
+  },
+  {
+   "n": 6,
+   "seq": 15,
+   "cat": "Grand Title Battle Match 70kg",
+   "prelim": false,
+   "a": {
+    "name": "Yusup Saadulaev",
+    "abb": "RUS",
+    "country": "Russia",
+    "team": "Top Team Fight Club",
+    "rec": "5-2"
+   },
+   "b": {
+    "name": "Ary Farias",
+    "abb": "BRA",
+    "country": "Brazil",
+    "team": "Davi Ramos Jiu-Jitsu",
+    "rec": "2-0"
+   }
+  },
+  {
+   "n": 7,
+   "seq": 14,
+   "cat": "All-Stars Title No-Gi Match 100kg",
+   "prelim": false,
+   "a": {
+    "name": "Ivan Shtyrkov",
+    "abb": "RUS",
+    "country": "Russia",
+    "team": "Archangel Michael",
+    "rec": "0-0"
+   },
+   "b": {
+    "name": "Antonio Carlos Jr",
+    "abb": "BRA",
+    "country": "Brazil",
+    "team": "American Top Team",
+    "rec": "0-0"
+   }
+  },
+  {
+   "n": 8,
+   "seq": 13,
+   "cat": "Grand Title Battle Match 90kg",
+   "prelim": false,
+   "a": {
+    "name": "Joao Zeferino",
+    "abb": "BRA",
+    "country": "Brazil",
+    "team": "Joao Zeferino Academy",
+    "rec": "0-0"
+   },
+   "b": {
+    "name": "Rinat Fakhretdinov",
+    "abb": "RUS",
+    "country": "Russia",
+    "team": "URF ATT",
+    "rec": "1-0"
+   }
+  },
+  {
+   "n": 9,
+   "seq": 12,
+   "cat": "All-Stars No-Gi Match 80kg",
+   "prelim": false,
+   "a": {
+    "name": "Natan Schulte",
+    "abb": "BRA",
+    "country": "Brazil",
+    "team": "American Top Team",
+    "rec": "0-0"
+   },
+   "b": {
+    "name": "Elves Brener",
+    "abb": "BRA",
+    "country": "Brazil",
+    "team": "Chute Boxe Diego Lima",
+    "rec": "1-0"
+   }
+  },
+  {
+   "n": 10,
+   "seq": 11,
+   "cat": "Battle Match 80kg",
+   "prelim": false,
+   "a": {
+    "name": "Philip Rowe",
+    "abb": "USA",
+    "country": "USA",
+    "team": "Fusion X Cel",
+    "rec": "0-0"
+   },
+   "b": {
+    "name": "Gleison Tibau",
+    "abb": "BRA",
+    "country": "Brazil",
+    "team": "American Top Team Training",
+    "rec": "1-0 Battle / 0-1 No-Gi"
+   }
+  },
+  {
+   "n": 11,
+   "seq": 10,
+   "cat": "All-Stars No-Gi Match 100kg",
+   "prelim": false,
+   "a": {
+    "name": "Kelvin Gastelum",
+    "abb": "USA",
+    "country": "USA",
+    "team": "Porrada Training Center",
+    "rec": "0-0"
+   },
+   "b": {
+    "name": "Herdeson Batista",
+    "abb": "BRA",
+    "country": "Brazil",
+    "team": "Atos / Davi Ramos / Top Brother",
+    "rec": "0-0"
+   }
+  },
+  {
+   "n": 12,
+   "seq": 9,
+   "cat": "Grand Title Gi Match 80kg",
+   "prelim": false,
+   "a": {
+    "name": "Islam Mamilov",
+    "abb": "KAZ",
+    "country": "Kazakhstan",
+    "team": "Davi Ramos Academy",
+    "rec": "8-3"
+   },
+   "b": {
+    "name": "Jonnatas Gracie",
+    "abb": "BRA",
+    "country": "Brazil",
+    "team": "AOJ",
+    "rec": "5-0"
+   }
+  },
+  {
+   "n": 13,
+   "seq": 8,
+   "cat": "Battle Match 100kg",
+   "prelim": false,
+   "a": {
+    "name": "Kamil Guseinov",
+    "abb": "RUS",
+    "country": "Russia",
+    "team": "Agate",
+    "rec": "5-0"
+   },
+   "b": {
+    "name": "Claudio Ribeiro",
+    "abb": "BRA",
+    "country": "Brazil",
+    "team": "Revira Black Team",
+    "rec": "2-1"
+   }
+  },
+  {
+   "n": 14,
+   "seq": 7,
+   "cat": "Grand Title No-Gi Match 90kg",
+   "prelim": false,
+   "a": {
+    "name": "Eldar Sayidov",
+    "abb": "RUS",
+    "country": "Russia",
+    "team": "Fighting Sport Arts & CSKA",
+    "rec": "10-1"
+   },
+   "b": {
+    "name": "Felipe Costa",
+    "abb": "BRA",
+    "country": "Brazil",
+    "team": "Six Blades Jiu Jitsu",
+    "rec": "1-0"
+   }
+  },
+  {
+   "n": 15,
+   "seq": 6,
+   "cat": "Grand Title Gi Match 100kg",
+   "prelim": false,
+   "a": {
+    "name": "Rider Zuchi",
+    "abb": "BRA",
+    "country": "Brazil",
+    "team": "Team 6",
+    "rec": "1-1"
+   },
+   "b": {
+    "name": "Vinicius Liberati",
+    "abb": "BRA",
+    "country": "Brazil",
+    "team": "Soldiers",
+    "rec": "0-0"
+   }
+  },
+  {
+   "n": 16,
+   "seq": 5,
+   "cat": "No-Gi Super Cup Final Match +80kg Absolute",
+   "prelim": false,
+   "a": {
+    "name": "Guilherme Augusto",
+    "abb": "BRA",
+    "country": "Brazil",
+    "team": "Alliance",
+    "rec": "0-0"
+   },
+   "b": {
+    "name": "Yatan Bueno",
+    "abb": "BRA",
+    "country": "Brazil",
+    "team": "Agora BJJ",
+    "rec": "2-1"
+   }
+  },
+  {
+   "n": 17,
+   "seq": 4,
+   "cat": "Battle Match 80kg",
+   "prelim": true,
+   "a": {
+    "name": "Askhab Zulaev",
+    "abb": "RUS",
+    "country": "Russia",
+    "team": "Davi Ramos Academy",
+    "rec": "1-0"
+   },
+   "b": {
+    "name": "Joilton Lutterbach",
+    "abb": "BRA",
+    "country": "Brazil",
+    "team": "Falcon Gym",
+    "rec": "2-1"
+   }
+  },
+  {
+   "n": 18,
+   "seq": 3,
+   "cat": "Gi Super Cup Final Match -80kg Absolute",
+   "prelim": true,
+   "a": {
+    "name": "Joao Gabriel",
+    "abb": "BRA",
+    "country": "Brazil",
+    "team": "Soldiers Jiu Jitsu",
+    "rec": "0-0"
+   },
+   "b": {
+    "name": "Elijiah Dorsey",
+    "abb": "USA",
+    "country": "USA",
+    "team": "Lloyd Irvin",
+    "rec": "0-0"
+   }
+  },
+  {
+   "n": 19,
+   "seq": 2,
+   "cat": "Battle Super Cup Final Match +80kg Absolute",
+   "prelim": true,
+   "a": {
+    "name": "Movsar Magomadov",
+    "abb": "RUS",
+    "country": "Russia",
+    "team": "Evolve Davi Ramos Academy",
+    "rec": "6-1"
+   },
+   "b": {
+    "name": "Yatan Bueno",
+    "abb": "BRA",
+    "country": "Brazil",
+    "team": "Agora BJJ",
+    "rec": "2-1"
+   }
+  },
+  {
+   "n": 20,
+   "seq": 1,
+   "cat": "Gi Super Cup Final Match Absolute +80kg",
+   "prelim": true,
+   "a": {
+    "name": "Rafael Trabuco",
+    "abb": "BRA",
+    "country": "Brazil",
+    "team": "Gracie Barra Felipe Preguiça",
+    "rec": "1-2"
+   },
+   "b": {
+    "name": "Guilherme Augusto",
+    "abb": "BRA",
+    "country": "Brazil",
+    "team": "Alliance",
+    "rec": "0-0"
+   }
+  }
+ ],
+ "updated": "2026-11-13T18:46:13.592Z"
+}

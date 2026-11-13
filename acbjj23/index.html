@@ -1,0 +1,238 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>ACBJJ 23 — Rio de Janeiro</title>
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="default">
+<meta name="apple-mobile-web-app-title" content="ACBJJ 23">
+<meta name="theme-color" content="#f1f0ed" media="(prefers-color-scheme: light)">
+<meta name="theme-color" content="#343331" media="(prefers-color-scheme: dark)">
+<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'unsafe-inline'; style-src 'self' 'unsafe-inline'; font-src 'self'; img-src 'self' data:; connect-src 'self'; object-src 'none'; base-uri 'self'; form-action 'none'; frame-src 'none'">
+<script>try{var t=localStorage.getItem('bjjTracker.theme');if(t==='light'||t==='dark')document.documentElement.dataset.theme=t}catch(e){}</script>
+<link rel="stylesheet" href="../field-manual-theme/theme.css">
+<style>
+  /* A fight-card event (one mat, single bouts, no brackets). Same theme rules and tokens as the bracket page
+     (../index.html); the shared rules are copied, not linked, because each page is one file. */
+  :root{ --follow:#1f6f7a; --win:var(--type-a); --lose:var(--text-muted); --live:var(--cue-warning); }
+  @media (prefers-color-scheme: dark){ :root:not([data-theme="light"]){ --follow:#62bccb; } }
+  :root[data-theme="dark"]{ --follow:#62bccb; }
+  html{font-size:17px}
+  :root{ --fs-body:1rem; --fs-meta:.86rem; --fs-eyebrow:.8rem; --fs-card-title:1.05rem; }
+  @media (prefers-color-scheme: dark){ :root:not([data-theme="light"]){ --bg-card:#454340; --bg-card-hover:#504e4a; --chip-bg:#454340; --text-muted:#979289; } }
+  :root[data-theme="dark"]{ --bg-card:#454340; --bg-card-hover:#504e4a; --chip-bg:#454340; --text-muted:#979289; }
+  .chip{font-size:.88rem}
+  .panel .chip{background:var(--accent-soft);color:var(--text-primary)}
+  .panel .chip.active{background:var(--accent);color:var(--accent-contrast)}
+  .chip:focus-visible{outline:2px solid var(--accent-soft);outline-offset:1px}
+  .container{max-width:720px}
+  .top{position:sticky;top:0;z-index:200;padding-top:env(safe-area-inset-top);background:color-mix(in srgb, var(--bg-primary) 94%, transparent);backdrop-filter:blur(16px);-webkit-backdrop-filter:blur(16px)}
+  .topbar{display:flex;align-items:center;gap:10px;padding-block:10px 0}
+  .tabs{display:flex;padding-block:0}
+  .tab{position:relative;flex:1;background:none;border:0;padding:9px 4px 11px;font:inherit;font-size:.92rem;font-weight:500;color:var(--text-muted);cursor:pointer;-webkit-tap-highlight-color:transparent}
+  .tab.active{color:var(--accent);font-weight:650}
+  .tab.active::after{content:"";position:absolute;left:50%;bottom:0;transform:translateX(-50%);width:28px;height:3px;border-radius:3px 3px 0 0;background:var(--accent)}
+  .tab:focus-visible{outline:2px solid var(--accent-soft);outline-offset:-2px}
+  main.container{padding-top:12px;padding-bottom:calc(env(safe-area-inset-bottom) + 28px)}
+  .topbar .title{font-family:var(--font-heading);font-weight:650;font-size:1.05rem;letter-spacing:-.02em;white-space:nowrap}
+  .status{flex:1;min-width:0;font-size:var(--fs-eyebrow);color:var(--text-muted);text-align:right;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+  .status .bad{color:var(--cue-warning)}
+  .section-title{font-size:var(--fs-meta);font-weight:600;color:var(--text-muted);margin:18px 0 8px}
+  main > .section-title:first-child{margin-top:2px}
+  .panel{background:var(--bg-card);border-radius:var(--radius-md);padding:12px 14px}
+  .panel.quiet{color:var(--text-secondary);font-size:var(--fs-meta)}
+  .stack{display:flex;flex-direction:column;gap:6px}
+  .note{font-size:var(--fs-meta);color:var(--text-muted);margin-top:8px}
+  a.plain{color:var(--text-primary);text-decoration:underline;text-decoration-color:var(--text-muted);text-underline-offset:3px}
+  .actions{display:flex;gap:8px;margin-top:10px;flex-wrap:wrap}
+  .big{font-family:var(--font-heading);font-size:1.35rem;font-weight:650;letter-spacing:-.02em;line-height:1.15}
+  .sub{font-size:var(--fs-meta);color:var(--text-muted);margin-top:2px}
+  .row{display:grid;grid-template-columns:96px 1fr;gap:10px}
+  .row > div{min-width:0}
+  .row.now{background:color-mix(in srgb, var(--cue-warning) 12%, var(--bg-card))}
+  .t{font-family:var(--font-heading);font-weight:650;font-size:1.1rem;line-height:1.15;font-variant-numeric:tabular-nums}
+  .t small{display:block;color:var(--text-muted);font-weight:400;font-size:var(--fs-eyebrow)}
+  .t.soft{font-weight:500;font-size:var(--fs-meta);color:var(--text-muted)}
+  .meta{color:var(--text-muted);font-size:var(--fs-eyebrow);margin-bottom:2px;display:flex;align-items:center;gap:6px;flex-wrap:wrap}
+  .vs{display:flex;flex-direction:column;gap:2px}
+  .name{display:flex;align-items:center;gap:7px;color:var(--text-primary);font:inherit;font-size:var(--fs-body);padding:4px 0;background:none;border:0;text-align:left;width:100%;cursor:pointer;-webkit-tap-highlight-color:transparent;border-radius:var(--radius-sm)}
+  .name:active{background:var(--bg-card-hover)}
+  .name:focus-visible{outline:2px solid var(--accent-soft);outline-offset:1px}
+  .name.win{color:var(--win);font-weight:600}
+  .name.lose{color:var(--lose);text-decoration:line-through}
+  .name.follow{font-weight:650}
+  .name .nm{overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+  .name .tm{margin-left:auto;padding-left:8px;color:var(--text-muted);font-size:var(--fs-eyebrow);font-weight:400;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:45%;text-decoration:none}
+  .row.fol,.panel.follow-card{background:color-mix(in srgb, var(--follow) 22%, var(--bg-card))}
+  .row.fol .meta,.row.fol .t small,.row.fol .tm,.panel.follow-card .sub{color:var(--text-primary)}
+  .row.fol.now{background:color-mix(in srgb, var(--cue-warning) 14%, color-mix(in srgb, var(--follow) 16%, var(--bg-card)))}
+  .flag{display:inline-block;width:1.25em;text-align:center;flex-shrink:0;font-size:1.05em;line-height:1}
+  .big .flag{margin-right:.35em;font-size:.9em}
+  .res{color:var(--text-secondary)}
+  .cue{font-size:.68rem;padding:1px 7px;margin:0}
+  .cue.live{background:var(--live)}
+  label{display:block;margin:12px 0 5px;color:var(--text-muted);font-size:var(--fs-meta)}
+  .field{width:100%;background:var(--bg-primary);border:0;color:var(--text-primary);border-radius:var(--radius-pill);padding:10px 12px;font:inherit;font-size:var(--fs-body);outline:none}
+  .field:focus{box-shadow:0 0 0 2px var(--accent-soft)}
+  .toast{position:fixed;bottom:calc(env(safe-area-inset-bottom) + 18px);left:50%;transform:translateX(-50%);background:var(--accent);color:var(--accent-contrast);padding:8px 14px;border-radius:var(--radius-pill);font-size:var(--fs-meta);opacity:0;transition:opacity .2s;pointer-events:none;z-index:300}
+  .toast.show{opacity:1}
+  @media (prefers-reduced-motion:reduce){.toast,.chip{transition:none}}
+</style>
+</head>
+<body>
+<header class="top">
+  <div class="container topbar">
+    <div class="title">ACBJJ 23 <span class="muted">Rio de Janeiro</span></div>
+    <div class="status" id="status"></div>
+  </div>
+  <nav class="container tabs" aria-label="sections">
+    <button class="tab active" data-tab="next" type="button">next up</button>
+    <button class="tab" data-tab="settings" type="button">settings</button>
+  </nav>
+</header>
+<main id="main" class="container"><div class="panel">loading the card…</div></main>
+<div class="toast" id="toast"></div>
+<script src="../field-manual-theme/theme.js" data-key="bjjTracker.theme"></script>
+
+<script type="module" id="app">
+// ---------- sources ----------
+// The card: ../data/acbjj23/card.json, written by scripts/card/acbjj-sync.mjs from ACBJJ's own card page.
+// What has happened: ../data/acbjj23/results.json. ACBJJ publishes no machine-readable results or scoreboard,
+// so that file is empty unless something is watching the broadcast and writing it; the page has to read
+// honestly either way. All projection logic is in scripts/card/engine.mjs (tested by scripts/card/test.mjs).
+import { project, follows } from '../scripts/card/engine.mjs';
+const CARD_URL='../data/acbjj23/card.json', RES_URL='../data/acbjj23/results.json';
+const KEY='bjjTracker.acbjj23';
+const DEFAULT={ follow:['Felipe Costa'], v:1 };
+
+let CARD=null, RES=null, cardErr=null, resErr=null, tab='next';
+let S=JSON.parse(JSON.stringify(DEFAULT));
+try{ const o=JSON.parse(localStorage.getItem(KEY)||'null'); if(o&&Array.isArray(o.follow)) S=Object.assign({},DEFAULT,o); }catch(e){}
+const save=()=>{ try{ localStorage.setItem(KEY, JSON.stringify(S)); }catch(e){} };
+
+const $=s=>document.querySelector(s);
+const esc=s=>String(s??'').replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+const fmt=dt=>new Date(dt).toLocaleTimeString([], {hour:'numeric',minute:'2-digit'}).toLowerCase();
+function rel(t){ const m=Math.round((t-Date.now())/60000); if(m<=0) return 'now'; if(m<60) return `in ${m} min`; return `in ${Math.floor(m/60)}h ${m%60}m`; }
+function ago(t){ const m=Math.round((Date.now()-t)/60000); if(m<1) return 'just now'; if(m<60) return `${m} min ago`; return `${Math.floor(m/60)}h ${m%60}m ago`; }
+// the card gives three-letter country codes; flags need two. An unknown code renders an empty span so names stay aligned.
+const A2={BRA:'BR',RUS:'RU',USA:'US',KAZ:'KZ',TUR:'TR',UZB:'UZ',KGZ:'KG',TJK:'TJ',AZE:'AZ',ARM:'AM',GEO:'GE',UKR:'UA',BLR:'BY',UAE:'AE',ARE:'AE',QAT:'QA',FRA:'FR',GBR:'GB',IRL:'IE',MEX:'MX',ARG:'AR',POL:'PL',JPN:'JP',KOR:'KR',AUS:'AU',CAN:'CA',ESP:'ES',ITA:'IT',GER:'DE',DEU:'DE',POR:'PT',PRT:'PT',NED:'NL',NLD:'NL',SWE:'SE',NOR:'NO',MAR:'MA',EGY:'EG',IRN:'IR',CHN:'CN',PER:'PE',COL:'CO',CHI:'CL',CHL:'CL'};
+function flagHtml(p){ const c=A2[String(p.abb||'').toUpperCase()]; const f=c?String.fromCodePoint(...[...c].map(ch=>0x1F1E6+ch.charCodeAt(0)-65)):''; return `<span class="flag" title="${esc(p.country||'')}">${f}</span>`; }
+const isFollow=p=>follows(S.follow,p);
+const quiet=()=>tab==='settings'&&document.activeElement&&document.activeElement.id==='follow';   // don't redraw under the keyboard
+
+async function getJson(u){ const r=await fetch(u+'?t='+Date.now(),{cache:'no-store'}); if(!r.ok) throw new Error('HTTP '+r.status); return r.json(); }
+async function loadCard(){ try{ const c=await getJson(CARD_URL); if(!c||!Array.isArray(c.bouts)||!c.bouts.length) throw new Error('empty card'); CARD=c; cardErr=null; }catch(e){ cardErr=e; } refresh(); }
+async function loadRes(){ try{ RES=await getJson(RES_URL); resErr=null; }catch(e){ resErr=e; } refresh(); }
+function refresh(){ if(quiet()) renderStatus(); else render(); }
+
+// ---------- rendering ----------
+const total=()=>CARD.bouts.length;
+const catText=b=>esc(String(b.cat||'').toLowerCase().replace(/\bno-gi\b/g,'no-gi'));
+function nameBtn(p,it,s){
+  const w=it.result?it.result.w:null;
+  const c=['name', isFollow(p)?'follow':'', w===s?'win':'', (w!==null&&w!==undefined&&w!==s)?'lose':''].join(' ');
+  return `<button type="button" class="${c}" data-copy="${esc(p.name)}" title="copy name">${flagHtml(p)}<span class="nm">${esc(p.name)}</span><span class="tm">${esc(p.team||'')}</span></button>`;
+}
+function resultText(r){ if(!r) return ''; const how=String(r.how||'').toLowerCase().trim(); const t=/^\d{1,2}:\d{2}$/.test(String(r.time||''))?r.time:''; if(r.w===-1) return how||'no winner'; return [how, t&&how?'at '+t:t].filter(Boolean).join(' ')||'result in'; }
+function timeCell(it){
+  if(it.state==='done') return `<div class="t soft">${it.result.endedAt&&!isNaN(Date.parse(it.result.endedAt))?fmt(it.result.endedAt):'done'}</div>`;
+  if(it.state==='live') return `<div class="t">now<small>seen ${esc(ago(Date.parse(RES.now.seenAt)))}</small></div>`;
+  if(it.state==='due') return `<div class="t">${fmt(it.at)}<small>due now</small></div>`;
+  if(it.state==='pending') return `<div class="t soft">no result yet</div>`;
+  return `<div class="t">${fmt(it.at)}<small>${esc(rel(it.at))}</small></div>`;
+}
+function row(it){
+  const b=it.bout, fol=isFollow(b.a)||isFollow(b.b);
+  const tags=[`bout ${b.seq} of ${total()}`, catText(b), b.prelim?'prelim':''].filter(Boolean).join(' · ');
+  const res=it.state==='done'?`<span class="res">${esc(resultText(it.result))}</span>`:'';
+  const cue=it.state==='live'?'<span class="cue live">on the mat</span>':'';
+  return `<div class="panel row ${fol?'fol':''} ${it.state==='live'||it.state==='due'?'now':''}">${timeCell(it)}<div><div class="meta">${cue}<span>${tags}</span>${res}</div><div class="vs">${nameBtn(b.a,it,0)}${nameBtn(b.b,it,1)}</div></div></div>`;
+}
+// one card per followed fighter with a bout still to come; otherwise the neutral card (never one that names a loss)
+function followCards(P){
+  if(!S.follow.length) return `<div class="panel quiet">nobody followed yet. add names or countries under settings.</div>`;
+  const cards=[]; let matched=false;
+  for(const it of P.items) for(const s of [0,1]){ const p=s?it.bout.b:it.bout.a, o=s?it.bout.a:it.bout.b;
+    if(!isFollow(p)) continue; matched=true;
+    if(it.state==='done'||it.state==='pending') continue;
+    const when = it.state==='live' ? 'on the mat now' : it.state==='due' ? `due now · projected ${fmt(it.at)}` : `about ${fmt(it.at)} · ${rel(it.at)}`;
+    cards.push(`<div class="panel follow-card"><div><div class="big"><button type="button" class="copy-name" data-copy="${esc(p.name)}" style="background:none;border:0;padding:0;font:inherit;color:inherit;cursor:pointer">${flagHtml(p)}${esc(p.name)}</button></div><div class="sub">${esc(when)}</div><div class="sub">vs ${esc(o.name)} · bout ${it.bout.seq} of ${total()} · ${catText(it.bout)}</div></div></div>`);
+  }
+  if(cards.length) return `<div class="stack">${cards.join('')}</div>`;
+  return `<div class="panel quiet">${matched?'no scheduled matches.':'nobody on this card matches your follow list.'}</div>`;
+}
+function sourceNote(P){
+  const start=Date.parse(CARD.start), slot=CARD.slotMin||15;
+  const watch=typeof CARD.watch==='string'&&/^https:\/\/www\.youtube\.com\//.test(CARD.watch)?` <a class="plain" href="${esc(CARD.watch)}" target="_blank" rel="noopener">watch on YouTube</a>.`:'';
+  if(P.mode==='observed') return `position on the card last checked ${esc(ago(P.lastSeen))} against the broadcast. times after that assume about ${slot} minutes a bout.${watch}`;
+  const lead = Date.now()<start ? `starts at ${fmt(start)} (${esc(rel(start))}).` : P.lastSeen ? `the card has not been checked against the broadcast since ${fmt(P.lastSeen)}.` : `started at ${fmt(start)}.`;
+  return `${lead} ACBJJ has no live results feed, so every time here is an estimate: about ${slot} minutes a bout, the pace of the last ACBJJ event.${watch}`;
+}
+function renderNext(){
+  const P=project(CARD,RES,Date.now());
+  const on=P.items.filter(i=>i.state==='live'||i.state==='due');
+  const up=P.items.filter(i=>i.state==='upcoming');
+  const past=P.items.filter(i=>i.state==='done'||i.state==='pending').reverse();
+  const over=!on.length&&!up.length;
+  return `<div class="panel quiet">${over?'the card is over.':sourceNote(P)}</div>
+  ${on.length?`<h2 class="section-title">${on[0].state==='live'?'on the mat':'should be on the mat (not confirmed)'}</h2><div class="stack">${on.map(row).join('')}</div>`:''}
+  <h2 class="section-title">following</h2>${followCards(P)}
+  ${up.length?`<h2 class="section-title">up next · ${up.length} to go · times are estimates</h2><div class="stack">${up.map(row).join('')}</div>`:''}
+  ${past.length?`<h2 class="section-title">already fought</h2><div class="stack">${past.map(row).join('')}</div>`:''}`;
+}
+function themeMode(){ try{ const t=localStorage.getItem('bjjTracker.theme'); return t==='light'||t==='dark'?t:'auto'; }catch(e){ return 'auto'; } }
+function setThemeMode(v){ for(let i=0;i<3&&themeMode()!==v;i++) window.AppTheme&&window.AppTheme.cycle(); }
+function unmatched(){ const ps=CARD.bouts.flatMap(b=>[b.a,b.b]); return S.follow.filter(f=>!ps.some(p=>follows([f],p))); }
+function renderSettings(){
+  const um=unmatched();
+  const src=typeof CARD.source==='string'&&/^https:\/\/events\.acbjj\.com\//.test(CARD.source)?`<a class="plain" href="${esc(CARD.source)}" target="_blank" rel="noopener">ACBJJ's card page</a>`:`ACBJJ's card page`;
+  return `<h2 class="section-title">following</h2>
+  <div class="panel">
+    <input class="field" id="follow" value="${esc(S.follow.join(', '))}" placeholder="names or countries, comma separated" aria-label="following" autocomplete="off" autocapitalize="words">
+    <div class="note">${um.length?`not on this card: ${esc(um.join(', '))}`:'a name or a country; partial names work.'}</div>
+  </div>
+  <h2 class="section-title">appearance</h2>
+  <div class="panel"><div class="chip-row">${['auto','light','dark'].map(m=>`<button type="button" class="chip ${themeMode()===m?'active':''}" data-theme-set="${m}">${m}</button>`).join('')}</div></div>
+  <h2 class="section-title">where this comes from</h2>
+  <div class="panel quiet">
+    <div>the card and its order come from ${src}${CARD.updated?`, read ${esc(ago(Date.parse(CARD.updated)))}`:''}. the night runs from the last bout listed there up to the main event.</div>
+    <div class="note">ACBJJ publishes no live scoreboard or results feed. times assume the ${fmt(Date.parse(CARD.start))} start and about ${CARD.slotMin||15} minutes a bout; when the card's position has been checked against the broadcast, times run from there instead.</div>
+    <div class="note"><a class="plain" href="../">ADCC 2026 brackets</a></div>
+  </div>`;
+}
+function renderStatus(){
+  const el=$('#status'); if(!CARD){ el.innerHTML=cardErr?'<span class="bad">couldn’t load</span>':''; return; }
+  const P=project(CARD,RES,Date.now()), start=Date.parse(CARD.start);
+  const left=P.items.filter(i=>i.state==='upcoming'||i.state==='due'||i.state==='live').length;
+  let s = !left ? 'card over' : P.mode==='observed' ? `checked ${ago(P.lastSeen)}` : Date.now()<start ? `starts ${fmt(start)}` : 'estimates only';
+  if(cardErr||resErr) s+=' · <span class="bad">stale</span>';
+  el.innerHTML=s;
+}
+function render(){
+  document.querySelectorAll('.tab').forEach(b=>b.classList.toggle('active',b.dataset.tab===tab));
+  renderStatus();
+  if(!CARD){ $('#main').innerHTML=`<div class="panel">${cardErr?'couldn’t load the card. check your connection; this page retries on its own.':'loading the card…'}</div>`; return; }
+  $('#main').innerHTML = tab==='settings' ? renderSettings() : renderNext();
+}
+async function copyText(t){
+  try{ if(navigator.clipboard&&window.isSecureContext){ await navigator.clipboard.writeText(t); toast(`copied ${t}`); return; } }catch(e){}
+  toast('couldn’t copy');
+}
+function toast(t){ const e=$('#toast'); e.textContent=t; e.classList.add('show'); clearTimeout(toast.t); toast.t=setTimeout(()=>e.classList.remove('show'),3000); }
+
+// ---------- events ----------
+document.querySelector('.top').addEventListener('click',e=>{ const b=e.target.closest('[data-tab]'); if(b){ tab=b.dataset.tab; render(); window.scrollTo(0,0); } });
+$('#main').addEventListener('click',e=>{
+  const cp=e.target.closest('[data-copy]'); if(cp){ copyText(cp.dataset.copy); return; }
+  const th=e.target.closest('[data-theme-set]'); if(th){ setThemeMode(th.dataset.themeSet); render(); }
+});
+$('#main').addEventListener('change',e=>{ if(e.target.id==='follow'){ S.follow=e.target.value.split(',').map(x=>x.trim()).filter(Boolean); save(); render(); } });
+
+loadCard(); loadRes();
+setInterval(loadRes, 60000); setInterval(loadCard, 300000); setInterval(refresh, 20000);   // results each minute, the card every five, relative times in between
+document.addEventListener('visibilitychange',()=>{ if(!document.hidden){ loadCard(); loadRes(); } });
+</script>
+</body>
+</html>

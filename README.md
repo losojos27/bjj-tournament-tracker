@@ -11,6 +11,10 @@ ADCC 2026 in your browser from its real results, mats and finish times, starting
 semifinals at 10× speed. Pause and a speed drop-down sit at the top of the page; jump-to-a-round
 controls are under settings.
 
+**ACBJJ 23 (Rio, Nov 13, 2026):** https://brackets.gracklefighter.com/acbjj23/ is a fight card
+rather than a bracket: the running order with estimated times. ACBJJ publishes no live feed, so
+the page says so and projects from the start time (`scripts/card/`, `data/acbjj23/`).
+
 ## How it stays live
 - `scripts/sync.mjs` pulls every division's bouts from FloArena's JSON endpoints and writes
   `data/results.json`. A GitHub Actions workflow (`.github/workflows/sync.yml`) runs
