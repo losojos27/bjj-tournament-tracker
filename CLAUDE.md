@@ -341,7 +341,11 @@ The page's CSP, `SIM` gate and demo are hostname-agnostic, verified on the new o
 - The Actions workflow runs only on schedule and manual dispatch (never on pull requests), with
   the default `GITHUB_TOKEN` scoped to `contents: write`; it executes repo code, not feed data.
   The cloud routine pushes as Lee with the repo cloned; its prompt limits it to three files.
-- Per-viewer state is localStorage only (follow list, day, mats, slot minutes, theme, division).
+- Per-viewer state is browser storage only. localStorage: `adcc26` (`S`: follow list, mats,
+  day starts, slot minutes, `breakUntil`, bracket division), `bjjTracker.theme`, and
+  `bjjTracker.seen.<event guid>` (remembered live finishes, 12 h). sessionStorage:
+  `bjjTracker.demo` (the demo clock). `adcc26` is the one key not scoped to an event; the
+  tournament selector has to deal with that.
 - The `gh` token on Lee's Mac has the `workflow` scope (needed to push `sync.yml`); it is in the
   macOS keychain, never in the repo. Git history was scanned for secrets: none.
 
@@ -357,7 +361,9 @@ The page's CSP, `SIM` gate and demo are hostname-agnostic, verified on the new o
 
 ADCC 2026 is done: Lee used the page all of finals day and reported no UX or functionality
 punch list. The sync schedule is commented out in `sync.yml` and the Day 2 routine is disabled;
-re-enable the cron before the next event. Three items, in this order:
+re-enable the cron before the next event. Three items follow, numbered as they were raised;
+the working order is the one agreed under item 1: selector (item 2) → a day on ibjjf.com's
+data → the sync on Lambda.
 
 **0. A competition simulator** — done Sept 21 (`scripts/sim/`, see Architecture), including the
 hosted `?demo` mode. Deliberately not built (Lee, Sept 21: "hold off"): failure injection
