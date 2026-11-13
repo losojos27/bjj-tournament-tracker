@@ -137,7 +137,7 @@ function nameBtn(p,it,s){
   const c=['name', isFollow(p)?'follow':'', w===s?'win':'', (w!==null&&w!==undefined&&w!==s)?'lose':''].join(' ');
   return `<button type="button" class="${c}" data-copy="${esc(p.name)}" title="copy name">${flagHtml(p)}<span class="nm">${esc(p.name)}</span><span class="tm">${esc(p.team||'')}</span></button>`;
 }
-function resultText(r){ if(!r) return ''; const how=String(r.how||'').toLowerCase().trim(); const t=/^\d{1,2}:\d{2}$/.test(String(r.time||''))?r.time:''; if(r.w===-1) return how||'no winner'; return [how, t&&how?'at '+t:t].filter(Boolean).join(' ')||'result in'; }
+function resultText(r){ if(!r) return ''; const how=String(r.how||'').toLowerCase().trim(); const t=/^\d{1,2}:\d{2}$/.test(String(r.time||''))?r.time:''; if(r.w===-1) return how||'no winner'; return [how, t&&how?'at '+t:t].filter(Boolean).join(' '); }
 function timeCell(it){
   if(it.state==='done') return `<div class="t soft">${it.result.endedAt&&!isNaN(Date.parse(it.result.endedAt))?fmt(it.result.endedAt):'done'}</div>`;
   if(it.state==='live') return `<div class="t">now<small>${it.at?'started about '+fmt(it.at):'on the mat'}</small></div>`;
@@ -171,7 +171,7 @@ function sourceNote(P){
   if(P.mode==='sched'){
     const seen=P.lastSeen?`read ${esc(ago(P.lastSeen))}`:'read time unknown';
     const live=P.signal?'':Date.now()<start?'':' nothing has been marked as started there yet, so these are still its planned times.';
-    return `times are ACBJJ's own mat schedule on Smoothcomp, ${seen}${P.stale?' <span class="bad-note">(that is old; the times may have moved)</span>':''}. it says when each bout is expected and which are over, not who won.${live}${watch}`;
+    return `times are ACBJJ's own mat schedule on Smoothcomp, ${seen}${P.stale?' <span class="bad-note">(that is old; the times may have moved)</span>':''}. winners are read from its bracket pages every few minutes.${live}${watch}`;
   }
   if(P.mode==='observed') return `position on the card last checked ${esc(ago(P.lastSeen))} against the broadcast. times after that assume about ${slot} minutes a bout.${watch}`;
   const lead = Date.now()<start ? `starts at ${fmt(start)} (${esc(rel(start))}).` : P.lastSeen ? `the card has not been checked against the broadcast since ${fmt(P.lastSeen)}.` : `started at ${fmt(start)}.`;
@@ -206,7 +206,7 @@ function renderSettings(){
   <div class="panel quiet">
     <div>the card and its order come from ${src}${CARD.updated?`, read ${esc(ago(Date.parse(CARD.updated)))}`:''}. the night runs from the last bout listed there up to the main event.</div>
     <div class="note">times come from ACBJJ's mat schedule on Smoothcomp, re-read every few minutes; it moves as the night runs. if that schedule can't be read or stops matching the card, times fall back to the ${fmt(Date.parse(CARD.start))} start and about ${CARD.slotMin||15} minutes a bout.</div>
-    <div class="note">nobody publishes winners in a form this page can read, so a finished bout shows as finished until a result is added.</div>
+    <div class="note">winners are read from Smoothcomp's bracket pages every few minutes during the event, so a bout can show as finished for a while before its winner appears. how a bout was won is not published there.</div>
     <div class="note"><a class="plain" href="../">ADCC 2026 brackets</a></div>
   </div>`;
 }
