@@ -1,6 +1,7 @@
 // node scripts/card/test.mjs — the fight-card projection, with no feed, a fresh observation, and a stale one.
-import { project, follows, decided } from './engine.mjs';
+import { project, follows, decided, schedUsable } from './engine.mjs';
 import { parseCard } from './acbjj-sync.mjs';
+import { buildSchedule, sig } from './smoothcomp-sync.mjs';
 
 let n = 0;
 const ok = (c, m) => { n++; if (!c) throw new Error('FAILED: ' + m); };
@@ -71,5 +72,37 @@ ok(c.bouts.find(b => b.n === 3).prelim === true && c.bouts.find(b => b.n === 2).
 ok(!('ig' in c.bouts.find(b => b.n === 1).a) && c.bouts.find(b => b.n === 2).a.name === '<b>Bad</b>', 'I only known fields are kept; text is stored raw (the page escapes it)');
 let threw = false; try { parseCard('<html>nothing</html>'); } catch (e) { threw = true; }
 ok(threw, 'I a page without the card throws instead of writing an empty one');
+
+// J) the organiser's schedule (Smoothcomp): its times replace the clock, its counts say what is on and what is over
+const blocks = (o = {}) => [1, 2, 3, 4].map(q => ({ seq: q, start: iso(START + min(60 + (q - 1) * 11)), end: iso(START + min(60 + q * 11)), running: 0, finished: 0, total: 1, ...(o[q] || {}) }));
+let sch = { ok: true, updated: iso(START), blocks: blocks() };
+p = project(card, null, START + min(5), sch);
+ok(p.mode === 'sched' && st(p) === 'upcoming,upcoming,upcoming,upcoming' && p.items[0].at === START + min(60) && p.items[2].at === START + min(82), 'J the schedule\'s own start times are used');
+ok(p.signal === false && p.stale === false, 'J nothing has started yet and the read is fresh');
+sch = { ok: true, updated: iso(START + min(75)), blocks: blocks({ 1: { finished: 1 }, 2: { running: 1 } }) };
+p = project(card, null, START + min(76), sch);
+ok(st(p) === 'pending,live,upcoming,upcoming' && p.items[0].finished === true && p.signal === true, 'J finished without a winner is pending+finished; a running block is live');
+p = project(card, { results: { 4: { w: 1, how: 'points' } } }, START + min(76), sch);
+ok(st(p) === 'done,live,upcoming,upcoming', 'J a recorded result still wins over the schedule');
+sch = { ok: true, updated: iso(START + min(75)), blocks: blocks({ 3: { running: 1 } }) };
+ok(st(project(card, null, START + min(76), sch)) === 'pending,pending,live,upcoming', 'J bouts before a running one cannot be upcoming');
+sch = { ok: true, updated: iso(START), blocks: blocks() };
+p = project(card, null, START + min(78), sch);
+ok(st(p) === 'pending,due,upcoming,upcoming' && p.stale === true, 'J a schedule nobody is operating degrades to its clock, and says it is stale');
+ok(!schedUsable(card, { ok: false, blocks: blocks() }) && !schedUsable(card, { ok: true, blocks: blocks().slice(1) }) && !schedUsable(card, null), 'J a mismatched or failed schedule is not used');
+ok(project(card, null, START + min(20), { ok: false, blocks: blocks() }).mode === 'clock', 'J and the page falls back to the clock');
+
+// K) the Smoothcomp sync: blocks ordered, counts read, and names checked against the card by rule set and weight
+ok(sig('ACBJJ 23 / Grand Title No-Gi Match / 90kg') === sig('Grand Title No-Gi Match 90kg') && sig('SUPER CUP / GI / FINAL MATCH / ABSOLUTE / OVER 80KG') === sig('Gi Super Cup Final Match Absolute +80kg'), 'K category signatures agree across the two sites');
+ok(sig('Battle Match 80kg') !== sig('No-Gi Match 80kg') && sig('Gi Match 80kg') !== sig('No-Gi Match 80kg') && sig('Gi Match 80kg') !== sig('Gi Match 90kg'), 'K and differ when the bout differs');
+const c2 = { bouts: [{ n: 2, seq: 1, cat: 'Gi Match 60kg' }, { n: 1, seq: 2, cat: 'Main Event Battle Match 100kg' }] };
+const sj = { blocks: [
+  { name: 'ACBJJ 23 / Main Event Battle Match / 100kg', ordering: '1', estimated_start: '2026-11-13T19:11:00-03:00', estimated_end: '2026-11-13T19:24:00-03:00', running_matches_count: 0, finished_matches_count: 0, total_matches: 1 },
+  { name: 'ACBJJ 23 / Gi Match / 60kg', ordering: '0', estimated_start: '2026-11-13T19:00:00-03:00', estimated_end: '2026-11-13T19:11:00-03:00', running_matches_count: '1', finished_matches_count: 0, total_matches: 1 }] };
+let b2 = buildSchedule(sj, c2);
+ok(b2.ok && b2.blocks[0].seq === 1 && b2.blocks[0].running === 1 && b2.blocks[0].start === '2026-11-13T22:00:00.000Z', 'K blocks sorted by ordering, times normalised to UTC');
+ok(buildSchedule(sj, { bouts: [...c2.bouts].map(x => ({ ...x, seq: 3 - x.seq })) }).ok === false && buildSchedule({ blocks: sj.blocks.slice(1) }, c2).ok === false, 'K a reordered card or a missing block marks the schedule not ok');
+threw = false; try { buildSchedule({ blocks: [] }, c2); } catch (e) { threw = true; }
+ok(threw, 'K an empty schedule throws instead of overwriting a good file');
 
 console.log(`ALL CARD CHECKS PASSED (${n} checks)`);

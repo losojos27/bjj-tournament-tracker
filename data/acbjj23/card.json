@@ -4,8 +4,8 @@
  "place": "Rio de Janeiro",
  "source": "https://events.acbjj.com/card23.html",
  "watch": "https://www.youtube.com/live/ZrKLsVbpIRc",
- "start": "2026-11-13T21:00:00Z",
- "slotMin": 15,
+ "start": "2026-11-13T22:00:00Z",
+ "slotMin": 13,
  "bouts": [
   {
    "n": 1,
@@ -408,5 +408,5 @@
    }
   }
  ],
- "updated": "2026-11-13T18:46:13.592Z"
+ "updated": "2026-11-13T18:54:12.673Z"
 }

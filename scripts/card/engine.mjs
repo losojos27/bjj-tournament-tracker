@@ -7,14 +7,14 @@
 //          w is 0 (a won), 1 (b won) or -1 (no winner: draw, double DQ). Every field is optional: the event
 //          has no machine feed, so the page must read sensibly with nothing but the card and a clock.
 //
-// project() returns { mode, items } with items in running order:
+// project(card, results, nowMs, sched?) returns { mode, items } with items in running order:
 //   state 'done'     decided
 //         'live'     seen on the mat recently
 //         'pending'  must be over (something later was seen, or its window passed) but no result is recorded
 //         'due'      its projected window contains now, and nothing has been seen to confirm it
 //         'upcoming'
 //   at    projected start (ms) for due/upcoming, start for live when known, else null
-// mode is 'observed' when the position on the card comes from something seen in the last STALE minutes,
+// mode is 'sched' when the organiser's schedule is in use (see schedUsable), 'observed' when the position on the card comes from something seen in the last STALE minutes,
 // else 'clock' (start time plus slot minutes only).
 
 export const GAP_MIN = 4;      // walkouts and announcements between a finish and the next start
@@ -25,7 +25,35 @@ const T = v => { const t = typeof v === 'number' ? v : Date.parse(v); return Num
 
 export function decided(r) { return !!r && (r.w === 0 || r.w === 1 || r.w === -1); }
 
-export function project(card, results, nowMs) {
+// sched: data/<event>/schedule.json, the organiser's own mat schedule ({ok, updated, blocks:[{seq,start,end,running,
+// finished,total}]}). When it is usable it replaces the clock arithmetic: each bout takes its block's estimated
+// start, a block with a running match is live, and a finished block with no recorded result is 'pending' with
+// finished:true (it is over; nobody has said who won). It carries no winners.
+export function schedUsable(card, sched) {
+  return !!sched && sched.ok === true && Array.isArray(sched.blocks) && sched.blocks.length === card.bouts.length &&
+    sched.blocks.every(b => T(b.start) !== null && T(b.end) !== null);
+}
+function projectSched(card, results, nowMs, sched) {
+  const R = (results && results.results) || {};
+  const bouts = [...card.bouts].sort((x, y) => x.seq - y.seq);
+  const blk = new Map(sched.blocks.map(b => [b.seq, b]));
+  const over = b => { const k = blk.get(b.seq); return decided(R[b.n]) || k.finished >= (k.total || 1); };
+  let anchor = -1;   // the last bout the schedule or a result says has started
+  bouts.forEach((b, i) => { if (over(b) || blk.get(b.seq).running > 0) anchor = i; });
+  const items = bouts.map((b, i) => {
+    const k = blk.get(b.seq), r = R[b.n], at = T(k.start), end = T(k.end);
+    if (decided(r)) return { bout: b, state: 'done', at: null, result: r };
+    if (k.finished >= (k.total || 1)) return { bout: b, state: 'pending', at: null, result: null, finished: true };
+    if (k.running > 0) return { bout: b, state: 'live', at, result: null };
+    if (i < anchor) return { bout: b, state: 'pending', at: null, result: null };
+    return { bout: b, state: nowMs >= end ? 'pending' : nowMs >= at ? 'due' : 'upcoming', at, result: null };
+  });
+  const upd = T(sched.updated);
+  return { mode: 'sched', items, lastSeen: upd, signal: anchor >= 0, stale: upd === null || nowMs - upd > ms(STALE_MIN) };
+}
+
+export function project(card, results, nowMs, sched) {
+  if (schedUsable(card, sched)) return projectSched(card, results, nowMs, sched);
   const slot = ms(card.slotMin || 15), R = (results && results.results) || {};
   const bouts = [...card.bouts].sort((x, y) => x.seq - y.seq);
   const obs = results && results.now && results.now.n != null ? results.now : null;

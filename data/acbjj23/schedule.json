@@ -1,0 +1,188 @@
+{
+ "updated": "2026-11-13T18:55:58.124Z",
+ "ok": true,
+ "problems": [],
+ "source": "smoothcomp",
+ "blocks": [
+  {
+   "seq": 1,
+   "name": "SUPER CUP / GI / FINAL MATCH / ABSOLUTE / OVER 80KG",
+   "start": "2026-11-13T22:00:00.000Z",
+   "end": "2026-11-13T22:11:00.000Z",
+   "running": 0,
+   "finished": 0,
+   "total": 1
+  },
+  {
+   "seq": 2,
+   "name": "SUPER CUP / BATTLE / FINAL MATCH / ABSOLUTE / OVER 80KG",
+   "start": "2026-11-13T22:11:00.000Z",
+   "end": "2026-11-13T22:22:00.000Z",
+   "running": 0,
+   "finished": 0,
+   "total": 1
+  },
+  {
+   "seq": 3,
+   "name": "SUPER CUP / GI / FINAL MATCH / ABSOLUTE / UP TO 80KG",
+   "start": "2026-11-13T22:22:00.000Z",
+   "end": "2026-11-13T22:33:00.000Z",
+   "running": 0,
+   "finished": 0,
+   "total": 1
+  },
+  {
+   "seq": 4,
+   "name": "ACBJJ 23 / Battle Match / 80kg",
+   "start": "2026-11-13T22:33:00.000Z",
+   "end": "2026-11-13T22:46:00.000Z",
+   "running": 0,
+   "finished": 0,
+   "total": 1
+  },
+  {
+   "seq": 5,
+   "name": "SUPER CUP / NO-GI / FINAL MATCH / ABSOLUTE / OVER 80KG",
+   "start": "2026-11-13T22:46:00.000Z",
+   "end": "2026-11-13T22:57:00.000Z",
+   "running": 0,
+   "finished": 0,
+   "total": 1
+  },
+  {
+   "seq": 6,
+   "name": "ACBJJ 23 / Grand Title Gi Match / 100kg",
+   "start": "2026-11-13T22:57:00.000Z",
+   "end": "2026-11-13T23:10:00.000Z",
+   "running": 0,
+   "finished": 0,
+   "total": 1
+  },
+  {
+   "seq": 7,
+   "name": "ACBJJ 23 / Grand Title No-Gi Match / 90kg",
+   "start": "2026-11-13T23:10:00.000Z",
+   "end": "2026-11-13T23:23:00.000Z",
+   "running": 0,
+   "finished": 0,
+   "total": 1
+  },
+  {
+   "seq": 8,
+   "name": "ACBJJ 23 / Battle Match / 100kg",
+   "start": "2026-11-13T23:23:00.000Z",
+   "end": "2026-11-13T23:36:00.000Z",
+   "running": 0,
+   "finished": 0,
+   "total": 1
+  },
+  {
+   "seq": 9,
+   "name": "ACBJJ 23 / Grand Title Gi Match / 80kg",
+   "start": "2026-11-13T23:36:00.000Z",
+   "end": "2026-11-13T23:49:00.000Z",
+   "running": 0,
+   "finished": 0,
+   "total": 1
+  },
+  {
+   "seq": 10,
+   "name": "ACBJJ 23 / All-Stars No-Gi Match / 100kg",
+   "start": "2026-11-13T23:49:00.000Z",
+   "end": "2026-11-14T00:02:00.000Z",
+   "running": 0,
+   "finished": 0,
+   "total": 1
+  },
+  {
+   "seq": 11,
+   "name": "ACBJJ 23 / Battle Match / 80kg",
+   "start": "2026-11-14T00:02:00.000Z",
+   "end": "2026-11-14T00:15:00.000Z",
+   "running": 0,
+   "finished": 0,
+   "total": 1
+  },
+  {
+   "seq": 12,
+   "name": "ACBJJ 23 / All-Stars No-Gi Match / 80kg",
+   "start": "2026-11-14T00:15:00.000Z",
+   "end": "2026-11-14T00:28:00.000Z",
+   "running": 0,
+   "finished": 0,
+   "total": 1
+  },
+  {
+   "seq": 13,
+   "name": "ACBJJ 23 / Grand Title Battle Match / 90kg",
+   "start": "2026-11-14T00:28:00.000Z",
+   "end": "2026-11-14T00:41:00.000Z",
+   "running": 0,
+   "finished": 0,
+   "total": 1
+  },
+  {
+   "seq": 14,
+   "name": "ACBJJ 23 / All-Stars Title No-Gi Match / 100kg",
+   "start": "2026-11-14T00:41:00.000Z",
+   "end": "2026-11-14T00:54:00.000Z",
+   "running": 0,
+   "finished": 0,
+   "total": 1
+  },
+  {
+   "seq": 15,
+   "name": "ACBJJ 23 / Grand Title Battle Match / 70kg",
+   "start": "2026-11-14T00:54:00.000Z",
+   "end": "2026-11-14T01:07:00.000Z",
+   "running": 0,
+   "finished": 0,
+   "total": 1
+  },
+  {
+   "seq": 16,
+   "name": "ACBJJ 23 / All-Stars No-Gi Match / 80kg",
+   "start": "2026-11-14T01:07:00.000Z",
+   "end": "2026-11-14T01:20:00.000Z",
+   "running": 0,
+   "finished": 0,
+   "total": 1
+  },
+  {
+   "seq": 17,
+   "name": "ACBJJ 23 / Grand Title Gi Match / 60kg",
+   "start": "2026-11-14T01:20:00.000Z",
+   "end": "2026-11-14T01:33:00.000Z",
+   "running": 0,
+   "finished": 0,
+   "total": 1
+  },
+  {
+   "seq": 18,
+   "name": "ACBJJ 23 / Battle Match / 80kg",
+   "start": "2026-11-14T01:33:00.000Z",
+   "end": "2026-11-14T01:46:00.000Z",
+   "running": 0,
+   "finished": 0,
+   "total": 1
+  },
+  {
+   "seq": 19,
+   "name": "ACBJJ 23 / Co-Main Event All-Stars No-Gi Match / 90kg",
+   "start": "2026-11-14T01:46:00.000Z",
+   "end": "2026-11-14T01:59:00.000Z",
+   "running": 0,
+   "finished": 0,
+   "total": 1
+  },
+  {
+   "seq": 20,
+   "name": "ACBJJ 23 / Main Event Battle Match / 100kg",
+   "start": "2026-11-14T01:59:00.000Z",
+   "end": "2026-11-14T02:12:00.000Z",
+   "running": 0,
+   "finished": 0,
+   "total": 1
+  }
+ ]
+}

@@ -37,7 +37,7 @@
   main.container{padding-top:12px;padding-bottom:calc(env(safe-area-inset-bottom) + 28px)}
   .topbar .title{font-family:var(--font-heading);font-weight:650;font-size:1.05rem;letter-spacing:-.02em;white-space:nowrap}
   .status{flex:1;min-width:0;font-size:var(--fs-eyebrow);color:var(--text-muted);text-align:right;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
-  .status .bad{color:var(--cue-warning)}
+  .status .bad,.bad-note{color:var(--cue-warning)}
   .section-title{font-size:var(--fs-meta);font-weight:600;color:var(--text-muted);margin:18px 0 8px}
   main > .section-title:first-child{margin-top:2px}
   .panel{background:var(--bg-card);border-radius:var(--radius-md);padding:12px 14px}
@@ -98,15 +98,16 @@
 <script type="module" id="app">
 // ---------- sources ----------
 // The card: ../data/acbjj23/card.json, written by scripts/card/acbjj-sync.mjs from ACBJJ's own card page.
-// What has happened: ../data/acbjj23/results.json. ACBJJ publishes no machine-readable results or scoreboard,
-// so that file is empty unless something is watching the broadcast and writing it; the page has to read
-// honestly either way. All projection logic is in scripts/card/engine.mjs (tested by scripts/card/test.mjs).
+// When: ../data/acbjj23/schedule.json, ACBJJ's own mat schedule on Smoothcomp (scripts/card/smoothcomp-sync.mjs):
+// estimated starts and running/finished counts per bout, no winners. Who won: ../data/acbjj23/results.json, which
+// no feed fills; it is empty unless someone records results. The page has to read honestly in every combination. All projection logic is in scripts/card/engine.mjs (tested by scripts/card/test.mjs).
 import { project, follows } from '../scripts/card/engine.mjs';
-const CARD_URL='../data/acbjj23/card.json', RES_URL='../data/acbjj23/results.json';
+const CARD_URL='../data/acbjj23/card.json', RES_URL='../data/acbjj23/results.json', SCHED_URL='../data/acbjj23/schedule.json';
 const KEY='bjjTracker.acbjj23';
 const DEFAULT={ follow:['Felipe Costa'], v:1 };
 
-let CARD=null, RES=null, cardErr=null, resErr=null, tab='next';
+let CARD=null, RES=null, SCHED=null, cardErr=null, resErr=null, schedErr=null, tab='next';
+const plan=()=>project(CARD,RES,Date.now(),SCHED);
 let S=JSON.parse(JSON.stringify(DEFAULT));
 try{ const o=JSON.parse(localStorage.getItem(KEY)||'null'); if(o&&Array.isArray(o.follow)) S=Object.assign({},DEFAULT,o); }catch(e){}
 const save=()=>{ try{ localStorage.setItem(KEY, JSON.stringify(S)); }catch(e){} };
@@ -125,6 +126,7 @@ const quiet=()=>tab==='settings'&&document.activeElement&&document.activeElement
 async function getJson(u){ const r=await fetch(u+'?t='+Date.now(),{cache:'no-store'}); if(!r.ok) throw new Error('HTTP '+r.status); return r.json(); }
 async function loadCard(){ try{ const c=await getJson(CARD_URL); if(!c||!Array.isArray(c.bouts)||!c.bouts.length) throw new Error('empty card'); CARD=c; cardErr=null; }catch(e){ cardErr=e; } refresh(); }
 async function loadRes(){ try{ RES=await getJson(RES_URL); resErr=null; }catch(e){ resErr=e; } refresh(); }
+async function loadSched(){ try{ SCHED=await getJson(SCHED_URL); schedErr=null; }catch(e){ schedErr=e; } refresh(); }
 function refresh(){ if(quiet()) renderStatus(); else render(); }
 
 // ---------- rendering ----------
@@ -138,15 +140,15 @@ function nameBtn(p,it,s){
 function resultText(r){ if(!r) return ''; const how=String(r.how||'').toLowerCase().trim(); const t=/^\d{1,2}:\d{2}$/.test(String(r.time||''))?r.time:''; if(r.w===-1) return how||'no winner'; return [how, t&&how?'at '+t:t].filter(Boolean).join(' ')||'result in'; }
 function timeCell(it){
   if(it.state==='done') return `<div class="t soft">${it.result.endedAt&&!isNaN(Date.parse(it.result.endedAt))?fmt(it.result.endedAt):'done'}</div>`;
-  if(it.state==='live') return `<div class="t">now<small>seen ${esc(ago(Date.parse(RES.now.seenAt)))}</small></div>`;
+  if(it.state==='live') return `<div class="t">now<small>${it.at?'started about '+fmt(it.at):'on the mat'}</small></div>`;
   if(it.state==='due') return `<div class="t">${fmt(it.at)}<small>due now</small></div>`;
-  if(it.state==='pending') return `<div class="t soft">no result yet</div>`;
+  if(it.state==='pending') return `<div class="t soft">${it.finished?'finished':'no result yet'}</div>`;
   return `<div class="t">${fmt(it.at)}<small>${esc(rel(it.at))}</small></div>`;
 }
 function row(it){
   const b=it.bout, fol=isFollow(b.a)||isFollow(b.b);
   const tags=[`bout ${b.seq} of ${total()}`, catText(b), b.prelim?'prelim':''].filter(Boolean).join(' · ');
-  const res=it.state==='done'?`<span class="res">${esc(resultText(it.result))}</span>`:'';
+  const res=it.state==='done'?`<span class="res">${esc(resultText(it.result))}</span>`:it.finished?'<span class="res">winner not posted</span>':'';
   const cue=it.state==='live'?'<span class="cue live">on the mat</span>':'';
   return `<div class="panel row ${fol?'fol':''} ${it.state==='live'||it.state==='due'?'now':''}">${timeCell(it)}<div><div class="meta">${cue}<span>${tags}</span>${res}</div><div class="vs">${nameBtn(b.a,it,0)}${nameBtn(b.b,it,1)}</div></div></div>`;
 }
@@ -166,20 +168,25 @@ function followCards(P){
 function sourceNote(P){
   const start=Date.parse(CARD.start), slot=CARD.slotMin||15;
   const watch=typeof CARD.watch==='string'&&/^https:\/\/www\.youtube\.com\//.test(CARD.watch)?` <a class="plain" href="${esc(CARD.watch)}" target="_blank" rel="noopener">watch on YouTube</a>.`:'';
+  if(P.mode==='sched'){
+    const seen=P.lastSeen?`read ${esc(ago(P.lastSeen))}`:'read time unknown';
+    const live=P.signal?'':Date.now()<start?'':' nothing has been marked as started there yet, so these are still its planned times.';
+    return `times are ACBJJ's own mat schedule on Smoothcomp, ${seen}${P.stale?' <span class="bad-note">(that is old; the times may have moved)</span>':''}. it says when each bout is expected and which are over, not who won.${live}${watch}`;
+  }
   if(P.mode==='observed') return `position on the card last checked ${esc(ago(P.lastSeen))} against the broadcast. times after that assume about ${slot} minutes a bout.${watch}`;
   const lead = Date.now()<start ? `starts at ${fmt(start)} (${esc(rel(start))}).` : P.lastSeen ? `the card has not been checked against the broadcast since ${fmt(P.lastSeen)}.` : `started at ${fmt(start)}.`;
   return `${lead} ACBJJ has no live results feed, so every time here is an estimate: about ${slot} minutes a bout, the pace of the last ACBJJ event.${watch}`;
 }
 function renderNext(){
-  const P=project(CARD,RES,Date.now());
+  const P=plan();
   const on=P.items.filter(i=>i.state==='live'||i.state==='due');
   const up=P.items.filter(i=>i.state==='upcoming');
   const past=P.items.filter(i=>i.state==='done'||i.state==='pending').reverse();
   const over=!on.length&&!up.length;
   return `<div class="panel quiet">${over?'the card is over.':sourceNote(P)}</div>
-  ${on.length?`<h2 class="section-title">${on[0].state==='live'?'on the mat':'should be on the mat (not confirmed)'}</h2><div class="stack">${on.map(row).join('')}</div>`:''}
+  ${on.length?`<h2 class="section-title">${on[0].state==='live'?'on the mat':'due on the mat (not confirmed)'}</h2><div class="stack">${on.map(row).join('')}</div>`:''}
   <h2 class="section-title">following</h2>${followCards(P)}
-  ${up.length?`<h2 class="section-title">up next · ${up.length} to go · times are estimates</h2><div class="stack">${up.map(row).join('')}</div>`:''}
+  ${up.length?`<h2 class="section-title">up next · ${up.length} to go${P.mode==='sched'?'':' · times are estimates'}</h2><div class="stack">${up.map(row).join('')}</div>`:''}
   ${past.length?`<h2 class="section-title">already fought</h2><div class="stack">${past.map(row).join('')}</div>`:''}`;
 }
 function themeMode(){ try{ const t=localStorage.getItem('bjjTracker.theme'); return t==='light'||t==='dark'?t:'auto'; }catch(e){ return 'auto'; } }
@@ -198,16 +205,17 @@ function renderSettings(){
   <h2 class="section-title">where this comes from</h2>
   <div class="panel quiet">
     <div>the card and its order come from ${src}${CARD.updated?`, read ${esc(ago(Date.parse(CARD.updated)))}`:''}. the night runs from the last bout listed there up to the main event.</div>
-    <div class="note">ACBJJ publishes no live scoreboard or results feed. times assume the ${fmt(Date.parse(CARD.start))} start and about ${CARD.slotMin||15} minutes a bout; when the card's position has been checked against the broadcast, times run from there instead.</div>
+    <div class="note">times come from ACBJJ's mat schedule on Smoothcomp, re-read every few minutes; it moves as the night runs. if that schedule can't be read or stops matching the card, times fall back to the ${fmt(Date.parse(CARD.start))} start and about ${CARD.slotMin||15} minutes a bout.</div>
+    <div class="note">nobody publishes winners in a form this page can read, so a finished bout shows as finished until a result is added.</div>
     <div class="note"><a class="plain" href="../">ADCC 2026 brackets</a></div>
   </div>`;
 }
 function renderStatus(){
   const el=$('#status'); if(!CARD){ el.innerHTML=cardErr?'<span class="bad">couldn’t load</span>':''; return; }
-  const P=project(CARD,RES,Date.now()), start=Date.parse(CARD.start);
+  const P=plan(), start=Date.parse(CARD.start);
   const left=P.items.filter(i=>i.state==='upcoming'||i.state==='due'||i.state==='live').length;
-  let s = !left ? 'card over' : P.mode==='observed' ? `checked ${ago(P.lastSeen)}` : Date.now()<start ? `starts ${fmt(start)}` : 'estimates only';
-  if(cardErr||resErr) s+=' · <span class="bad">stale</span>';
+  let s = !left ? 'card over' : P.mode==='sched' ? (Date.now()<start&&!P.signal ? `starts ${fmt(start)}` : P.stale ? `<span class="bad">schedule ${ago(P.lastSeen)}</span>` : `schedule ${ago(P.lastSeen)}`) : P.mode==='observed' ? `checked ${ago(P.lastSeen)}` : Date.now()<start ? `starts ${fmt(start)}` : 'estimates only';
+  if(cardErr||resErr||schedErr) s+=' · <span class="bad">stale</span>';
   el.innerHTML=s;
 }
 function render(){
@@ -230,9 +238,9 @@ $('#main').addEventListener('click',e=>{
 });
 $('#main').addEventListener('change',e=>{ if(e.target.id==='follow'){ S.follow=e.target.value.split(',').map(x=>x.trim()).filter(Boolean); save(); render(); } });
 
-loadCard(); loadRes();
-setInterval(loadRes, 60000); setInterval(loadCard, 300000); setInterval(refresh, 20000);   // results each minute, the card every five, relative times in between
-document.addEventListener('visibilitychange',()=>{ if(!document.hidden){ loadCard(); loadRes(); } });
+loadCard(); loadRes(); loadSched();
+setInterval(loadRes, 60000); setInterval(loadSched, 60000); setInterval(loadCard, 300000); setInterval(refresh, 20000);   // results each minute, the card every five, relative times in between
+document.addEventListener('visibilitychange',()=>{ if(!document.hidden){ loadCard(); loadRes(); loadSched(); } });
 </script>
 </body>
 </html>

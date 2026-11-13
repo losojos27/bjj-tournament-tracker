@@ -44,8 +44,10 @@ node scripts/sync.mjs            # FloArena -> data/results.json (Node 18+, no d
 node scripts/queue-test.js       # schedule engine on its own small fixture (Flo lists, live bouts, DQs)
 scripts/sync-loop-test.sh        # the sync loop against a local bare repo with a competing push mid-loop
 node scripts/sim/test.mjs        # the competition simulator: timeline, both fake feeds, the HTTP server (114 checks)
-node scripts/card/test.mjs       # the fight-card projection and the ACBJJ card parser (22 checks)
+node scripts/card/test.mjs       # the fight-card projection and both card syncs' parsers (35 checks)
 node scripts/card/acbjj-sync.mjs # ACBJJ's card page -> data/acbjj23/card.json
+node scripts/card/smoothcomp-sync.mjs  # Smoothcomp's mat schedule -> data/acbjj23/schedule.json
+gh workflow run card-sync.yml    # loop that schedule sync on GitHub for ~5 hours (manual only)
 node scripts/sim/server.mjs      # run a simulated ADCC: tracker at http://localhost:8766/?sim, controls at /sim/
                                  #   --speed 20 --from SF --sync 300 --port 8766 --host 0.0.0.0 (phone on the same wifi)
 python3 -m http.server 8000      # serve locally; open http://localhost:8000 (file:// breaks fetch and fonts)
@@ -230,25 +232,44 @@ shares the theme and the UI rules above but none of the bracket code; `index.htm
 touched. The tournament selector still doesn't exist; this page is what a "card" event type
 looks like when it does.
 
-- **Card:** `scripts/card/acbjj-sync.mjs` reads https://events.acbjj.com/card23.html (static
-  HTML, the card inline as `var FIGHTS = [...]`, plus `var PRELIMS_FROM`) and writes
-  `data/acbjj23/card.json`. The site bills from the main event (n = 1) down and **the night runs
-  in the reverse of that** (`seq`); checked against ACBJJ 22, where Tapology's recorded bout
-  order was the site's list reversed. Run by hand; no cron.
-- **No live feed exists.** The official site has no results fields and never added any to
-  ACBJJ 22's page; the public Telegram channel (`t.me/s/ACBJJ`, readable without a login)
-  carried no per-bout posts during ACBJJ 22; Tapology had full ACBJJ 22 results with methods and
-  times but is hand-entered, blocks non-browser fetches (403), and its ACBJJ 23 card disagreed
-  with the official one. The broadcast (YouTube) is the only real-time source.
-- **`data/acbjj23/results.json`** is therefore written by whoever is watching, never by the
-  sync: `{updated, now:{n, seenAt, startedAt?}, results:{"<n>":{w, how, time, endedAt}}}`, keyed
-  by billing number `n`, `w` = 0 (`a`) / 1 (`b`) / -1 (no winner). Empty is a valid state.
-- **Projection (`scripts/card/engine.mjs`, pure; tests in `scripts/card/test.mjs`).** With
-  nothing recorded it is the clock alone: `start` plus `slotMin` (15, from ACBJJ 22's 22 bouts in
-  5 h 33 min) per bout, and the page says every time is an estimate. A recorded finish or a
-  recent `now` anchors everything after it; an observation older than 25 minutes stops claiming
-  a bout is live. A bout that must be over with no result recorded is "no result yet", never
-  "up next". The follow card follows the same neutral rule as the bracket page.
+- **Card (names, countries, teams):** `scripts/card/acbjj-sync.mjs` reads
+  https://events.acbjj.com/card23.html (static HTML, the card inline as `var FIGHTS = [...]`,
+  plus `var PRELIMS_FROM`) and writes `data/acbjj23/card.json`. The site bills from the main
+  event (n = 1) down and **the night runs in the reverse of that** (`seq`). Run by hand.
+- **Schedule (when, and what is on): Smoothcomp.** ACBJJ runs its events on
+  acbjj.smoothcomp.com (ACBJJ 23 is event `36384`, mat `209349`; Lee's lead, after I had
+  written the event off as feedless). The schedule page's own XHR,
+  `/en/event/<id>/schedule/new/blocks.json?matIds[]=<mat>`, is public JSON with no login and no
+  bot check (plain curl gets 200): one block per bout in mat order with `estimated_start`/
+  `estimated_end` (ISO with offset; Smoothcomp says these move in real time) and
+  `running_matches_count`/`finished_matches_count`/`total_matches`. Siblings:
+  `schedule/new/matcategories.json` and `schedule/new/mats.json/<matCategoryId>` (how to find
+  the mat id). It sends no CORS header, so the browser can't read it: `scripts/card/
+  smoothcomp-sync.mjs` writes `data/acbjj23/schedule.json`, and `.github/workflows/
+  card-sync.yml` (manual dispatch only) runs it through `scripts/sync-loop.sh` every 2 minutes
+  for ~5 hours. An unchanged schedule is rewritten every 10 minutes as a heartbeat.
+- **Blocks carry no names and no winners.** They are matched to the card by running order and
+  checked by rule set and weight (`sig()`); on any mismatch the file says `ok:false` and the
+  page falls back to the clock rather than put a time on the wrong bout. The Smoothcomp pages
+  that do have names and results (`schedule/matchlist`, `bracket/<id>` with its signed
+  `getRenderData` URL, `results`) sit behind Cloudflare's browser check and return 403 to
+  anything but a browser. **Don't try to get around that**; open them in Chrome if needed.
+- **Winners have no machine-readable source.** The official site has no result fields (and
+  never added any to ACBJJ 22's page); the public Telegram channel (`t.me/s/ACBJJ`) carried no
+  per-bout posts during ACBJJ 22; Tapology had full ACBJJ 22 results but is hand-entered, 403s
+  non-browser fetches, sells its API, and its ACBJJ 23 card disagreed with the official one.
+  `data/acbjj23/results.json` (`{updated, now, results:{"<n>":{w, how, time, endedAt}}}`, keyed
+  by billing number `n`, `w` = 0 (`a`) / 1 (`b`) / -1) is there for whoever records them; empty
+  is a valid state, and a finished bout then reads "finished · winner not posted".
+- **Projection (`scripts/card/engine.mjs`, pure; `scripts/card/test.mjs`).** With a usable
+  schedule, each bout takes its block's time; a running block is live; a finished block is over.
+  A schedule nobody is operating degrades to its own planned times and the page flags it as old
+  after 25 minutes. Without a schedule it is the clock alone (`start` + `slotMin` per bout) and
+  the page says every time is an estimate. A bout that must be over is never "up next". The
+  follow card follows the same neutral rule as the bracket page.
+- Sources disagreed on the start: the official countdown and the YouTube stream say 18:00 Rio,
+  Smoothcomp's first bout and the promoter's own time-zone poster say 19:00. The first bout is
+  19:00; the stream opens an hour early.
 - Local state: `bjjTracker.acbjj23` (follow list), plus the shared `bjjTracker.theme`.
 
 ## FloArena data sources (found by watching the arena page's network traffic)

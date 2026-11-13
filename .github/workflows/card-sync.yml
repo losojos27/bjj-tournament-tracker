@@ -1,0 +1,30 @@
+name: sync a fight card's schedule (Smoothcomp)
+# Manual only: start it before a card event, it loops for the evening and ends on its own.
+# Same loop as the FloArena sync (scripts/sync-loop.sh), pointed at the Smoothcomp schedule sync.
+on:
+  workflow_dispatch:
+permissions:
+  contents: write
+concurrency:
+  group: card-sync
+  cancel-in-progress: false
+jobs:
+  sync:
+    runs-on: ubuntu-latest
+    timeout-minutes: 340
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+      - name: Read the schedule every 2 minutes for ~5.5 hours, committing when it changes
+        env:
+          SYNC_STRICT: '1'
+          SYNC_CMD: node scripts/card/smoothcomp-sync.mjs
+          SYNC_FILE: data/acbjj23/schedule.json
+          SYNC_SLEEP: '120'
+          SYNC_PASSES: '150'
+        run: |
+          git config user.name "card-sync"
+          git config user.email "actions@users.noreply.github.com"
+          scripts/sync-loop.sh

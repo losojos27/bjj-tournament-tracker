@@ -14,8 +14,8 @@ const EVENT = {
   id: 'acbjj23', title: 'ACBJJ 23', place: 'Rio de Janeiro',
   source: 'https://events.acbjj.com/card23.html',
   watch: 'https://www.youtube.com/live/ZrKLsVbpIRc',
-  start: '2026-11-13T21:00:00Z',   // 18:00 in Rio: the site's countdown and the stream's scheduled start
-  slotMin: 15,                     // ACBJJ 22 ran 22 bouts in 5 h 33 min of broadcast
+  start: '2026-11-13T22:00:00Z',   // 19:00 in Rio, the first bout on Smoothcomp's schedule (the stream opens an hour earlier)
+  slotMin: 13,                     // Smoothcomp plans 11-13 minutes a bout; ACBJJ 22 averaged 15 on air
 };
 const str = (v, max = 80) => String(v ?? '').replace(/\s+/g, ' ').trim().slice(0, max);
 const fighter = f => ({ name: str(f && f.name), abb: str(f && f.abb, 3).toUpperCase(), country: str(f && f.country, 40), team: str(f && f.team), rec: str(f && f.rec, 30) });
