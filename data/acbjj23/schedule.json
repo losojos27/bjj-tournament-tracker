@@ -1,5 +1,5 @@
 {
- "updated": "2026-11-14T02:02:24.822Z",
+ "updated": "2026-11-14T02:04:27.123Z",
  "ok": true,
  "problems": [],
  "source": "smoothcomp",
@@ -134,16 +134,16 @@
    "seq": 15,
    "name": "ACBJJ 23 / Grand Title Battle Match / 70kg",
    "start": "2026-11-14T01:39:15.000Z",
-   "end": "2026-11-14T01:52:15.000Z",
-   "running": 1,
-   "finished": 0,
+   "end": "2026-11-14T02:03:47.000Z",
+   "running": 0,
+   "finished": 1,
    "total": 1
   },
   {
    "seq": 16,
    "name": "ACBJJ 23 / All-Stars No-Gi Match / 80kg",
-   "start": "2026-11-14T02:01:52.000Z",
-   "end": "2026-11-14T02:14:52.000Z",
+   "start": "2026-11-14T02:03:48.000Z",
+   "end": "2026-11-14T02:16:48.000Z",
    "running": 0,
    "finished": 0,
    "total": 1
@@ -151,8 +151,8 @@
   {
    "seq": 17,
    "name": "ACBJJ 23 / Grand Title Gi Match / 60kg",
-   "start": "2026-11-14T02:14:52.000Z",
-   "end": "2026-11-14T02:27:52.000Z",
+   "start": "2026-11-14T02:16:48.000Z",
+   "end": "2026-11-14T02:29:48.000Z",
    "running": 0,
    "finished": 0,
    "total": 1
@@ -160,8 +160,8 @@
   {
    "seq": 18,
    "name": "ACBJJ 23 / Battle Match / 80kg",
-   "start": "2026-11-14T02:27:52.000Z",
-   "end": "2026-11-14T02:40:52.000Z",
+   "start": "2026-11-14T02:29:48.000Z",
+   "end": "2026-11-14T02:42:48.000Z",
    "running": 0,
    "finished": 0,
    "total": 1
@@ -169,8 +169,8 @@
   {
    "seq": 19,
    "name": "ACBJJ 23 / Co-Main Event All-Stars No-Gi Match / 90kg",
-   "start": "2026-11-14T02:40:52.000Z",
-   "end": "2026-11-14T02:53:52.000Z",
+   "start": "2026-11-14T02:42:48.000Z",
+   "end": "2026-11-14T02:55:48.000Z",
    "running": 0,
    "finished": 0,
    "total": 1
@@ -178,8 +178,8 @@
   {
    "seq": 20,
    "name": "ACBJJ 23 / Main Event Battle Match / 100kg",
-   "start": "2026-11-14T02:53:52.000Z",
-   "end": "2026-11-14T03:06:52.000Z",
+   "start": "2026-11-14T02:55:48.000Z",
+   "end": "2026-11-14T03:08:48.000Z",
    "running": 0,
    "finished": 0,
    "total": 1
