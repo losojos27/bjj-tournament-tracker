@@ -48,6 +48,7 @@ node scripts/card/test.mjs       # the fight-card projection and both card syncs
 node scripts/card/acbjj-sync.mjs # ACBJJ's card page -> data/acbjj23/card.json
 node scripts/card/smoothcomp-sync.mjs  # Smoothcomp's mat schedule -> data/acbjj23/schedule.json
 gh workflow run card-sync.yml    # loop that schedule sync on GitHub for ~5 hours (manual only)
+node scripts/card/record.mjs '7=Felipe Costa'  # record a winner read off Smoothcomp's bracket page (seq=name)
 node scripts/sim/server.mjs      # run a simulated ADCC: tracker at http://localhost:8766/?sim, controls at /sim/
                                  #   --speed 20 --from SF --sync 300 --port 8766 --host 0.0.0.0 (phone on the same wifi)
 python3 -m http.server 8000      # serve locally; open http://localhost:8000 (file:// breaks fetch and fonts)
@@ -254,13 +255,24 @@ looks like when it does.
   that do have names and results (`schedule/matchlist`, `bracket/<id>` with its signed
   `getRenderData` URL, `results`) sit behind Cloudflare's browser check and return 403 to
   anything but a browser. **Don't try to get around that**; open them in Chrome if needed.
-- **Winners have no machine-readable source.** The official site has no result fields (and
-  never added any to ACBJJ 22's page); the public Telegram channel (`t.me/s/ACBJJ`) carried no
-  per-bout posts during ACBJJ 22; Tapology had full ACBJJ 22 results but is hand-entered, 403s
-  non-browser fetches, sells its API, and its ACBJJ 23 card disagreed with the official one.
-  `data/acbjj23/results.json` (`{updated, now, results:{"<n>":{w, how, time, endedAt}}}`, keyed
-  by billing number `n`, `w` = 0 (`a`) / 1 (`b`) / -1) is there for whoever records them; empty
-  is a valid state, and a finished bout then reads "finished · winner not posted".
+- **Winners: Smoothcomp's bracket pages, read in Chrome (found during the event).** Each bout
+  is its own one-match bracket (`bracket_id` in `blocks.json`);
+  `/en/event/<id>/bracket/<bracket_id>` marks the winner (`.player.winner`, placement 1). Those
+  pages sit behind the browser check, which clears without interaction in Chrome after a few
+  seconds, so no script can read them. On Nov 13 a session watched the public `blocks.json` for
+  each finish, opened that bout's bracket page in Chrome, and ran
+  `node scripts/card/record.mjs '<seq>=<winner name>'` (the name must be one of that bout's two
+  fighters) to write `data/acbjj23/results.json`
+  (`{updated, now, results:{"<n>":{w, endedAt}}}`, keyed by billing number `n`, `w` = 0 (`a`) /
+  1 (`b`) / -1); all 20 landed within about a minute of the finish. Smoothcomp does not say how
+  a bout was won, so the page marks the winner and shows no method. Its `results` page (medals)
+  stayed empty and `schedule/matchlist` lists only bouts still to come. The official site,
+  Telegram and Tapology were ruled out beforehand (no result fields; no per-bout posts;
+  hand-entered, paid API, and a card that disagreed with the official one).
+- The event ran 19:17 to about 23:17 Rio for 20 bouts (12 minutes a bout on average, the late
+  title bouts up to 27), and ACBJJ operated Smoothcomp live throughout: started/finished counts
+  and moving estimates were accurate all night. Lee kept the unchanged-schedule heartbeat at 10
+  minutes (the "read N min ago" line can reach ~12 during a long bout).
 - **Projection (`scripts/card/engine.mjs`, pure; `scripts/card/test.mjs`).** With a usable
   schedule, each bout takes its block's time; a running block is live; a finished block is over.
   A schedule nobody is operating degrades to its own planned times and the page flags it as old
